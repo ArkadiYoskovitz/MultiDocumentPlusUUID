@@ -55,7 +55,10 @@
                         NSLog(@"Update notification received. %d files found so far",
                               [self.query resultCount]);
                         
-                        [self processQueryUpdate];
+                        [self.query disableUpdates];{
+                            [self processQueryUpdate];
+                        }[self.query enableUpdates];
+                        
                         
                     }];
     
@@ -71,7 +74,9 @@
                         NSLog(@"Progress notification received. %d files found so far",
                               [self.query resultCount]);
                         
-                        [self processQueryUpdate];
+                        [self.query disableUpdates];{
+                            [self processQueryUpdate];
+                        }[self.query enableUpdates];
                         
                     }];
     
@@ -189,6 +194,7 @@ const NSString *PNDocMDataDotPlistKey = @"DocumentMetadata.plist";
         for (NSMetadataItem* item in queryItems) {
             
             NSURL* url = [item valueForAttribute:NSMetadataItemURLKey];
+            url = [url npNormalizedURL];
             
             NSFileCoordinator* coordinator =
             [[NSFileCoordinator alloc] initWithFilePresenter:nil];

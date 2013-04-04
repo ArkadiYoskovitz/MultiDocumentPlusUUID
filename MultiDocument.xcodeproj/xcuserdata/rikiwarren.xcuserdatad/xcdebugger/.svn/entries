@@ -2,13 +2,13 @@
 
 dir
 20
-file:///Volumes/Archives/NowPicture/Warren/MultiDocument.xcodeproj/project.xcworkspace
+file:///Volumes/Archives/NowPicture/Warren/MultiDocument.xcodeproj/xcuserdata/rikiwarren.xcuserdatad/xcdebugger
 file:///Volumes/Archives/NowPicture/Warren
 
 
 
-2013-03-11T20:58:24.863714Z
-20
+2012-07-31T18:12:47.770526Z
+1
 devguy
 
 
@@ -26,14 +26,14 @@ devguy
 
 667f0136-07fa-4238-89e9-f4c07409b9d6
 
-contents.xcworkspacedata
+Breakpoints.xcbkptlist
 file
 
 
 
 
 2013-03-11T21:22:59.000000Z
-90c33167bfa88a9a70c1c68d0d97d993
+308edba9393da20851afc948a28ee16e
 2012-07-31T18:12:47.770526Z
 1
 devguy
@@ -58,8 +58,5 @@ devguy
 
 
 
-158
-
-xcuserdata
-dir
+949
 
