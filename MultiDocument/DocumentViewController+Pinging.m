@@ -84,7 +84,7 @@ NSString *NPTextEntryLatencies = @"TextEntry Latencies across Devices";
     if( !pingEnabled ) return;
     
    
-//    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         
         [self logLatency];
         
@@ -101,17 +101,16 @@ NSString *NPTextEntryLatencies = @"TextEntry Latencies across Devices";
         // Use performSelector: to avoid declaring or making -setViewFromModel public.
         [self performSelector: @selector(setViewFromModel)];
         
-//    });
-    NSLog(@"%@: -ping END",
-          [[UIDevice currentDevice] model] );
+        NSLog(@"%@: -ping END",
+              [[UIDevice currentDevice] model] );
+
+        
+    });
 
 }
 
 -(void)schedulePing
 {
-    NSLog(@"%@: -schedulePing BEGIN",
-          [[UIDevice currentDevice] model] );
-    
     NSRunLoop *runLoop = [NSRunLoop mainRunLoop]; //[NSRunLoop currentRunLoop];
     
     NSArray *modes = [NSArray arrayWithObject: NSDefaultRunLoopMode];

@@ -206,14 +206,7 @@
                           argument: nil];
     
     [self setViewFromModel];
-         
-    NSArray *modes = [NSArray arrayWithObject: NSDefaultRunLoopMode];
-    [runLoop performSelector: @selector(schedulePing)
-                      target: self
-                    argument: nil
-                       order: 5
-                       modes: modes];
-    
+    [self schedulePing];
     
     NSLog(@"%@: -updateFromCloud END",
           [[UIDevice currentDevice] model] );

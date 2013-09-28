@@ -314,50 +314,37 @@ const NSString* NPDocumentKey     = @"Document";
     
     
     NSMutableDictionary *existing = [self recordForUuid: uuid];
+    NSAssert( (nil == existing), @"Record exists for uuid: %@", uuid);
     
+    NSMutableDictionary *record = nil;
     
-    if( nil != existing ){
-        BOOL sanity = [filename isEqualToString: [existing objectForKey:NPFileNameKey]];
+    @synchronized(self){
         
-        NSAssert( sanity, @"Conflict: filenames %@ & %@ for uuid: %@",
-                 filename,
-                 [existing objectForKey:NPFileNameKey],
-                 uuid);
-        return existing;
+        record = [NSMutableDictionary dictionaryWithCapacity: 8];
         
-    }else{
-        NSMutableDictionary *record = nil;
+        [record setObject: uuid
+                   forKey: NPUUIDKey];
+        [record setObject: filename
+                   forKey: NPFileNameKey];
         
-        @synchronized(self){
-            
-            record = [NSMutableDictionary dictionaryWithCapacity: 8];
-            
-            [record setObject: uuid
-                       forKey: NPUUIDKey];
-            [record setObject: filename
-                       forKey: NPFileNameKey];
-            
-            [record setObject: localDocURL
-                       forKey: NPLocalURLKey];
-            
-            if( nil != cloudDocURL ){
-                [record setObject: cloudDocURL
-                           forKey: NPCloudURLKey];
-            }else{
-                [record removeObjectForKey: NPCloudURLKey];
-            }
-            
-            NSDictionary *storeOptions = [[self class] persistentStoreOptionsForDocumentFileURL: localDocURL];
-            
-            [record setObject: storeOptions
-                       forKey: NPStoreOptionsKey];
-            
-            
+        [record setObject: localDocURL
+                   forKey: NPLocalURLKey];
+        
+        if( nil != cloudDocURL ){
+            [record setObject: cloudDocURL
+                       forKey: NPCloudURLKey];
+        }else{
+            [record removeObjectForKey: NPCloudURLKey];
         }
-
-        return record;
+        
+        NSDictionary *storeOptions = [[self class] persistentStoreOptionsForDocumentFileURL: localDocURL];
+        
+        [record setObject: storeOptions
+                   forKey: NPStoreOptionsKey];
+        
+        
     }
-    
+    return record;
 }
 
 const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";

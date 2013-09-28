@@ -113,15 +113,6 @@
               }
               if ([[self class] isCloudEnabled]) {
                   
-                  /**
-                   Erica Sadun indicates (by omission) that it's unnecessary to setUbiquitous:...
-                   I find otherwise.
-                   If I skip setUbiquitous:..., 
-                   [1] the application's cloud storage "looks wrong" in 
-                        the desktop Settings.app; and
-                   [2] other devices don't discover supposedly cloud-resident documents. 
-                   */
-
                   NSDictionary *record = [self recordForDocument: document];
                   
                   NSURL *localDocURL = [record objectForKey: NPLocalURLKey];
@@ -131,7 +122,7 @@
                   dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
                   
                   dispatch_async(queue, ^{
-                  
+                      
                       NSError* error = nil;
                       
                       if (![[[self class] fileManager] setUbiquitous: YES
@@ -161,7 +152,6 @@
                         [failCallback invoke];
                     }
                 }];
-
           }else{
               [failCallback invoke];
           }
