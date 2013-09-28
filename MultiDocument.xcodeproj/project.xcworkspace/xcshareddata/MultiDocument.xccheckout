@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>702B7783-B1D3-4677-B265-C2B6681F93D5</string>
+	<key>IDESourceControlProjectName</key>
+	<string>MultiDocument</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>B9AE197D-1947-42AE-857D-C5EB7B918B40</key>
+		<string>https://github.com/DonBriggs/MultiDocumentPlusUUID.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>MultiDocument.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>B9AE197D-1947-42AE-857D-C5EB7B918B40</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/DonBriggs/MultiDocumentPlusUUID.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>B9AE197D-1947-42AE-857D-C5EB7B918B40</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>B9AE197D-1947-42AE-857D-C5EB7B918B40</string>
+			<key>IDESourceControlWCCName</key>
+			<string>MultiDocumentPlusUUID</string>
+		</dict>
+	</array>
+</dict>
+</plist>
