@@ -135,22 +135,68 @@
     
 }
 
--(void)observeDocument:(UIManagedDocument*)document
+-(void)ignoreDocument:(UIManagedDocument*)document
 {
     NSNotificationCenter* center =
     [NSNotificationCenter defaultCenter];
+
+    NSMutableDictionary *updatedRecord = [self recordForDocument: document].mutableCopy;
     
-    id observer =
+    id stateChangedObserver = updatedRecord[NPDocumentStateChangedObserverKey];
+    [center removeObserver: stateChangedObserver];
+    [updatedRecord removeObjectForKey:NPDocumentStateChangedObserverKey];
+    
+    id pscImportObserver = updatedRecord[NPDocumentPscImportKey];
+    [center removeObserver: pscImportObserver];
+    [updatedRecord removeObjectForKey:NPDocumentPscImportKey];
+    
+    [self updateRecord: updatedRecord];
+ 
+}
+-(void)observeDocument:(UIManagedDocument*)document
+{
+    [self ignoreDocument: document];
+    
+    NSMutableDictionary *updatedRecord = [self recordForDocument: document].mutableCopy;
+
+    NSNotificationCenter* center =
+    [NSNotificationCenter defaultCenter];
+    
+    id stateChangedObserver =
     [center addObserverForName:UIDocumentStateChangedNotification
                         object:document
                          queue:nil
                     usingBlock:^(NSNotification *note) {
                         
-                        [self.tableView reloadData];
+                        [self resetTableViewSnoozeAlarm];
                         
                     }];
-    [self.notificationObservers addObject:observer];
+    updatedRecord[NPDocumentStateChangedObserverKey] = stateChangedObserver;
     
+    
+    NSPersistentStoreCoordinator *psc =
+    document.managedObjectContext.persistentStoreCoordinator;
+    NSAssert( (nil !=psc),
+             @"-[%@ observeDocument] found nil psc",
+             NSStringFromClass([self class]));
+    
+    id pscImportObserver =
+    [center addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification
+                        object:psc
+                         queue:nil
+                    usingBlock:^(NSNotification *note) {
+                        
+                        NSMutableDictionary *updatedRecord = [[self recordForDocument:document] mutableCopy];
+                        updatedRecord[NPMostRecentUpdateKey] = [NSDate date];
+                        [self updateRecord: updatedRecord];
+                        
+                        [self resetTableViewSnoozeAlarm];
+                        
+                    }];
+    updatedRecord[NPDocumentPscImportKey] = pscImportObserver;
+    
+    [self updateRecord: updatedRecord];
+                        
 }
 
 -(void)setUbiquitous: (NSDictionary*)record
@@ -220,69 +266,6 @@
         });
     }
 }
--(void)setUbiquitousWorks: (NSDictionary*)record
-{
-    
-    if ([[self class] isCloudEnabled]) {
-        
-        NSURL *localDocURL = [record objectForKey: NPLocalDocURLKey];
-        [[self class] assureDirectoryURLExists: localDocURL];
-        
-        NSURL* cloudDocURL = [record objectForKey: NPCloudDocURLKey];
-        
-        /**
-         DON'T DO THIS:
-         
-         NSFileCoordinator *fc =
-         [[NSFileCoordinator alloc] initWithFilePresenter:document];
-         
-         [fc coordinateWritingItemAtURL:record[NPCloudDocURLKey]
-         options:NSFileCoordinatorWritingForMerging
-         error:nil
-         byAccessor:^(NSURL *coordinatedURL) {
-         
-         [[self class] assureDirectoryURLExists: coordinatedURL];
-         }];
-         
-         BECAUSE:
-         
-         "Printing description of error:
-         Error Domain=NSCocoaErrorDomain Code=516 "The operation couldn’t be completed. (Cocoa error 516.)" UserInfo=0x17e38ce0 {NSFilePath=/var/mobile/Library/Mobile Documents/YHVGV9RUH4~com~nowpicture~multidocument/Documents/DBCBD854-9A99-4429-8491-7FD16895E901/TestDoc1, NSUnderlyingError=0x17e37580 "The operation couldn’t be completed. File exists"}"
-         
-         */
-        
-        dispatch_queue_t queue =
-        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        
-        dispatch_async(queue, ^{
-            
-            NSLog(@" -setUbiquitous:error: dispatch_async start");
-            NSError* error = nil;
-            
-            NSFileManager *fm = [[NSFileManager alloc] init];
-            
-            BOOL success =
-            [fm setUbiquitous: YES
-                    itemAtURL: localDocURL
-               destinationURL: cloudDocURL
-                        error: &error];
-            
-            if(success){
-                NSLog(@" -setUbiquitous:error: SUCCESS");
-            }else{
-                NSLog(@" -setUbiquitous:error: FAIL: %@", [error description]);
-                [NSException
-                 raise:NSGenericException
-                 format:@"Error moving to iCloud container: %@",
-                 error.localizedDescription];
-                
-            }
-            NSLog(@" -setUbiquitous:error: dispatch_async end");
-            
-        });
-    }
-}
-
 -(void)mostlyHarmlessMethod: (NSString*)haplessArgument
 {
     // Strive to do nothing in this method.
@@ -314,6 +297,10 @@
     }
     document.persistentStoreOptions = storeOptions;
     
+    NSMutableDictionary *updatedRecord = record.mutableCopy;
+    updatedRecord[NPDocumentKey] = document;
+    [self updateRecord: updatedRecord];
+    
     [self observeDocument: document];
     
     [[document managedObjectContext] setMergePolicy:NSRollbackMergePolicy];
@@ -338,8 +325,7 @@
             failCallback: (NSInvocation*)failCallback;
 {
     
-    NSMutableDictionary *record = [self recordForDocument: document];
-    //record[NPDocumentKey] = document;
+    NSMutableDictionary *record = [self recordForDocument: document].mutableCopy;
     
     NSURL *localDocURL = record[NPLocalDocURLKey];
     if ([[[self class] fileManager] fileExistsAtPath: localDocURL.path]){
@@ -347,6 +333,9 @@
         NSLog(@"Attempting to open existing file");
                 
         [document openWithCompletionHandler:^(BOOL success){
+            
+            [self resetTableViewSnoozeAlarm];
+            
             if (!success) {
                 NSLog(@"In -establishDocument:, Error opening file");
                 return;
@@ -365,6 +354,8 @@
         [document saveToURL: localDocURL
            forSaveOperation:UIDocumentSaveForCreating
           completionHandler:^(BOOL success){
+              
+              [self resetTableViewSnoozeAlarm];
               if (!success) {
                   NSLog(@"In -establishDocument, Error creating file");
                   [failCallback invoke];
@@ -373,12 +364,18 @@
                   
                   if( nil == record[NPMetadataDictionaryKey] ){
                       [self addObjectGraphToDocument: document];
+                      
+                      NSMutableDictionary *updatedRecord = record.mutableCopy;
+                      updatedRecord[NPMostRecentUpdateKey] = [NSDate date];
+                      [self updateRecord: updatedRecord];
                   }
                   
                   if( [[self class] isCloudEnabled] ){
                       
                       [document closeWithCompletionHandler:^(BOOL success){
                           NSLog(@"Closed new file: %@", success ? @"Success" : @"Failure");
+                          
+                          [self resetTableViewSnoozeAlarm];
                           
                           if (!success) {
                               NSLog(@"In -establishDocument, Error closing file after creating.");
@@ -391,9 +388,13 @@
                                   record[NPCloudDocURLKey] = cloudDocURL;
                               }
                               
-                              if (![[[self class] fileManager] fileExistsAtPath: cloudDocURL.path]){
+                              if ([[[self class] fileManager] fileExistsAtPath: cloudDocURL.path]){
+                                  [record removeObjectForKey: NPMostRecentUpdateKey];
+                              }else{
                                   [self setUbiquitous: record];
+                                  [record setObject: [NSDate date] forKey: NPMostRecentUpdateKey];
                               }
+                              [self resetTableViewSnoozeAlarm];
                               
                               // If we:
                               // [1] initialized and saved (saved-for-creating)
@@ -413,6 +414,8 @@
                               UIManagedDocument *document2 =
                               [self instantiateDocumentFromRecord: record];
                               record[NPDocumentKey] = document2;
+                              [self resetTableViewSnoozeAlarm];
+                              
                               
                               /*
                               if( nil != record[NPMetadataDictionaryKey]){
@@ -420,6 +423,8 @@
                               }
                               */
                               [document2 openWithCompletionHandler:^(BOOL success){
+                                  
+                                  [self resetTableViewSnoozeAlarm];
                                   
                                   if (!success) {
                                       NSLog(@"In -establishDocument, Error opening file after creating and closing.");

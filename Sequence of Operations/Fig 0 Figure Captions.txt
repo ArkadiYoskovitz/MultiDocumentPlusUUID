@@ -1,0 +1,27 @@
+
+This series of screenshots from an iPhone and an iPad show how MultiDocumentPlusUUID demonstrates iCloud syncing and records the latencies of the updates.
+
+These screenshots came from Xcode’s Organizer window.
+Xcode generates filenames for screenshots automatically, but for human readability, I’ve prepended “Fig <index> <device name> ”.
+The figure captions below describe the sequence.
+A precondition is that the iCloud Storage for the app is empty.
+
+Fig 1 A: Launch the app on the iPhone. Its table view is empty.
+Fig 2 B: Launch the app on the iPad. Its table view is empty, too.
+Fig 3 A: On the iPhone, touch the [+] button in the upper left of the Master View. The app creates a new document locally, “TestDoc1”, initializes its object graph programmatically, and makes it ubiquitous. The document’s table row shows its file name, document state, whether it was created on this device or discovered though a query, and the availability of its object graph.
+Fig 4 A: The Detail View of TestDoc1 inspects the document’s object graph. It shows the document’s file name in the first text label, and its state and modification date in the second text label. (Those are immutable.) The text view below shows the text property of the document’s single TextEntity object. The newly initialized text shows the device where it was created. The user can edit the text view to modify the object graph.
+Fig 5 B: Meanwhile, the app on the iPad has discovered the existence of “TestDoc1” through a metadata query. However, the document’s object graph is not yet available.
+Fig 6 B: Eventually, the object graph of “TestDoc1” becomes available on the iPad. The user can now inspect it. By the way, the elapsed time recorded between creation and remote availability (see the time stamps embedded in the file names) was remarkably less than my typical experience.
+Fig 7 B: The iPad shows the same text as the iPhone. 
+Fig 8 B: The user edits the document on the iPad.
+Fig 9 A: The change appears on the iPhone.
+Fig 10 B: Enable the ping mechanism on the iPad.
+Fig 11 A: Likewise, enable the ping mechanism on the iPad. DO NOT enable ping on more than 2 devices simultaneously.
+Fig 12 A: Edit the text on either device (iPhone, here) to start pinging.
+Fig 13 B: The iPad detects the user’s update and responds programmatically by appending its ping to the text.
+Fig 14 A: The iPhone detects the iPad’s programmatic update and responds.
+Fig 15 B: Later, the iPad shows the result of several round trips.
+Fig 16 A: Similarly, the iPhone shows its results.
+Fig 17 Xcode: In the debugger, set a break point in the -ping: method and capture the latencies (on either device).
+Fig 18: The latencies in *.csv form
+

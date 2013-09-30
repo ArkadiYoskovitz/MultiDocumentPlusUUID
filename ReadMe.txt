@@ -33,14 +33,15 @@ https://github.com/dtrotzjr/APManagedDocument
 ________________________
 
 How to Use the App:
+See the “Sequence of Operations” folder and the figure captions.
 Run the app on two devices at once.
 The main view provides a table view of available UIManagedDocuments.
 On the first launch, and on every launch after removing all cloud documents, the table view is empty.
 Otherwise, a metadata query populates the table with existing cloud documents.
-The “+” button in the main view’s upper left adds a new document, initialized in the sandbox, then made ubiquitous.
-Each new document has a non-empty object graph.
+The “+” button in the main view’s upper left adds a new document, initialized in the sandbox of the creating device, then made ubiquitous.
+The app initializes each new document’s object graph programmatically, to identify its creating device.
 
-Click the “+” button on one device (the creating device).
+Click the “+” button (main screen, upper left) on one device (the creating device).
 A new document, "TestDoc1", appears in its table view.
 The other device (the receiving device) will show that document rather quickly.
 	• Each new document’s object graph includes:
@@ -59,9 +60,9 @@ It shows:
 			-[DocumentsListController createTextEntry]
 			<device name> (<device model>))
 
-On the receiving device, the new document appears in the table view in perhaps 10 seconds, but initially the detail view shows an empty object graph.
-After about 90 seconds, a notification updates the object graph as initialized on the creating device.
-For a given document, after both devices show the (same) object graph, edit operations on one device appear on the other within 10 seconds.
+On the receiving device, the new document appears in the table view in perhaps 10 seconds, but initially its object graph is unavailable.
+After about 90 seconds, when the object graph becomes available, a notification updates the Master View, and the Detail view becomes available to the user. 
+For a given document, after both devices show the (same) object graph, edit operations on one device appear on the other within about 10 seconds.
 
 Note that this application is a very simple test of UIManagedDocument cloud-syncing.
 Each document's object graph contains just one instance of TextEntry, and it persists for the life of the document.

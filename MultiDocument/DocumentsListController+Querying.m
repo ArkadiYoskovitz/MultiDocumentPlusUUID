@@ -255,7 +255,7 @@ const NSString *PNDocMDataDotPlistKey = @"DocumentMetadata.plist";
                                                         NSLog(@"targetDocURL = %@",
                                                               [targetDocURL absoluteString] );
                                                         
-                                                        NSMutableDictionary __block *record = [self recordForUuid: uuid];
+                                                        NSDictionary __block *record = [self recordForUuid: uuid];
                                                         
                                                         if( nil == record ){
                                                             

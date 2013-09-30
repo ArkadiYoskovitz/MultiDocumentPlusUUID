@@ -29,7 +29,7 @@
 @interface DetailViewController()
 
 @property (readonly, strong) NSMutableArray* notificationObservers;
-@property (readwrite, strong) UIManagedDocument *document;
+//@property (readwrite, strong) UIManagedDocument *document;
 
 @property (readonly, strong) NSURL *localDocURL;
 @property (readonly, strong) NSURL *cloudDocURL;
@@ -63,16 +63,16 @@
 {
     return (self.record)[NPDocumentKey];
 }
--(void)setDocument:(UIManagedDocument *)aDocument
-{
-    [self ignoreDocument];{
-        
-        [self.record removeObjectForKey: NPDocumentKey];
-        
-        (self.record)[NPDocumentKey] = aDocument;
-
-    }[self observeDocument];
-}
+//-(void)setDocument:(UIManagedDocument *)aDocument
+//{
+//    [self ignoreDocument];{
+//        
+//        [self.record removeObjectForKey: NPDocumentKey];
+//        
+//        (self.record)[NPDocumentKey] = aDocument;
+//
+//    }[self observeDocument];
+//}
 
 -(NSFileManager*)fileManager
 {
@@ -236,7 +236,8 @@
     NSPersistentStoreCoordinator *psc =
     self.document.managedObjectContext.persistentStoreCoordinator;
     NSAssert( (nil !=psc),
-             @"-[DetailViewController observeDocument] found nil psc");
+             @"-[%@ observeDocument] found nil psc",
+             NSStringFromClass([self class]));
     
     id observer =
     [center addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification
