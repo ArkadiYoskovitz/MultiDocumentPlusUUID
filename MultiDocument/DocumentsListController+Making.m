@@ -201,6 +201,13 @@
 
 -(void)setUbiquitous: (NSDictionary*)record
 {
+    /**
+     David Trotz suggests this method may not be necessary:
+     http://stackoverflow.com/questions/18971389/proper-use-of-icloud-fallback-stores
+     
+     ".. at startup if iCloud is enabled I perform a scan for documents that need to be migrated and migrate them simply by opening them with the iCloud options enabled. Once opened I close the document as that is enough to get them migrated and scannable via a meta data scan."
+     
+     */
     
     if ([[self class] isCloudEnabled]) {
                 

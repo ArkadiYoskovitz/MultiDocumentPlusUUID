@@ -100,11 +100,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MultiDocument/DocumentsListController.m"
-            timestampString = "402263984.572561"
+            timestampString = "402357937.830856"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "836"
-            endingLineNumber = "836"
+            startingLineNumber = "848"
+            endingLineNumber = "848"
             landmarkName = "@implementation DocumentsListController"
             landmarkType = "3">
          </BreakpointContent>
@@ -116,11 +116,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MultiDocument/DocumentsListController.m"
-            timestampString = "402263984.572561"
+            timestampString = "402357937.830856"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "653"
-            endingLineNumber = "653"
+            startingLineNumber = "665"
+            endingLineNumber = "665"
             landmarkName = "-addTextEntryToDocument:"
             landmarkType = "5">
          </BreakpointContent>
@@ -212,11 +212,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MultiDocument/DocumentsListController+Making.m"
-            timestampString = "402269741.614829"
+            timestampString = "402357937.830856"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "345"
-            endingLineNumber = "345"
+            startingLineNumber = "352"
+            endingLineNumber = "352"
             landmarkName = "-establishDocument:successCallback:failCallback:"
             landmarkType = "5">
             <Locations>
@@ -227,11 +227,11 @@
                   symbolName = "__82-[DocumentsListController(Making) establishDocument:successCallback:failCallback:]_block_invoke"
                   moduleName = "multidocument"
                   urlString = "file:///Volumes/Archives/github%20Respositories/MultiDocumentPlusUUID/MultiDocument/DocumentsListController+Making.m"
-                  timestampString = "402272842.847135"
+                  timestampString = "402357974.802055"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "345"
-                  endingLineNumber = "345"
+                  startingLineNumber = "352"
+                  endingLineNumber = "352"
                   offsetFromSymbolStart = "108">
                </Location>
                <Location
@@ -241,11 +241,11 @@
                   symbolName = "__copy_helper_block_155"
                   moduleName = "multidocument"
                   urlString = "file:///Volumes/Archives/github%20Respositories/MultiDocumentPlusUUID/MultiDocument/DocumentsListController+Making.m"
-                  timestampString = "402272842.847526"
+                  timestampString = "402357974.802607"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "345"
-                  endingLineNumber = "345"
+                  startingLineNumber = "352"
+                  endingLineNumber = "352"
                   offsetFromSymbolStart = "16">
                </Location>
                <Location
@@ -255,11 +255,11 @@
                   symbolName = "__destroy_helper_block_156"
                   moduleName = "multidocument"
                   urlString = "file:///Volumes/Archives/github%20Respositories/MultiDocumentPlusUUID/MultiDocument/DocumentsListController+Making.m"
-                  timestampString = "402272842.847855"
+                  timestampString = "402357974.803015"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "345"
-                  endingLineNumber = "345"
+                  startingLineNumber = "352"
+                  endingLineNumber = "352"
                   offsetFromSymbolStart = "14">
                </Location>
             </Locations>
@@ -272,11 +272,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MultiDocument/DocumentsListController+Making.m"
-            timestampString = "402269741.614829"
+            timestampString = "402357937.830856"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "373"
-            endingLineNumber = "373"
+            startingLineNumber = "380"
+            endingLineNumber = "380"
             landmarkName = "-establishDocument:successCallback:failCallback:"
             landmarkType = "5">
          </BreakpointContent>
@@ -304,11 +304,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MultiDocument/DocumentsListController+Making.m"
-            timestampString = "402269741.614829"
+            timestampString = "402357937.830856"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "304"
-            endingLineNumber = "304"
+            startingLineNumber = "311"
+            endingLineNumber = "311"
             landmarkName = "-instantiateDocumentFromRecord:"
             landmarkType = "5">
          </BreakpointContent>
@@ -316,7 +316,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MultiDocument/DocumentsListController+Making.m"

@@ -1,13 +1,24 @@
-MultiDocumentPlusUUID is a working example of an iOS 7 application with cloud-syncing UIManagedDocuments.
+MultiDocumentPlusUUID provides a working example of an iOS 7 application with cloud-syncing of UIManagedDocuments.
 This project is open-sourced and released under the MIT License.
+
+Don Briggs 2013 October 2
 ________________________
+
+Intended Audience:
+iOS Developers who have some knowledge of:
+• iOS application programming; and
+• some knowledge of Core Data;
+but have encountered difficulties with:
+• existing Apple documentation (circa October 2013); and/or
+• scarcity of working sample projects using UIManagedDocument.
 
 Purpose:
 MultiDocumentPlusUUID provides a limited working example of cloud-syncing of UIManagedDocuments. 
-The app demonstrates how to use UUIDs to distinguish documents of the same name.
-Each document has its own UUID to distinguish it from any documents with the same file name, e.g., “Untitled”, made on different devices.
+The app demonstrates how to use UUIDs to distinguish UIManagedDocuments of the same file name.
+Each document created has its own UUID.
+Its UUID distinguishes it from any other documents with the same file name, e.g., “Untitled”, created on different devices.
 A document's UUID precedes its file name in both its sandbox and cloud URLs.
-It can also provide statistics on update latencies.
+The app can also provide statistics on cloud-sync update latencies.
 
 ________________________
 
@@ -16,9 +27,9 @@ WWDC 2013 Video - Session 207 [What’s New in Core Data and iCloud](https://dev
 
 Credits:
 Richard Warren, author of "Creating iOS 5 Apps," provides the MultiDocument sample code:
-See: Freelance Mad Science Labs - Blog - Syncing multiple Core Data documents using iCloud
+See: http://freelancemadscience.squarespace.com/fmslabs_blog/2011/12/19/syncing-multiple-core-data-documents-using-icloud.html
 
-See also Drew McCormack's note: Under the Sheets with iCloud and Core Data: Troubleshooting
+See also Drew McCormack's note: http://mentalfaculty.tumblr.com/post/25241910449/under-the-sheets-with-icloud-and-core-data
 “Unfortunately, the most apt conclusion is probably that iCloud syncing of Core Data is not really ready for prime time, at least not for any app with a complex data model. If you have a simple model, and patience, it is doable, even if very few have achieved a shipping app at this point.”
 http://mentalfaculty.tumblr.com/post/25241910449/under-the-sheets-with-icloud-and-core-data
 
@@ -28,27 +39,30 @@ http://books.google.com/books?id=YeHQzA6UrcEC&pg=PT1173&lpg=PT1173&dq=yorn+BOOL+
 NEW: 
 See: David Trotz
 http://stackoverflow.com/questions/18971389/proper-use-of-icloud-fallback-stores
-
+and
 https://github.com/dtrotzjr/APManagedDocument
 ________________________
 
-How to Use the App:
+How to Use the MultiDocument App:
+See the “Sequence of Operations” folder and the figure captions.
+
 Run the app on two devices at once.
 The main view provides a table view of available UIManagedDocuments.
 On the first launch, and on every launch after removing all cloud documents, the table view is empty.
-Otherwise, a metadata query populates the table with existing cloud documents.
-The “+” button in the main view’s upper left adds a new document, initialized in the sandbox, then made ubiquitous.
-Each new document has a non-empty object graph.
+Otherwise, a metadata query populates the table with cloud documents as the app on the device discovers them.
+The “+” button in the Master View’s upper left creates a new document, initialized in the sandbox of the creating device, then made ubiquitous.
+The app initializes each new document’s object graph programmatically, to identify its creating device.
 
-Click the “+” button on one device (the creating device).
+Click the “+” button (main screen, upper left) on one device (the creating device).
 A new document, "TestDoc1", appears in its table view.
-The other device (the receiving device) will show that document rather quickly.
 	• Each new document’s object graph includes:
         • a single TextEntry object, and 
         • a single (useless, neglected) ModelVersion object.
 	• TextEntry has two useful properties: text (NSString) and modified (NSDate).
+The other device (the receiving device) will discover that document's existence rather quickly.
+
 Then still on the creating device, touch the new document’s row in the table view.
-A detail view appears as an inspector of the document.
+A Detail View appears as an inspector of the document.
 It shows:
 	• The document’s file name, e.g. “TestDoc1”, “TestDoc2”
 	• The document’s state and the singleton TextEntry’s modified (NSDate) property.
@@ -59,9 +73,9 @@ It shows:
 			-[DocumentsListController createTextEntry]
 			<device name> (<device model>))
 
-On the receiving device, the new document appears in the table view in perhaps 10 seconds, but initially the detail view shows an empty object graph.
-After about 90 seconds, a notification updates the object graph as initialized on the creating device.
-For a given document, after both devices show the (same) object graph, edit operations on one device appear on the other within 10 seconds.
+On the receiving device, the newly created document appears in the table view in perhaps 10 seconds, but initially its object graph is unavailable ("waiting").
+After about 90 seconds, when the object graph becomes available, a notification updates the Master View, and the Detail view becomes available to the user ("ready").
+For a given document, after both devices show the (same) object graph in their Detail Views, edit operations on one device appear on the other within about 10 seconds.
 
 Note that this application is a very simple test of UIManagedDocument cloud-syncing.
 Each document's object graph contains just one instance of TextEntry, and it persists for the life of the document.
@@ -69,12 +83,12 @@ The application does not test removing or adding more NSManagedObjects in its do
 
 ________________________
 
-The app provides two switches in its preferences under the Settings app:
+The app provides three switches in its preferences under the Settings app:
 
 • Enable Ping
 	• Enable pinging on just two devices.
         • Choose for example an iPhone named "A" and an iPad named "B".
-		• This demo is NOT designed to demonstrate pinging on more than two devices.
+	• This demo is NOT designed to demonstrate pinging on more than two devices.
         • For more than two devices, the cloud update notifications could grow without useful limit.
 	• While these two devices inspect the same document, a change to the text on one device triggers an update on the other device.
 	• To start the process, choose the same document on both devices.
@@ -128,8 +142,8 @@ The app provides two switches in its preferences under the Settings app:
 
 • Attempt Error Recovery
     • With this option enabled, the application builds documents using the RobustDocument class.
-    • Otherwise (and by default), it uses UIManagedDocument
-    • It seems best for all participating devices to share the same value for this option, and not to change it after any documents have been created and made ubiquitous.
+    • Otherwise, and by default, it uses UIManagedDocument
+    • It seems best for all participating devices to share the same value for this option, and not to change it after any documents have been created.
 
 ________________________
 
@@ -156,5 +170,14 @@ The project provides a few categories on Foundation classes for minor convenienc
 • UIDocument+NPExtending provides a document state as a string, e.g., @“ [Closed|Editing Disabled]”.
 
 The project’s data model is very simple: just TextEntry and ModelVersion.
+The ModelVersion entity is presently unused.
+The TextEntry entity has three properties and no relationships.
+
+Each document has an object graph that comprises:
+• a single ModelVersion instance (unused)
+• a single TextEntry instance
+    • TextEntry.text (NSString) is the "payload."
+    • TextEntry.modified (NSDate) holds the date of the most recent change to the object graph.
+        • the date is for display and for calculating update latencies only
 
 

@@ -268,25 +268,37 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     /**
      
      The following passage is paranoid-style defensive programming.
-     It attempts a workaround for a pesky problem:
+     
+     It attempts a workaround for a rare but pesky problem:
      Occassionally, I get an error when I call
      -dequeueReusableCellWithIdentifier:
-     deep in UITableView, e.g., UITableView.m:5225.
+     deep in UITableView, e.g., UITableView.m:5225,
+     as if I'm trying to message a freed object.
+     
+     The attempt at a workaround below simply
+     • initializes the cell identifier string differently; and
+     • initializes the DocumentCell class.
+     Experience wil tell if the problem remains, changes to a different problem, or goes away.
+     Already, the problem is rare.
      
      */
     static  NSString *mm_CellIdentifier = nil;
     {
-        NSUInteger row = indexPath.row;
-        NSUInteger count = self.docRecords.count;
-        NSAssert( (row<count), @"Bogus row");
-        
-        {
-            mm_CellIdentifier = @"Document Cell";
+        if( nil == mm_CellIdentifier ){
             
-            DocumentCell *test = [[DocumentCell alloc] init];
-            NSLog( @"Initialized the DocumentCell class: %@", [test description]);
-        };
-        NSAssert( (0<mm_CellIdentifier.length), @"Bogus CellIdentifier");
+            NSUInteger row = indexPath.row;
+            NSUInteger count = self.docRecords.count;
+            NSAssert( (row<count), @"Bogus row");
+            
+            {
+                mm_CellIdentifier = @"Document Cell";
+                
+                DocumentCell *test = [[DocumentCell alloc] init];
+                NSLog( @"Initialized the DocumentCell class: %@", [test description]);
+            };
+            NSAssert( (0<mm_CellIdentifier.length), @"Bogus CellIdentifier");
+
+        }
     }
     /**
      End of paranoid-style defensive programming passage.
