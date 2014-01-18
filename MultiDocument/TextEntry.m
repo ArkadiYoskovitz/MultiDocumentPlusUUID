@@ -17,7 +17,6 @@
 @implementation TextEntry
 
 @dynamic text;
-@dynamic title;
 @dynamic modified;
 
 @end

@@ -19,7 +19,7 @@
 
 #pragma mark - Loading Files
 
--(void)discoverLocalDocs;
+//-(void)discoverLocalDocs; // No: limit the scope of this example.
 
 -(void)launchMetadataQuery;
 -(void)ignoreMetadataQuery;

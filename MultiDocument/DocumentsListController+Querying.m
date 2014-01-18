@@ -16,6 +16,7 @@
 #import "DocumentsListController+Resources.h"
 
 #import "NSURL+NPAssisting.h"
+#import "NSDictionary+NPAssisting.h"
 
 #import <CoreData/CoreData.h>
 
@@ -99,7 +100,8 @@ const NSString *PNDocMDataDotPlistKey = @"DocumentMetadata.plist";
         NSPredicate *p =
         [NSPredicate predicateWithFormat:@"%K like %@",
          NSMetadataItemFSNameKey, PNDocMDataDotPlistKey];
-        
+        //NSMetadataItemFSNameKey, @"*"];
+       
         [m_query setPredicate:p];
         
         [self observeQuery];
@@ -107,41 +109,41 @@ const NSString *PNDocMDataDotPlistKey = @"DocumentMetadata.plist";
     return m_query;
 }
 
--(void)discoverLocalDocs
-{
-    // get all the files
-    NSDirectoryEnumerator *dirEnumerator =
-    [[[self class ] fileManager] enumeratorAtURL: [[self class] localDocsURL]
-                      includingPropertiesForKeys:nil
-                                         options: 0
-                                    errorHandler: nil];
-    
-    for( NSURL *nextURL in dirEnumerator ){
-        
-        NSURL *normalizedURL = [nextURL npNormalizedURL];
-        NSString * filename = [normalizedURL lastPathComponent];
-        NSURL *urlDir = [normalizedURL URLByDeletingLastPathComponent];
-        NSString *uuid = [urlDir lastPathComponent];
-        
-        if( [self validUuidString: uuid] ){
-            
-            NSMutableDictionary *record =
-            [self recordEnrolledForFilename: filename
-                            uuid: uuid];
-            
-            NSAssert( [[record[NPLocalDocURLKey] absoluteString]
-                        isEqualToString:
-                        [normalizedURL absoluteString]],
-                     @"Mismatched URLs: \n%@ \n%@",
-                     [record[NPLocalDocURLKey] absoluteString],
-                     [normalizedURL absoluteString]);
-            
-            [self addDocumentFromRecord: record];
-            
-            [dirEnumerator skipDescendants];
-        }
-    }
-}
+//-(void)discoverLocalDocs
+//{
+//    // get all the files
+//    NSDirectoryEnumerator *dirEnumerator =
+//    [[[self class ] fileManager] enumeratorAtURL: [[self class] localDocsURL]
+//                      includingPropertiesForKeys:nil
+//                                         options: 0
+//                                    errorHandler: nil];
+//    
+//    for( NSURL *nextURL in dirEnumerator ){
+//        
+//        NSURL *normalizedURL = [nextURL npNormalizedURL];
+//        NSString * filename = [normalizedURL lastPathComponent];
+//        NSURL *urlDir = [normalizedURL URLByDeletingLastPathComponent];
+//        NSString *uuid = [urlDir lastPathComponent];
+//        
+//        if( [self validUuidString: uuid] ){
+//            
+//            NSMutableDictionary *record =
+//            [self recordEnrolledForFilename: filename
+//                            uuid: uuid];
+//            
+//            NSAssert( [[record[NPLocalDocURLKey] absoluteString]
+//                        isEqualToString:
+//                        [normalizedURL absoluteString]],
+//                     @"Mismatched URLs: \n%@ \n%@",
+//                     [record[NPLocalDocURLKey] absoluteString],
+//                     [normalizedURL absoluteString]);
+//            
+//            [self addDocumentFromRecord: record];
+//            
+//            [dirEnumerator skipDescendants];
+//        }
+//    }
+//}
 
 -(void)launchMetadataQuery
 {    
@@ -255,7 +257,7 @@ const NSString *PNDocMDataDotPlistKey = @"DocumentMetadata.plist";
                                                         NSLog(@"targetDocURL = %@",
                                                               [targetDocURL absoluteString] );
                                                         
-                                                        NSMutableDictionary __block *record = [self recordForUuid: uuid];
+                                                        NSDictionary __block *record = [self recordForUuid: uuid];
                                                         
                                                         if( nil == record ){
                                                             

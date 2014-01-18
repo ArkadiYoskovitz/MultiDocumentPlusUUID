@@ -92,7 +92,7 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
 }
 -(void)ping:(NSTimer *)timer
 {
-    NSLog(@"%@: -ping BEGIN",
+    NSLog(@"%@: -ping: BEGIN",
           [[UIDevice currentDevice] model] );
     
     NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
@@ -129,10 +129,9 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
     
     [timer invalidate];
     [m_pingTimer invalidate];
-    
     m_pingTimer = nil;
     
-    NSLog(@"%@: -ping END",
+    NSLog(@"%@: -ping: END",
           [[UIDevice currentDevice] model] );
     
 }

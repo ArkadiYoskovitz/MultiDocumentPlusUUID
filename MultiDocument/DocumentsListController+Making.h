@@ -23,8 +23,8 @@
 -(void)mostlyHarmlessMethod: (NSString*)haplessArgument;
 
 -(UIManagedDocument*)instantiateDocumentFromRecord: (NSDictionary*)record;
-+(NSDictionary*)persistentStoreOptionsForDocumentFileURL: (NSURL*)documentFileURL;
-
+//+(NSDictionary*)persistentStoreOptionsForDocumentFileURL: (NSURL*)documentFileURL;
++(NSDictionary*)persistentStoreOptionsForRecord: (NSDictionary*)record;
 
 -(void)establishDocument: (UIManagedDocument*)document
          successCallback: (NSInvocation*)successCallback

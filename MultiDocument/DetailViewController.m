@@ -26,10 +26,12 @@
 
 #import "UIDocument+NPExtending.h"
 
+#import "NSDictionary+NPAssisting.h"
+
 @interface DetailViewController()
 
 @property (readonly, strong) NSMutableArray* notificationObservers;
-@property (readwrite, strong) UIManagedDocument *document;
+//@property (readwrite, strong) UIManagedDocument *document;
 
 @property (readonly, strong) NSURL *localDocURL;
 @property (readonly, strong) NSURL *cloudDocURL;
@@ -44,7 +46,7 @@
 
 @implementation DetailViewController
 
-@synthesize documentTitleTextField = _documentTitle;
+//@synthesize documentTitleTextField = _documentTitle;
 @synthesize docStateTextField = _docStateTextField;
 @synthesize textView = _text;
 
@@ -62,16 +64,6 @@
 -(UIManagedDocument*)document
 {
     return (self.record)[NPDocumentKey];
-}
--(void)setDocument:(UIManagedDocument *)aDocument
-{
-    [self ignoreDocument];{
-        
-        [self.record removeObjectForKey: NPDocumentKey];
-        
-        (self.record)[NPDocumentKey] = aDocument;
-
-    }[self observeDocument];
 }
 
 -(NSFileManager*)fileManager
@@ -112,25 +104,33 @@
 -(NSArray*)fetchedObjectsFromMocFetchRequest
 {
     NSManagedObjectContext *moc = [self.document managedObjectContext];
-    NSFetchRequest *frq = self.fetchRequest;
     
-    if( nil == frq ) return @[];
-    
-    NSError *error = nil;
     // GLITCH: moc has no registered objects.
     // The following call triggers -mocObjectsDidChange:
     
-    NSArray *result = [moc executeFetchRequest: frq
-                                         error: &error];
-    if( error ){
-        NSLog(@"-[NSManagedObjectContext executeFetchRequest:error:] Unresolved error %@, %@",
-              error, [error userInfo]);
-        exit(-1);  // Fail
+    NSArray __block *result = nil;
+
+    [moc performBlockAndWait:^(){
+        NSError *error = nil;
         
-    }
+        NSFetchRequest *frq = self.fetchRequest;
+
+        result = [moc executeFetchRequest: frq
+                                    error: &error];
+        
+        if( error ){
+            NSLog(@"-[NSManagedObjectContext executeFetchRequest:error:] Unresolved error %@, %@",
+                  error, [error userInfo]);
+            exit(-1);  // Fail
+            
+        }else{
+            NSSet *registeredObjects = [moc registeredObjects];
+            NSLog(@" registeredObjects = %@", [registeredObjects description] );
+
+        }
+    }];
+  
     
-    NSSet *registeredObjects = [moc registeredObjects];
-    NSLog(@" registeredObjects = %@", [registeredObjects description] );
     
 
     return result;
@@ -236,7 +236,8 @@
     NSPersistentStoreCoordinator *psc =
     self.document.managedObjectContext.persistentStoreCoordinator;
     NSAssert( (nil !=psc),
-             @"-[DetailViewController observeDocument] found nil psc");
+             @"-[%@ observeDocument] found nil psc",
+             NSStringFromClass([self class]));
     
     id observer =
     [center addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification
@@ -261,6 +262,7 @@
                                 [moc mergeChangesFromContextDidSaveNotification:note];
                                 [moc processPendingChanges];
                             }[undoManager enableUndoRegistration];
+                            
                         }];
                         
                         [self readModelWriteView];
@@ -345,14 +347,73 @@
     self.textView.returnKeyType = UIReturnKeyDone;
     
     self.docStateTextField.enabled = NO;
-    self.documentTitleTextField.enabled = NO;
-    
+        
     [self resetMocAndParent];
     /** -resetMocAndParent triggers:
         NSManagedObjectContextObjectsDidChangeNotification,
      which triggers:
         [self readModelWriteView]
      */
+    
+    NSDictionary *metadataDictionary = self.record[NPMetadataDictionaryKey];
+    BOOL createdLocally = (nil == metadataDictionary);
+    
+    if(!createdLocally){
+        
+        NSURL *cloudDocURL = self.record[NPCloudDocURLKey];
+        BOOL started =
+        [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
+                                                        error: nil];
+        NSLog(@"started = %@", (started ? @"YES" : @"NO"));
+        NSAssert( started, @"Failed to start downloading. Better fix this...");
+
+//        NSArray *array =
+//        @[NSMetadataUbiquitousItemDownloadingStatusCurrent,
+//          NSMetadataUbiquitousItemDownloadingStatusDownloaded,
+//          NSMetadataUbiquitousItemDownloadingStatusNotDownloaded];
+//        NSMetadataItem *metadataItem = self.record[NPMetadataItemKey];
+//        
+//        NSString *status = [metadataItem valueForKey: NSMetadataUbiquitousItemDownloadingStatusKey];
+//        NSUInteger index = [array indexOfObject: status];
+//        switch( index ){
+//            case 0: // NSMetadataUbiquitousItemDownloadingStatusCurrent
+//            {
+//                /**
+//                 "... there is a local version of this item and
+//                 it is the most up-to-date version known to this device."
+//                 */
+//            }
+//            case 1: // NSMetadataUbiquitousItemDownloadingStatusDownloaded
+//            {
+//                /**
+//                 "...  there is a local version of this item available."
+//                 */
+//            }
+//            case 2: // NSMetadataUbiquitousItemDownloadingStatusNotDownloaded
+//            {
+//                /**
+//                 "... this item has not been downloaded yet."
+//                 */
+//                
+//                // Add a side-effect (mostly harmless):
+//                BOOL started =
+//                [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
+//                                                                error: nil];
+//                NSLog(@"started = %@", (started ? @"YES" : @"NO"));
+//                
+//                break;
+//            }
+//            case NSNotFound:
+//            default:
+//            {
+//                NSAssert( NO, @"Programming Error: RTFM");
+//                break;
+//            }
+//        }
+
+    }
+    [self readModelWriteView];
+    
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -390,29 +451,21 @@
     // Perturb the view in the main thread:
     dispatch_async(dispatch_get_main_queue(), ^{
         
+        NSMutableString *status = [self.record npStatus].mutableCopy;
         
-        self.documentTitleTextField.text = self.document.localizedName;
-        
-        NSString *docStateText = [self.document npDocumentStateAsString];
-        
-        NSString *dateModified = @"??";
         TextEntry *textEntry = [self fetchedTextEntry];
         if( nil == textEntry ){
             self.textView.text = @"<nil>";
-            self.docStateTextField.text = @"!!";
+            [status appendString: @", date?"];
         }else{
             self.textView.text = textEntry.text;
-            dateModified =[(textEntry.modified) description];
+            [status appendFormat: @", %@",[(textEntry.modified) description]];
         }
         
-        self.docStateTextField.text =
-        [NSString stringWithFormat: @"%@, %@",
-         docStateText,
-         dateModified];
+        self.docStateTextField.text = status;
         
-        [(self.documentTitleTextField) setNeedsDisplay];
-        [(self.docStateTextField)      setNeedsDisplay];
-        [(self.textView)               setNeedsDisplay];
+        [(self.docStateTextField) setNeedsDisplay];
+        [(self.textView)          setNeedsDisplay];
         
         NSLog(@"%@: -readModelWriteView at %@",
               [[UIDevice currentDevice] model],

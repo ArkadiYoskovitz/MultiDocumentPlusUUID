@@ -10,6 +10,8 @@
 #import "DocumentsListController+Making.h"
 #import "RobustDocument.h"
 
+#import "NSDictionary+NPAssisting.h"
+
 NSString *NPErrorRecoveryEnabledKey = @"errorRecoveryEnabled";
 
 @implementation DocumentsListController (ErrorRecovering)
@@ -60,6 +62,7 @@ static DocumentsListController *mm_activeController = nil;
     
     [haplessDocument closeWithCompletionHandler:^(BOOL success){
         if(success){
+            
             [record removeObjectForKey: NPDocumentKey];
             UIManagedDocument *document2 = [self instantiateDocumentFromRecord: record];
             record[NPDocumentKey] = document2;

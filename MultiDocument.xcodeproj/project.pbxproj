@@ -22,6 +22,7 @@
 		345CF9711480CCAA0046F083 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 345CF9701480CCAA0046F083 /* CoreData.framework */; };
 		A50D473816FA4D390098BAF8 /* DetailViewController+Pinging.m in Sources */ = {isa = PBXBuildFile; fileRef = A50D473716FA4D390098BAF8 /* DetailViewController+Pinging.m */; };
 		A51A70FE16E2AB4600D7030C /* NSURL+NPAssisting.m in Sources */ = {isa = PBXBuildFile; fileRef = A51A70FD16E2AB4600D7030C /* NSURL+NPAssisting.m */; };
+		A527F605188720BC00137D97 /* NSDictionary+NPAssisting.m in Sources */ = {isa = PBXBuildFile; fileRef = A527F604188720BC00137D97 /* NSDictionary+NPAssisting.m */; };
 		A52AF77216F24CD900840918 /* DocumentsListController+Resources.m in Sources */ = {isa = PBXBuildFile; fileRef = A52AF77116F24CD800840918 /* DocumentsListController+Resources.m */; };
 		A5369F1A15E979D900DAD076 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A5369F1915E979D900DAD076 /* Settings.bundle */; };
 		A568CE4B17F50A7200554885 /* ReadMe.txt in Resources */ = {isa = PBXBuildFile; fileRef = A568CE4A17F50A7200554885 /* ReadMe.txt */; };
@@ -62,6 +63,8 @@
 		A50D473716FA4D390098BAF8 /* DetailViewController+Pinging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DetailViewController+Pinging.m"; sourceTree = "<group>"; };
 		A51A70FC16E2AB4600D7030C /* NSURL+NPAssisting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+NPAssisting.h"; sourceTree = "<group>"; };
 		A51A70FD16E2AB4600D7030C /* NSURL+NPAssisting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+NPAssisting.m"; sourceTree = "<group>"; };
+		A527F603188720BC00137D97 /* NSDictionary+NPAssisting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+NPAssisting.h"; sourceTree = "<group>"; };
+		A527F604188720BC00137D97 /* NSDictionary+NPAssisting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+NPAssisting.m"; sourceTree = "<group>"; };
 		A52AF77016F24CD800840918 /* DocumentsListController+Resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DocumentsListController+Resources.h"; sourceTree = "<group>"; };
 		A52AF77116F24CD800840918 /* DocumentsListController+Resources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DocumentsListController+Resources.m"; sourceTree = "<group>"; };
 		A5369F1915E979D900DAD076 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = MultiDocument/Settings.bundle; sourceTree = "<group>"; };
@@ -153,6 +156,8 @@
 				A571E53017ECD4D600FACEEE /* RobustDocument.m */,
 				A571E53517ECDFE000FACEEE /* UIBAlertView.h */,
 				A571E53617ECDFE000FACEEE /* UIBAlertView.m */,
+				A527F603188720BC00137D97 /* NSDictionary+NPAssisting.h */,
+				A527F604188720BC00137D97 /* NSDictionary+NPAssisting.m */,
 				A51A70FC16E2AB4600D7030C /* NSURL+NPAssisting.h */,
 				A51A70FD16E2AB4600D7030C /* NSURL+NPAssisting.m */,
 				A53B6C991794BA2F0097D5A1 /* UIDocument+NPExtending.h */,
@@ -276,6 +281,7 @@
 				A51A70FE16E2AB4600D7030C /* NSURL+NPAssisting.m in Sources */,
 				A52AF77216F24CD900840918 /* DocumentsListController+Resources.m in Sources */,
 				A5C6342A16F51E7A000A1E1E /* DocumentsListController+Making.m in Sources */,
+				A527F605188720BC00137D97 /* NSDictionary+NPAssisting.m in Sources */,
 				A5F02C3017F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.m in Sources */,
 				A5C6342B16F51E7A000A1E1E /* DocumentsListController+Querying.m in Sources */,
 				A50D473816FA4D390098BAF8 /* DetailViewController+Pinging.m in Sources */,
@@ -315,8 +321,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -335,8 +341,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "5F57270A-3B57-43D6-A8DA-D00CAA148BA7";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5F57270A-3B57-43D6-A8DA-D00CAA148BA7";
+				PROVISIONING_PROFILE = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -352,8 +358,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -367,8 +373,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "5F57270A-3B57-43D6-A8DA-D00CAA148BA7";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5F57270A-3B57-43D6-A8DA-D00CAA148BA7";
+				PROVISIONING_PROFILE = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -378,16 +384,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MultiDocument/MultiDocument.entitlements;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "iPhone Developer";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MultiDocument/MultiDocument-Prefix.pch";
 				INFOPLIST_FILE = "MultiDocument/MultiDocument-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "5F57270A-3B57-43D6-A8DA-D00CAA148BA7";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5F57270A-3B57-43D6-A8DA-D00CAA148BA7";
+				PROVISIONING_PROFILE = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -397,16 +404,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MultiDocument/MultiDocument.entitlements;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "iPhone Developer";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MultiDocument/MultiDocument-Prefix.pch";
 				INFOPLIST_FILE = "MultiDocument/MultiDocument-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "5F57270A-3B57-43D6-A8DA-D00CAA148BA7";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5F57270A-3B57-43D6-A8DA-D00CAA148BA7";
+				PROVISIONING_PROFILE = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};

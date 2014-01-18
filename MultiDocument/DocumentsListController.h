@@ -13,16 +13,7 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString* NPLocalDocURLKey;
-extern NSString* NPCloudDocURLKey;
-extern NSString* NPCloudLogFilesURLKey;
-extern NSString* NPUUIDKey;
-extern NSString* NPStoreOptionsKey;
 
-extern NSString* NPMetadataItemKey;
-extern NSString* NPMetadataDictionaryKey;
-extern NSString* NPFileNameKey;
-extern NSString* NPDocumentKey;
 
 @class UIManagedDocument;
 
@@ -33,6 +24,7 @@ extern NSString* NPDocumentKey;
     NSMetadataQuery* m_query;
     NSMutableArray *m_notificationObservers;
 
+    NSTimer *m_tableViewSnoozeAlarm;
 }
 
 @property (readonly, strong) NSMutableOrderedSet* docRecords;
@@ -40,11 +32,18 @@ extern NSString* NPDocumentKey;
 
 @property (readwrite, strong) IBOutlet UIBarButtonItem* addButton;
 
+#pragma mark Workaround to refresh table view on main thread, later.
 
+/**
+    Call liberally. 
+    When the snooze alarm eventually goes off,
+    the table view reloads.
+ */
+-(void)resetTableViewSnoozeAlarm;
 
 #pragma mark IBActions:
 - (IBAction)addDocument:(id)sender;
--(void)addDocumentFromRecord: (NSMutableDictionary*)record;
+-(void)addDocumentFromRecord: (NSDictionary*)record;
 
 #pragma mark addDocumentFromRecord:documentExists: callbacks:
 
@@ -56,7 +55,8 @@ extern NSString* NPDocumentKey;
 
 #pragma mark Utility methods:
 -(BOOL)validUuidString: (NSString*)testUuidString;
--(NSMutableDictionary*)recordForUuid: (NSString*)uuid;
+-(NSDictionary*)recordForUuid: (NSString*)uuid;
+-(void)updateRecord: (NSDictionary*)newRecord;
 
 #pragma mark Model-Controller methods:
 -(NSMutableDictionary*)recordEnrolledForFilename: (NSString*)filename

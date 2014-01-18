@@ -29,24 +29,9 @@
 
 #import "UIDocument+NPExtending.h"
 
-
+#import "NSDictionary+NPAssisting.h"
 
 static NSString* const BaseFileName = @"TestDoc";
-
-
-const NSString* NPLocalDocURLKey     = @"Local Document URL";
-const NSString* NPCloudDocURLKey     = @"Cloud Document URL";
-const NSString* NPCloudLogFilesURLKey     = @"Cloud Log Files URL";
-const NSString* NPUUIDKey         = @"UUID";
-const NSString* NPStoreOptionsKey = @"Persistent Store Options dictionary";
-
-
-const NSString* NPMetadataItemKey = @"NSMetadataItem";
-const NSString* NPMetadataDictionaryKey     = @"Metadata from Query Result Item";
-
-const NSString* NPFileNameKey     = @"File Name";
-
-const NSString* NPDocumentKey     = @"Document";
 
 @interface DocumentsListController()        
 
@@ -69,6 +54,13 @@ const NSString* NPDocumentKey     = @"Document";
 }
 -(NSMutableOrderedSet*)docRecords
 {
+    /**
+     
+     Whenever we instantiate a document on this device,
+     whether by creation or discovery,
+     we add its record to the end of self.docRecords.
+     
+     */
     if( nil == m_docRecords ){
         m_docRecords = [[NSMutableOrderedSet alloc] initWithCapacity:8];
     }
@@ -118,7 +110,7 @@ const NSString* NPDocumentKey     = @"Document";
     if ([[self class] isCloudEnabled]) {
         [self launchMetadataQuery];
     } else {
-        [self discoverLocalDocs];
+        //[self discoverLocalDocs]; // This app is limited.
     }
     
     
@@ -127,7 +119,7 @@ const NSString* NPDocumentKey     = @"Document";
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [(self.tableView) reloadData];
+    [self resetTableViewSnoozeAlarm];
 }
 -(void)closeDocuments
 {
@@ -178,233 +170,84 @@ const NSString* NPDocumentKey     = @"Document";
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView
+ numberOfRowsInSection:(NSInteger)section
 {
-    
-    // Return the number of entries in our weight history
+    // Return the number of entries in the ordered set of dictionaries (each specifies a document).
     return [self.docRecords count];
 }
 
--(void)saveConfigureCell:(DocumentCell *)cell
-                 row: (NSUInteger)row
-{
-    cell.fileNameUILabel.text = @"--";
-    
-    NSMutableDictionary *record = (self.docRecords)[row];
-    
-    //    UIManagedDocument *document = [record objectForKey: NPDocumentKey];
-    //    NSAssert( (nil != document), @"Bogus cell, no document");
-    
-    NSString* fileName = record[NPFileNameKey];
-    NSMutableString *tmp = fileName.mutableCopy;
-    
-    UIManagedDocument *doc = record[NPDocumentKey];
-    NSURL *localDocURL = [doc fileURL];
-    
-    NSNumber *isUploaded   = @NO;
-    [localDocURL getResourceValue: &isUploaded
-                           forKey: NSURLUbiquitousItemIsUploadedKey // NSMetadataUbiquitousItemIsUploadedKey //
-                            error: nil];
-    
-    NSNumber *isDownloaded = @NO;
-    [localDocURL getResourceValue: &isDownloaded
-                           forKey: NSURLUbiquitousItemIsDownloadedKey  //NSMetadataUbiquitousItemIsDownloadedKey
-                            error: nil];
-    
-    NSString *percentUploaded   = @"??";
-    NSString *percentDownloaded = @"??";
-   
-    if(nil == doc){
-        [tmp appendString: @" (nil)"];
-    }else{
-        [tmp appendFormat: @", %@", [doc npDocumentStateAsString]];
-        
-        NSMetadataItem *mdItem = record[NPMetadataItemKey];
-        
-        if( nil != mdItem ){
-            
-            id v = [mdItem valueForAttribute:NSMetadataUbiquitousItemPercentDownloadedKey];
-            
-            if( [(NSObject*)v isKindOfClass:[NSNumber class]] ){
-                
-                NSNumber *percentDn = (NSNumber *)v;
-                
-                percentDownloaded = [[percentDn stringValue] copy];
-                
-                if( [percentDn unsignedIntegerValue] < 100 ){
-                    
-                    // Somewhat hackish...
-                    [self.tableView performSelector: @selector(reloadData)
-                                         withObject: nil
-                                         afterDelay: 0.5
-                                            inModes: @[NSRunLoopCommonModes, NSDefaultRunLoopMode] ];
-                    
-                }
-            }
-            
-            v = [mdItem valueForAttribute:NSMetadataUbiquitousItemPercentUploadedKey];
-            
-            if( [(NSObject*)v isKindOfClass:[NSNumber class]] ){
-                
-                NSNumber *percentUp = (NSNumber *)v;
-                
-                percentUploaded = [[percentUp stringValue] copy];
-                
-                if( [percentUp unsignedIntegerValue] < 100 ){
-                    
-                    // Somewhat hackish...
-                    [self.tableView performSelector: @selector(reloadData)
-                                         withObject: nil
-                                         afterDelay: 0.5
-                                            inModes: @[NSRunLoopCommonModes, NSDefaultRunLoopMode] ];
-                    
-                }
-            }
 
-        } //if( nil != mdItem )
-    }
-    
-    [tmp appendFormat: @" up: %@ (%@), dn: %@ (%@)",
-     [isUploaded boolValue] ? @"+" : @"-",
-     percentUploaded,
-     [isDownloaded boolValue] ? @"+" : @"-",
-     percentDownloaded];
-    
-    
-    cell.fileNameUILabel.text = tmp;
-    
-    /*
-     {
-     // debug passage
-     NSMutableString *msg = [NSMutableString stringWithFormat: @"\n\nCell for row: %d\n", row];
-     [msg appendFormat: @"doc.localizedName = %@\n", doc.localizedName];
-     [msg appendFormat: @"uuid = %@\n", record[NPUUIDKey] ];
-     [msg appendFormat: @"cell.fileNameUILabel.text = %@", cell.fileNameUILabel.text ];
-     [msg appendString: @"\n\n"];
-     
-     NSLog(@"%@", msg);
-     }
-     */
-    
-    cell.userInteractionEnabled = [doc isKindOfClass: [UIManagedDocument class]];
-}
 -(void)configureCell: (DocumentCell *)cell
                  row: (NSUInteger)row
 {
     cell.fileNameUILabel.text = @"--";
     
     NSMutableDictionary *record = (self.docRecords)[row];
-        
-    NSString* fileName = record[NPFileNameKey];
-    NSMutableString *tmp = fileName.mutableCopy;
+    cell.fileNameUILabel.text = [record npStatus];
+    cell.userInteractionEnabled = [record isDocumentViewable];
     
-    UIManagedDocument *doc = record[NPDocumentKey];
-    NSURL *localDocURL = [doc fileURL];
-    
-    NSNumber *isUploaded   = @NO;
-    [localDocURL getResourceValue: &isUploaded
-                           forKey: NSURLUbiquitousItemIsUploadedKey // NSMetadataUbiquitousItemIsUploadedKey //
-                            error: nil];
-    
-    NSNumber *isDownloaded = @NO;
-    [localDocURL getResourceValue: &isDownloaded
-                           forKey: NSURLUbiquitousItemIsDownloadedKey  //NSMetadataUbiquitousItemIsDownloadedKey
-                            error: nil];
-    
-    NSString *percentTransferred   = @"??";
-    
-    if(nil == doc){
-        [tmp appendString: @" <nil> "];
-    }else{
-        [tmp appendFormat: @", %@", [doc npDocumentStateAsString]];
-        
-        NSMetadataItem *mdItem = record[NPMetadataItemKey];
-        BOOL thisDeviceIsSource = (nil == mdItem);
-        
-        BOOL success = NO;
-        
-        if( thisDeviceIsSource ){
-            
-            NSNumber *percentUp = nil;
-            success = [localDocURL getResourceValue:&percentUp
-                                             forKey:NSURLUbiquitousItemIsUploadedKey
-                                              error:nil];
-            
-            if( success ){
-                
-                
-                percentTransferred = [[percentUp stringValue] copy];
-                
-                if( [percentUp unsignedIntegerValue] < 100 ){
-                    
-                    // Somewhat hackish...
-                    [self.tableView performSelector: @selector(reloadData)
-                                         withObject: nil
-                                         afterDelay: 0.5
-                                            inModes: @[NSRunLoopCommonModes, NSDefaultRunLoopMode] ];
-                    
-                }
-                
-                [tmp appendFormat: @" Up: %@ %c",
-                 percentTransferred, '%'];
-            }
-        }else{
-            NSNumber *percentDn = nil;
-            BOOL success = [localDocURL getResourceValue:&percentDn
-                                                  forKey:NSURLUbiquitousItemIsDownloadedKey
-                                                   error:nil];
-            
-            if( success ){
-                
-                
-                percentTransferred = [[percentDn stringValue] copy];
-                
-                if( [percentDn unsignedIntegerValue] < 100 ){
-                    
-                    // Somewhat hackish...
-                    [self.tableView performSelector: @selector(reloadData)
-                                         withObject: nil
-                                         afterDelay: 0.5
-                                            inModes: @[NSRunLoopCommonModes, NSDefaultRunLoopMode] ];
-                    
-                }
-                
-                [tmp appendFormat: @" Dn: %@ %c",
-                 percentTransferred, '%'];
-            }
-            
-            
-        } //if( nil != mdItem )
-    }
-    
-    cell.fileNameUILabel.text = tmp;
-    
-    cell.userInteractionEnabled = [doc isKindOfClass: [UIManagedDocument class]];
 }
 
 - (void)tableView:(UITableView *)tableView
   willDisplayCell:(UITableViewCell *)cell
 forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-    NSMutableDictionary *record = (self.docRecords)[indexPath.row];
-    UIManagedDocument *doc = record[NPDocumentKey];
-    
-    if([doc isKindOfClass:[UIManagedDocument class]]){
+
+    if( cell.userInteractionEnabled ){
         cell.backgroundColor = [UIColor whiteColor];
     }else{
         cell.backgroundColor = [UIColor lightGrayColor];
+        
+        // Let's see if we can force some downloading progress:
+        NSMutableDictionary *record = (self.docRecords)[indexPath.row];
+        NSURL *cloudDocURL = record[NPCloudDocURLKey];
+        [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
+                                                        error: nil];
+        [self resetTableViewSnoozeAlarm];
     }
 }
+
+
+static NSString *cellID = @"Document Cell";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static const NSString *CellIdentifier = @"Document Cell";
+    /**
+     
+     The following passage is paranoid-style defensive programming.
+     It attempts a workaround for a pesky problem:
+     Occassionally, I get an error when I call
+     -dequeueReusableCellWithIdentifier:
+     deep in UITableView, e.g., UITableView.m:5225.
+     
+     */
+//    static  NSString *mm_CellIdentifier = nil;
+//    {
+//        NSUInteger row = indexPath.row;
+//        NSUInteger count = self.docRecords.count;
+//        NSAssert( (row<count), @"Bogus row");
+//        
+//        {
+//            mm_CellIdentifier = @"Document Cell";
+//            
+//            DocumentCell *test = [[DocumentCell alloc] init];
+//            NSLog( @"Initialized the DocumentCell class: %@", [test description]);
+//        };
+//        NSAssert( (0<mm_CellIdentifier.length), @"Bogus CellIdentifier");
+//    }
+    /**
+     End of paranoid-style defensive programming passage.
+     */
+    DocumentCell *cell =
+    [tableView dequeueReusableCellWithIdentifier: cellID];
     
-    DocumentCell *cell = 
-    [tableView dequeueReusableCellWithIdentifier: (NSString *)CellIdentifier];
-    
+    if( nil == cell ){
+        cell = [[DocumentCell alloc] initWithStyle:UITableViewCellStyleValue1
+                                   reuseIdentifier:cellID];
+        
+    }
     [self configureCell: cell
                     row: indexPath.row];
     
@@ -441,19 +284,25 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 #pragma mark Model-Controller methods:
+
+#pragma mark Document Records: an ordered set of dictionaries, each specifies a document, in order of creation or discovery
+
 -(NSMutableDictionary*)mapUuidsToRecords
 {
     NSMutableDictionary *map =
     [NSMutableDictionary dictionaryWithCapacity: self.docRecords.count];
     
-    for( NSDictionary *d in self.docRecords ){
-        // local document records have no metadata.
-        
-        NSString *uuid = d[NPUUIDKey];
-        map[uuid] = d;
+    @synchronized ( self.docRecords ){
+        for( NSDictionary *d in self.docRecords ){
+            // local document records have no metadata.
+            
+            NSString *uuid = d[NPUUIDKey];
+            map[uuid] = d;
+        }
     }
     return map;
 }
+
 
 -(NSMutableDictionary*)recordForUuid: (NSString*)uuid
 {
@@ -461,46 +310,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     return  map[uuid];
 }
 
--(void)addRowForRecord: (NSMutableDictionary*)record
+-(NSDictionary*)recordEnrolledForFilename: (NSString*)filename
+                                     uuid: (NSString*)uuid
 {
-    
-    @synchronized( self ){
-        
-        NSString *uuid = record[NPUUIDKey];
-        
-        NSAssert( [self validUuidString: uuid], @"Bogus uuid");
-        
-        NSMutableDictionary *exists = [self recordForUuid: uuid];
-        //NSAssert( (nil == exists), @"Record already exists.");
-        if( exists ) return ;
-        
-        [self.docRecords addObject: record];
-        
-        NSUInteger row = [self.docRecords indexOfObject: record];
-        NSIndexPath* indexPath =
-        [NSIndexPath indexPathForRow:row inSection:0];
-        
-        NSArray *indexPaths = @[indexPath];
-        
-        // Now update those rows
-        [self.tableView beginUpdates];{
-            
-            [self.tableView insertRowsAtIndexPaths:indexPaths
-                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-            
-        }[self.tableView endUpdates];
-        
-        [self.tableView reloadData];
-
-    }
-
-}
-
--(NSMutableDictionary*)recordEnrolledForFilename: (NSString*)filename
-                                            uuid: (NSString*)uuid
-{
-    /*
-     This method retrieves a record for a uuid, 
+    /**
+     This method retrieves a record for a uuid,
      or builds and stores an appropriate record for the uuid is no such record exists.
      
      Note that the MultiDocument app only adds documents;
@@ -521,7 +335,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     NSAssert( ok, @"Can't make directory: %@", [uuidDir absoluteString] );
     
     
-    NSMutableDictionary *existing = [self recordForUuid: uuid];
+    NSDictionary *existing = [self recordForUuid: uuid];
     
     
     if( nil != existing ){
@@ -536,29 +350,64 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     }else{
         NSMutableDictionary *record = nil;
         
-        @synchronized(self){
-            
-            record = [NSMutableDictionary dictionaryWithCapacity: 8];
-            
-            record[NPUUIDKey] = uuid;
-            record[NPFileNameKey] = filename;
-            
-            record[NPLocalDocURLKey] = localDocURL;
-            
-            if( nil != cloudDocURL ){
-                record[NPCloudDocURLKey] = cloudDocURL;
-            }else{
-                [record removeObjectForKey: NPCloudDocURLKey];
-            }
-            
-            NSDictionary *storeOptions = [[self class] persistentStoreOptionsForDocumentFileURL: localDocURL];
-            
-            record[NPStoreOptionsKey] = storeOptions;
-            
+        record = [NSMutableDictionary dictionaryWithCapacity: 8];
+        
+        record[NPUUIDKey] = uuid;
+        record[NPFileNameKey] = filename;
+        
+        record[NPLocalDocURLKey] = localDocURL;
+        
+        if( nil != cloudDocURL ){
+            record[NPCloudDocURLKey] = cloudDocURL;
+        }else{
+            [record removeObjectForKey: NPCloudDocURLKey];
         }
-
+        
+        NSDictionary *storeOptions = [[self class] persistentStoreOptionsForRecord: record];
+        
+        record[NPStoreOptionsKey] = storeOptions;
+        
+        [self updateRecord: [record copy]];
+        
         return record;
     }
+    
+}
+
+#pragma mark We never delete a document or its record in this app.
+
+-(void)addRowForRecord: (NSDictionary*)record
+{
+    
+    //@synchronized( self.tableView ){
+        
+        NSString *uuid = record[NPUUIDKey];
+        
+        NSAssert( [self validUuidString: uuid], @"Bogus uuid");
+        
+        NSDictionary *exists = [self recordForUuid: uuid];
+        //NSAssert( (nil == exists), @"Record already exists.");
+        if( exists ) return ;
+        
+        [self.docRecords addObject: record];
+        
+        NSUInteger row = [self.docRecords indexOfObject: record];
+        NSIndexPath* indexPath =
+        [NSIndexPath indexPathForRow:row inSection:0];
+        
+        NSArray *indexPaths = @[indexPath];
+        
+        // Now update those rows
+        [self.tableView beginUpdates];{
+            
+            [self.tableView insertRowsAtIndexPaths:indexPaths
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+            
+        }[self.tableView endUpdates];
+        
+        [self.tableView reloadData];
+        
+    //}
     
 }
 
@@ -601,7 +450,7 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     return result;
 }
 
--(NSMutableDictionary*)enrollMetadataItem: (NSMetadataItem*)metadataItem
+-(NSDictionary*)enrollMetadataItem: (NSMetadataItem*)metadataItem
 {
     NSURL *metadataURL = [metadataItem valueForAttribute: NSMetadataItemURLKey];
     
@@ -610,20 +459,20 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     
     
     NSString *uuid = [self uuidFromMetadataItem: metadataItem];
-    NSMutableDictionary *record = [self recordForUuid: uuid];
+    NSDictionary *existingRecord = [self recordForUuid: uuid];
     
-    if( nil == record ){
+    if( nil == existingRecord ){
         
         NSString *filename = [self filenameFromMetadataItem: metadataItem];
         
-        // -enrollFilename:uuid adds a row to the table view.
-        record = [self recordEnrolledForFilename: filename
-                                            uuid: uuid];
+        NSMutableDictionary *newRecord =
+        [self recordEnrolledForFilename: filename
+                                   uuid: uuid].mutableCopy;
         
         // This should be the ONLY place where the NPMetadataItemKey is used to write to a document's record.
         // The records of documents discovered by query have this entry;
         // records of documents instantiated in the sandbox do not.
-        record[NPMetadataItemKey] = metadataItem;
+        newRecord[NPMetadataItemKey] = metadataItem;
         // See:
         // [1] -establishDocument:successCallback:failCallback:
         //      where the absence of this entry determines the necessity to
@@ -635,28 +484,75 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
         NSDictionary *metadataDictionary =
         [NSDictionary dictionaryWithContentsOfURL: metadataURL];
         
-        record[NPMetadataDictionaryKey] = metadataDictionary;
+        newRecord[NPMetadataDictionaryKey] = metadataDictionary;
         
-        NSURL *cloudDocURL = record[NPCloudDocURLKey];
+        NSURL *cloudDocURL = newRecord[NPCloudDocURLKey];
         [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
                                                         error: nil];
+        
+        [self updateRecord: newRecord.copy];
+        
+        return newRecord;
+    }else{
+        return existingRecord;
     }
-    
-    return record;
 }
 
--(NSMutableDictionary*)recordForDocument: (UIManagedDocument*)document
+-(NSDictionary*)recordForDocument: (UIManagedDocument*)document
 {
     NSURL *docURL = [document fileURL];
     NSURL *uuidDir = [docURL URLByDeletingLastPathComponent];
     NSString *uuid = [uuidDir lastPathComponent];
     
-    NSMutableDictionary *record = [self recordForUuid: uuid];
+    NSDictionary *record = [self recordForUuid: uuid];
 
     return record;
 }
+-(void)updateRecord: (NSDictionary*)newRecord
+{
+    NSString *uuid = newRecord[NPUUIDKey];
+    NSAssert( (nil != uuid), @"Bogus record");
+    
+    NSDictionary *existingRecord = [self recordForUuid: uuid];
+    
+    @synchronized( self.docRecords ){
+        
+        if( nil == existingRecord ){
+            
+            [(self.docRecords) addObject: newRecord.copy];
+             
+        }else{
+            
+            // [0] Get the current table view row count BEFORE adding a new row to the
+            NSUInteger existingTableviewRowCount = [(self.tableView) numberOfRowsInSection: 0];
 
-#pragma mark Model Operations 
+            // [1] Replace the record:
+            NSUInteger recordRow = [(self.docRecords) indexOfObject: existingRecord];
+            [(self.docRecords) replaceObjectAtIndex: recordRow
+                                         withObject: newRecord];
+           
+            
+            // [2] If there's already a table view row for this record,
+            //     reload that row using animation:
+
+            if( recordRow < existingTableviewRowCount ){
+                
+                
+                NSIndexPath *justOneRow =
+                [NSIndexPath indexPathForRow: recordRow
+                                   inSection: 0];
+                
+                [(self.tableView) reloadRowsAtIndexPaths: @[justOneRow]
+                                        withRowAnimation: YES];
+            }
+
+        }
+    }
+    
+    [self resetTableViewSnoozeAlarm];
+}
+
+#pragma mark Model Operations
 
 -(void)addModelVersionToDocument: (UIManagedDocument*)document
 {
@@ -665,15 +561,7 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     
     NSManagedObjectContext* moc =
     document.managedObjectContext;
-    
-//    NSEntityDescription* desc =
-//    [NSEntityDescription entityForName:@"ModelVersion"
-//                inManagedObjectContext:moc];
-//    
-//    ModelVersion* result = [[ModelVersion alloc]
-//                            initWithEntity:desc
-//                            insertIntoManagedObjectContext:moc];
-    
+        
     ModelVersion* result =
     [NSEntityDescription insertNewObjectForEntityForName:@"ModelVersion"
                                   inManagedObjectContext:moc];
@@ -690,28 +578,13 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     NSManagedObjectContext* moc =
     document.managedObjectContext;
     
-//    NSEntityDescription* desc =
-//    [NSEntityDescription entityForName:@"TextEntry"
-//                inManagedObjectContext:moc];
-    
     // [1] Insert a new TextEntry:
-//    TextEntry* result = [[TextEntry alloc]
-//                         initWithEntity:desc
-//                         insertIntoManagedObjectContext:moc];
-    
     
     TextEntry* result =
     [NSEntityDescription insertNewObjectForEntityForName:@"TextEntry"
                                   inManagedObjectContext:moc];
     
     // [2] Modify the new TextEntry:
-    // At this point (early in its life cycle),
-    // the document returns nil for its localizedName.
-    // result.title = document.localizedName; // yields nil
-    // Use the record instead:
-
-    NSMutableDictionary *record = [self recordForDocument: document];
-    result.title = record[NPFileNameKey];
     
     result.modified = [NSDate date];
     
@@ -745,23 +618,23 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
 
 #pragma mark IBActions:
 
-- (IBAction)addDocument:(id)sender {
+- (IBAction)addDocument:(id)sender
+{
     
     // Create a blank document and save it to the local sandbox
     NSUInteger index = [self calculateNextFileNameIndex];
     NSString* fileName = [NSString stringWithFormat:@"%@%d",
-                         BaseFileName,
-                         index];
-        
+                          BaseFileName,
+                          index];
+    
     NSString *uuid = [[NSUUID UUID] UUIDString];
     
     NSMutableDictionary *record =
     [self recordEnrolledForFilename: fileName
-                    uuid: uuid];
-        
+                               uuid: uuid];
+    
     [self addDocumentFromRecord: record];
-
-
+    
 }
 #pragma mark Add Document Programmatically
 -(NSInvocation*)callbackForSelector: (SEL)selector
@@ -781,63 +654,123 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     return inv;
 }
 
--(void)addDocumentFromRecord: (NSMutableDictionary*)record
+-(void)addDocumentFromRecord: (NSDictionary*)record
 {
     self.addButton.enabled = NO;
+    [[self.addButton customView ] setNeedsDisplay];
     
     [self addRowForRecord: record];
     
     UIManagedDocument *document = [self instantiateDocumentFromRecord: record];
-    record[NPDocumentKey] = document;
-
-    NSInvocation *successCallback = nil;
-    NSInvocation *failCallback = nil;
     
-    successCallback = [self callbackForSelector: @selector(didOpenDocument:)
-                                       document: document];
-    failCallback    = [self callbackForSelector: @selector(didFailToOpenDocument:)
-                                       document: document];
+    NSMutableDictionary *updatedRecord = record.mutableCopy;
     
-    [(self.tableView) reloadData];
-
+    updatedRecord[NPDocumentKey] = document;
+    [self updateRecord: updatedRecord];
+    
+    NSInvocation *successCallback =
+    [self callbackForSelector: @selector(didOpenDocument:)
+                     document: document];
+    NSInvocation *failCallback =
+    [self callbackForSelector: @selector(didFailToOpenDocument:)
+                     document: document];
+    
+    [self resetTableViewSnoozeAlarm];
+    
+    
     [self establishDocument: document
             successCallback: successCallback
                failCallback: failCallback];
+    
 }
+-(void)resetTableViewSnoozeAlarm
+{
+    /**
+     This method delays the call to -actuallyReloadTableView:
+     until 1.0 second after the most recent call to -resetTableViewSnoozeAlarm.
+     
+     Suppose we get a burst of calls to -resetTableViewSnoozeAlarm over a short period,
+     but each within 1.0 second of the previous.
+     The burst ends when 1.0 second elapses with no call to -resetTableViewSnoozeAlarm.
+     
+     When the burst ends,
+     the timer, m_tableViewSnoozeAlarm, finally invokes -actuallyReloadTableView:.
+    
+     */
+    /*
+     "-[NSTimer invalidate] Stops the receiver from ever firing again and requests its removal from its run loop."
+     */
+    [m_tableViewSnoozeAlarm invalidate];
+    m_tableViewSnoozeAlarm = nil;
+    
+    NSRunLoop *main = [NSRunLoop mainRunLoop];
+    
+    m_tableViewSnoozeAlarm =
+    [NSTimer timerWithTimeInterval: 1.0
+                            target: self
+                          selector: @selector(actuallyReloadTableView:)
+                          userInfo: nil
+                           repeats: NO];
+    
+    [main addTimer: m_tableViewSnoozeAlarm
+           forMode: NSDefaultRunLoopMode];
+    
+}
+
+-(void)actuallyReloadTableView: (NSTimer*)timer
+{
+    NSLog(@"%@: -actuallyReloadTableView: ",
+          [[UIDevice currentDevice] model] );
+    
+    NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+    NSRunLoop *mainRunLoop = [NSRunLoop mainRunLoop];
+    NSAssert( (mainRunLoop == runLoop), @"Not main run loop.");
+    
+    [timer invalidate];
+    [m_tableViewSnoozeAlarm invalidate];
+    m_tableViewSnoozeAlarm  = nil;
+    
+    [(self.tableView) reloadData];
+    [(self.tableView) setNeedsDisplay];
+}
+
 #pragma mark addDocumentFromRecord:documentExists: callbacks:
 
--(void)didAddDocument: (UIManagedDocument*)document
+-(void)restoreAddButton
 {
     /*
-      When creating or opening a document, I disable the [+] button until the document opens. 
+     When creating or opening a document, I disable the [+] button until the document opens.
      I did this to prevent myself from activating [+] multiple times.
      There's considerable delay in the UI.
      This supporting logic expects only one document to be opening or creating at any one time.
      */
-    self.addButton.enabled = YES;
 
-    [self.tableView reloadData];
+    // Perturb the view in the main thread:
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.addButton.enabled = YES;
+        [self resetTableViewSnoozeAlarm];
+    });
+
+}
+-(void)didAddDocument: (UIManagedDocument*)document
+{
+    [self restoreAddButton];
+
 }
 
 -(void)didFailToAddDocument: (UIManagedDocument*)document
 {
-    self.addButton.enabled = YES;
-    
-    [self.tableView reloadData];
+    [self restoreAddButton];
 }
 
 -(void)didOpenDocument: (UIManagedDocument*)document
 {
-    self.addButton.enabled = YES;
-    
-    [self.tableView reloadData];
+    [self restoreAddButton];
 }
 
 -(void)didFailToOpenDocument: (UIManagedDocument*)document
 {
-    self.addButton.enabled = YES;
-    
-    [self.tableView reloadData];
+    [self restoreAddButton];
 }
 
 

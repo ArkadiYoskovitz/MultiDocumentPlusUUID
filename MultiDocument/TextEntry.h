@@ -17,7 +17,6 @@
 @interface TextEntry : NSManagedObject
 
 @property (nonatomic, retain) NSString * text;
-@property (nonatomic, retain) NSString * title;
 @property (strong, nonatomic) NSDate* modified;
 
 @end

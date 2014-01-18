@@ -21,12 +21,12 @@
     NSMutableArray *m_notificationObservers;
     NSTimer *m_pingTimer;
 }
-@property (readonly, strong) UIManagedDocument* document;
+//@property (readonly, strong) UIManagedDocument* document;
 
 @property (readonly, strong) NSFileManager *fileManager;
-@property (readwrite, strong) NSMutableDictionary *record;
+@property (readwrite, strong) NSDictionary *record;
 
-@property (strong, nonatomic) IBOutlet UITextField* documentTitleTextField;
+//@property (strong, nonatomic) IBOutlet UITextField* documentTitleTextField;
 @property (strong, nonatomic) IBOutlet UITextField* docStateTextField;
 @property (strong, nonatomic) IBOutlet UITextView* textView;
 

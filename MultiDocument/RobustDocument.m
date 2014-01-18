@@ -27,8 +27,7 @@
         [[UIBAlertView alloc] initWithTitle:@"Core Data Error"
                                     message: [error description]
                           cancelButtonTitle:@"OK"
-                          otherButtonTitles:@"Close, Re-open",
-         @"Crash, Burn",
+                          otherButtonTitles:@"Crash, Burn",
          nil];
         
         [alert showWithDismissHandler:^(NSInteger selectedIndex, BOOL didCancel) {
@@ -40,16 +39,8 @@
             }else{
                 
                 switch (selectedIndex) {
+                    
                     case 1:
-                    {
-                        NSLog(@"User clicked [Close, Re-open]. As if...");
-                        DocumentsListController *controller =
-                        [DocumentsListController activeController];
-                        [controller closeReopen: self
-                                        onError: error];
-                        break;
-                    }
-                    case 2:
                     {
                         NSLog(@"User clicked [Crash, Burn]");
                         exit(-1);
