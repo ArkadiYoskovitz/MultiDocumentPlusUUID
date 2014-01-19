@@ -33,29 +33,7 @@
 
 static NSString* const BaseFileName = @"TestDoc";
 
-<<<<<<< HEAD
-=======
 
-const NSString* NPLocalDocURLKey     = @"Local Document URL";
-const NSString* NPCloudDocURLKey     = @"Cloud Document URL";
-const NSString* NPCloudLogFilesURLKey     = @"Cloud Log Files URL";
-const NSString* NPUUIDKey         = @"UUID";
-const NSString* NPStoreOptionsKey = @"Persistent Store Options dictionary";
-
-
-const NSString* NPMetadataItemKey = @"NSMetadataItem";
-const NSString* NPMetadataDictionaryKey     = @"Metadata from Query Result Item";
-
-const NSString* NPFileNameKey     = @"File Name";
-
-const NSString* NPDocumentKey     = @"Document";
-
-const NSString* NPMostRecentUpdateKey = @"Most Recent Update to psc";
-
-const NSString* NPDocumentPscImportKey = @"UIDocumentStateChangedNotification Observer";
-const NSString* NPDocumentStateChangedObserverKey= @"NSPersistentStoreDidImportUbiquitousContentChangesNotification Observer";
-
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
 @interface DocumentsListController()        
 
 - (NSUInteger)calculateNextFileNameIndex;
@@ -207,70 +185,19 @@ const NSString* NPDocumentStateChangedObserverKey= @"NSPersistentStoreDidImportU
     cell.fileNameUILabel.text = @"--";
     
     NSMutableDictionary *record = (self.docRecords)[row];
-<<<<<<< HEAD
     cell.fileNameUILabel.text = [record npStatus];
     cell.userInteractionEnabled = [record isDocumentViewable];
     
 }
-=======
-    
-    NSString* fileName = record[NPFileNameKey];
-    NSMutableString *tmp = fileName.mutableCopy;
-    
-    UIManagedDocument *doc = record[NPDocumentKey];
-    
-    if(nil == doc){
-        [tmp appendString: @" <nil> "];
-        cell.userInteractionEnabled = NO;
-    }else{
-        [tmp appendFormat: @", %@", [doc npDocumentStateAsString]];
-        
-        
-        // Sandbox or Cloud?
-        NSDictionary *metadataDictionary = record[NPMetadataDictionaryKey];
-        if( nil == metadataDictionary ){
-            [tmp appendString: @", Created"];
-        }else{
-            [tmp appendString: @", Discovered"];
-           
-        }
-        
-        // Can we open the document?
-        NSDate *test = record[NPMostRecentUpdateKey];
-        if( nil == test ){
-            [tmp appendString: @", waiting"];
-            cell.userInteractionEnabled = NO;
-        }else{
-            [tmp appendString: @", ready"];
-            cell.userInteractionEnabled = YES;
-        }
-        
-    }
-    
-    cell.fileNameUILabel.text = tmp;
-    
- }
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
+
 
 - (void)tableView:(UITableView *)tableView
   willDisplayCell:(UITableViewCell *)cell
 forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-<<<<<<< HEAD
 
     if( cell.userInteractionEnabled ){
-=======
-    
-    NSMutableDictionary *record = (self.docRecords)[indexPath.row];
-    UIManagedDocument *doc = record[NPDocumentKey];
-    NSDate *test = record[NPMostRecentUpdateKey];
-    
-    BOOL copacetic =
-    [doc isKindOfClass:[UIManagedDocument class]] &&
-    (nil != test);
-    
-    if( copacetic ){
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
+
         cell.backgroundColor = [UIColor whiteColor];
     }else{
         cell.backgroundColor = [UIColor lightGrayColor];
@@ -280,6 +207,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         NSURL *cloudDocURL = record[NPCloudDocURLKey];
         [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
                                                         error: nil];
+        // And try again in a second:
         [self resetTableViewSnoozeAlarm];
     }
 }
@@ -290,73 +218,9 @@ static NSString *cellID = @"Document Cell";
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    /**
-     
-     The following passage is paranoid-style defensive programming.
-<<<<<<< HEAD
-     It attempts a workaround for a pesky problem:
-     Occassionally, I get an error when I call
-     -dequeueReusableCellWithIdentifier:
-     deep in UITableView, e.g., UITableView.m:5225.
-     
-     */
-//    static  NSString *mm_CellIdentifier = nil;
-//    {
-//        NSUInteger row = indexPath.row;
-//        NSUInteger count = self.docRecords.count;
-//        NSAssert( (row<count), @"Bogus row");
-//        
-//        {
-//            mm_CellIdentifier = @"Document Cell";
-//            
-//            DocumentCell *test = [[DocumentCell alloc] init];
-//            NSLog( @"Initialized the DocumentCell class: %@", [test description]);
-//        };
-//        NSAssert( (0<mm_CellIdentifier.length), @"Bogus CellIdentifier");
-//    }
-=======
-     
-     It attempts a workaround for a rare but pesky problem:
-     Occassionally, I get an error when I call
-     -dequeueReusableCellWithIdentifier:
-     deep in UITableView, e.g., UITableView.m:5225,
-     as if I'm trying to message a freed object.
-     
-     The attempt at a workaround below simply
-     • initializes the cell identifier string differently; and
-     • initializes the DocumentCell class.
-     Experience wil tell if the problem remains, changes to a different problem, or goes away.
-     Already, the problem is rare.
-     
-     */
-    static  NSString *mm_CellIdentifier = nil;
-    {
-        if( nil == mm_CellIdentifier ){
-            
-            NSUInteger row = indexPath.row;
-            NSUInteger count = self.docRecords.count;
-            NSAssert( (row<count), @"Bogus row");
-            
-            {
-                mm_CellIdentifier = @"Document Cell";
-                
-                DocumentCell *test = [[DocumentCell alloc] init];
-                NSLog( @"Initialized the DocumentCell class: %@", [test description]);
-            };
-            NSAssert( (0<mm_CellIdentifier.length), @"Bogus CellIdentifier");
-
-        }
-    }
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
-    /**
-     End of paranoid-style defensive programming passage.
-     */
+    
     DocumentCell *cell =
-<<<<<<< HEAD
     [tableView dequeueReusableCellWithIdentifier: cellID];
-=======
-    [tableView dequeueReusableCellWithIdentifier: (NSString *)mm_CellIdentifier];
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     
     if( nil == cell ){
         cell = [[DocumentCell alloc] initWithStyle:UITableViewCellStyleValue1
@@ -368,7 +232,6 @@ static NSString *cellID = @"Document Cell";
     
     return cell;
 }
-
 
 #pragma mark - Helper
 
@@ -478,11 +341,7 @@ static NSString *cellID = @"Document Cell";
             [record removeObjectForKey: NPCloudDocURLKey];
         }
         
-<<<<<<< HEAD
         NSDictionary *storeOptions = [[self class] persistentStoreOptionsForRecord: record];
-=======
-        NSDictionary *storeOptions = [[self class] persistentStoreOptionsForDocumentFileURL: localDocURL];
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
         
         record[NPStoreOptionsKey] = storeOptions;
         
@@ -492,7 +351,6 @@ static NSString *cellID = @"Document Cell";
     }
     
 }
-
 #pragma mark We never delete a document or its record in this app.
 
 -(void)addRowForRecord: (NSDictionary*)record
@@ -781,17 +639,6 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     [self addRowForRecord: record];
     
     UIManagedDocument *document = [self instantiateDocumentFromRecord: record];
-<<<<<<< HEAD
-=======
-    
-    NSMutableDictionary *updatedRecord = record.mutableCopy;
-    
-    updatedRecord[NPDocumentKey] = document;
-    [self updateRecord: updatedRecord];
-
-    NSInvocation *successCallback = nil;
-    NSInvocation *failCallback = nil;
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     
     NSMutableDictionary *updatedRecord = record.mutableCopy;
     
@@ -808,11 +655,6 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     [self resetTableViewSnoozeAlarm];
     
     
-<<<<<<< HEAD
-=======
-    [self resetTableViewSnoozeAlarm];
-
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     [self establishDocument: document
             successCallback: successCallback
                failCallback: failCallback];
@@ -820,7 +662,6 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
 }
 -(void)resetTableViewSnoozeAlarm
 {
-<<<<<<< HEAD
     /**
      This method delays the call to -actuallyReloadTableView:
      until 1.0 second after the most recent call to -resetTableViewSnoozeAlarm.
@@ -831,10 +672,8 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
      
      When the burst ends,
      the timer, m_tableViewSnoozeAlarm, finally invokes -actuallyReloadTableView:.
-    
+     
      */
-=======
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     /*
      "-[NSTimer invalidate] Stops the receiver from ever firing again and requests its removal from its run loop."
      */
@@ -843,20 +682,12 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     
     NSRunLoop *main = [NSRunLoop mainRunLoop];
     
-<<<<<<< HEAD
     m_tableViewSnoozeAlarm =
     [NSTimer timerWithTimeInterval: 1.0
                             target: self
                           selector: @selector(actuallyReloadTableView:)
                           userInfo: nil
                            repeats: NO];
-=======
-    m_tableViewSnoozeAlarm = [NSTimer timerWithTimeInterval: 1.0
-                                          target: self
-                                        selector: @selector(actuallyReloadTableView:) // -actuallyReloadTableView: invalidates and nullifies m_tableViewSnoozeAlarm.
-                                        userInfo: nil
-                                         repeats: NO];
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     
     [main addTimer: m_tableViewSnoozeAlarm
            forMode: NSDefaultRunLoopMode];
@@ -865,13 +696,8 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
 
 -(void)actuallyReloadTableView: (NSTimer*)timer
 {
-<<<<<<< HEAD
     NSLog(@"%@: -actuallyReloadTableView: ",
           [[UIDevice currentDevice] model] );
-=======
-//    NSLog(@"%@: -actuallyReloadTableView: BEGIN",
-//          [[UIDevice currentDevice] model] );
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     
     NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
     NSRunLoop *mainRunLoop = [NSRunLoop mainRunLoop];
@@ -895,56 +721,36 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
      There's considerable delay in the UI.
      This supporting logic expects only one document to be opening or creating at any one time.
      */
-
-<<<<<<< HEAD
+    
     // Perturb the view in the main thread:
     dispatch_async(dispatch_get_main_queue(), ^{
         self.addButton.enabled = YES;
         [self resetTableViewSnoozeAlarm];
     });
-
+    
 }
+
 -(void)didAddDocument: (UIManagedDocument*)document
 {
     [self restoreAddButton];
-
-=======
-    [self resetTableViewSnoozeAlarm];
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
+    
 }
 
 -(void)didFailToAddDocument: (UIManagedDocument*)document
 {
-<<<<<<< HEAD
     [self restoreAddButton];
-=======
-    self.addButton.enabled = YES;
-    
-    [self resetTableViewSnoozeAlarm];
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
 }
 
 -(void)didOpenDocument: (UIManagedDocument*)document
 {
-<<<<<<< HEAD
     [self restoreAddButton];
-=======
-    self.addButton.enabled = YES;
-    
-    [self resetTableViewSnoozeAlarm];
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
 }
 
 -(void)didFailToOpenDocument: (UIManagedDocument*)document
 {
-<<<<<<< HEAD
     [self restoreAddButton];
-=======
-    self.addButton.enabled = YES;
-    
-    [self resetTableViewSnoozeAlarm];
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
 }
+
 
 
 #pragma mark Utility methods:

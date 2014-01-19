@@ -140,14 +140,11 @@
 
 -(void)ignoreDocument:(UIManagedDocument*)document
 {
-<<<<<<< HEAD
     /**
      This class handles 0 or more documents.
      Each document has its own set of observers.
      The document's record stores the document's observers.
      */
-=======
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     NSNotificationCenter* center =
     [NSNotificationCenter defaultCenter];
 
@@ -157,30 +154,21 @@
     [center removeObserver: stateChangedObserver];
     [updatedRecord removeObjectForKey:NPDocumentStateChangedObserverKey];
     
-<<<<<<< HEAD
     id pscImportObserver = updatedRecord[NPDocumentPscImportObserverKey];
     [center removeObserver: pscImportObserver];
     [updatedRecord removeObjectForKey:NPDocumentPscImportObserverKey];
-=======
-    id pscImportObserver = updatedRecord[NPDocumentPscImportKey];
-    [center removeObserver: pscImportObserver];
-    [updatedRecord removeObjectForKey:NPDocumentPscImportKey];
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     
     [self updateRecord: updatedRecord];
  
 }
 -(void)observeDocument:(UIManagedDocument*)document
 {
-<<<<<<< HEAD
     /**
      This class handles 0 or more documents.
      Each document has its own set of observers.
      The document's record stores the document's observers.
      */
 
-=======
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     [self ignoreDocument: document];
     
     NSMutableDictionary *updatedRecord = [self recordForDocument: document].mutableCopy;
@@ -194,7 +182,6 @@
                          queue:nil
                     usingBlock:^(NSNotification *note) {
                         
-<<<<<<< HEAD
                        [self resetTableViewSnoozeAlarm];
                         
                     }];
@@ -222,48 +209,12 @@
                     }];
     updatedRecord[NPDocumentPscImportObserverKey] = pscImportObserver;
     
-=======
-                        [self resetTableViewSnoozeAlarm];
-                        
-                    }];
-    updatedRecord[NPDocumentStateChangedObserverKey] = stateChangedObserver;
-    
-    
-    NSPersistentStoreCoordinator *psc =
-    document.managedObjectContext.persistentStoreCoordinator;
-    NSAssert( (nil !=psc),
-             @"-[%@ observeDocument] found nil psc",
-             NSStringFromClass([self class]));
-    
-    id pscImportObserver =
-    [center addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification
-                        object:psc
-                         queue:nil
-                    usingBlock:^(NSNotification *note) {
-                        
-                        NSMutableDictionary *updatedRecord = [[self recordForDocument:document] mutableCopy];
-                        updatedRecord[NPMostRecentUpdateKey] = [NSDate date];
-                        [self updateRecord: updatedRecord];
-                        
-                        [self resetTableViewSnoozeAlarm];
-                        
-                    }];
-    updatedRecord[NPDocumentPscImportKey] = pscImportObserver;
-    
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     [self updateRecord: updatedRecord];
                         
 }
 
 -(void)setUbiquitous: (NSDictionary*)record
 {
-    /**
-     David Trotz suggests this method may not be necessary:
-     http://stackoverflow.com/questions/18971389/proper-use-of-icloud-fallback-stores
-     
-     ".. at startup if iCloud is enabled I perform a scan for documents that need to be migrated and migrate them simply by opening them with the iCloud options enabled. Once opened I close the document as that is enough to get them migrated and scannable via a meta data scan."
-     
-     */
     
     if ([[self class] isCloudEnabled]) {
                 
@@ -389,20 +340,11 @@
     NSDictionary *record = [self recordForDocument: document];
     NSURL *localDocURL = record[NPLocalDocURLKey];
     
-<<<<<<< HEAD
     NSFileManager *fMgr = [[self class] fileManager];
-=======
-    NSMutableDictionary *record = [self recordForDocument: document].mutableCopy;
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
     
     if( [fMgr fileExistsAtPath: [localDocURL path]]){
         [document openWithCompletionHandler:^(BOOL success){
             
-<<<<<<< HEAD
-=======
-            [self resetTableViewSnoozeAlarm];
-            
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
             if (!success) {
                 NSLog(@"In -establishDocument:, Error opening file");
                 return;
@@ -423,11 +365,7 @@
            forSaveOperation: UIDocumentSaveForCreating
           completionHandler:^(BOOL success){
               
-<<<<<<< HEAD
               
-=======
-              [self resetTableViewSnoozeAlarm];
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
               if (!success) {
                   NSLog(@"In -establishDocument, Error creating file");
                   [failCallback invoke];
@@ -440,51 +378,16 @@
                       NSMutableDictionary *updatedRecord = record.mutableCopy;
                       updatedRecord[NPMostRecentUpdateKey] = [NSDate date];
                       [self updateRecord: updatedRecord];
-<<<<<<< HEAD
                       
-=======
-                  }
-                  
-                  if( [[self class] isCloudEnabled] ){
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
                       
                       [document closeWithCompletionHandler:^(BOOL success){
                           NSLog(@"Closed new file: %@", success ? @"Success" : @"Failure");
-                          
-                          [self resetTableViewSnoozeAlarm];
                           
                           if (!success) {
                               NSLog(@"In -establishDocument, Error closing file after creating.");
                               [failCallback invoke];
                           }else{
                               NSURL *cloudDocURL = record[NPCloudDocURLKey];
-<<<<<<< HEAD
-=======
-                              if( nil == cloudDocURL ){
-                                  cloudDocURL = [[self class] cloudDocURLForFileName: record[NPFileNameKey]
-                                                                                uuid: record[NPUUIDKey]];
-                                  record[NPCloudDocURLKey] = cloudDocURL;
-                              }
-                              
-                              if ([[[self class] fileManager] fileExistsAtPath: cloudDocURL.path]){
-                                  [record removeObjectForKey: NPMostRecentUpdateKey];
-                              }else{
-                                  [self setUbiquitous: record];
-                                  [record setObject: [NSDate date] forKey: NPMostRecentUpdateKey];
-                              }
-                              [self resetTableViewSnoozeAlarm];
-                              
-                              // If we:
-                              // [1] initialized and saved (saved-for-creating)
-                              //     [1a] with the cloud version of persistent store options and
-                              // [2] closed the doc,
-                              // then:
-                              // [3] the cloudDocUuidURL should exist already:
-                              
-                              NSURL* cloudDocUuidURL = [cloudDocURL URLByDeletingLastPathComponent];
-                              [[self class] assureDirectoryURLExists: cloudDocUuidURL];
-                              
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
                               
                               UIManagedDocument *document2 = nil;
                               NSMutableDictionary *updatedRecord = record.mutableCopy;{
@@ -506,15 +409,6 @@
                                   
                               }[self updateRecord: updatedRecord];
                               
-<<<<<<< HEAD
-=======
-                              [record removeObjectForKey: NPDocumentKey];
-                              UIManagedDocument *document2 =
-                              [self instantiateDocumentFromRecord: record];
-                              record[NPDocumentKey] = document2;
-                              [self resetTableViewSnoozeAlarm];
-                              
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
                               
                               /*
                                if( nil != record[NPMetadataDictionaryKey]){
@@ -522,8 +416,6 @@
                                }
                                */
                               [document2 openWithCompletionHandler:^(BOOL success){
-                                  
-                                  [self resetTableViewSnoozeAlarm];
                                   
                                   if (!success) {
                                       NSLog(@"In -establishDocument, Error opening file after creating and closing.");

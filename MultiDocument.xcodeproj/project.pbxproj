@@ -15,8 +15,6 @@
 		345CF9541480A9CC0046F083 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 345CF9531480A9CC0046F083 /* main.m */; };
 		345CF9581480A9CC0046F083 /* NPAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 345CF9571480A9CC0046F083 /* NPAppDelegate.m */; };
 		345CF95B1480A9CC0046F083 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345CF9591480A9CC0046F083 /* MainStoryboard.storyboard */; };
-		345CF95E1480A9CC0046F083 /* DocumentsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 345CF95D1480A9CC0046F083 /* DocumentsListController.m */; };
-		345CF9611480A9CC0046F083 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 345CF9601480A9CC0046F083 /* DetailViewController.m */; };
 		345CF9691480AA170046F083 /* MultiDocumentDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 345CF9671480AA170046F083 /* MultiDocumentDataModel.xcdatamodeld */; };
 		345CF96F1480BD3F0046F083 /* DocumentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 345CF96E1480BD3F0046F083 /* DocumentCell.m */; };
 		345CF9711480CCAA0046F083 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 345CF9701480CCAA0046F083 /* CoreData.framework */; };
@@ -25,12 +23,13 @@
 		A527F605188720BC00137D97 /* NSDictionary+NPAssisting.m in Sources */ = {isa = PBXBuildFile; fileRef = A527F604188720BC00137D97 /* NSDictionary+NPAssisting.m */; };
 		A52AF77216F24CD900840918 /* DocumentsListController+Resources.m in Sources */ = {isa = PBXBuildFile; fileRef = A52AF77116F24CD800840918 /* DocumentsListController+Resources.m */; };
 		A5369F1A15E979D900DAD076 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A5369F1915E979D900DAD076 /* Settings.bundle */; };
-		A568CE4B17F50A7200554885 /* ReadMe.txt in Resources */ = {isa = PBXBuildFile; fileRef = A568CE4A17F50A7200554885 /* ReadMe.txt */; };
+		A56FD189188B6DC0004CF7EA /* DocumentsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = A56FD188188B6DC0004CF7EA /* DocumentsListController.m */; };
+		A56FD18B188B6DCD004CF7EA /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A56FD18A188B6DCD004CF7EA /* DetailViewController.m */; };
+		A56FD18D188B71EE004CF7EA /* DocumentsListController+Making.m in Sources */ = {isa = PBXBuildFile; fileRef = A56FD18C188B71EE004CF7EA /* DocumentsListController+Making.m */; };
 		A571E53117ECD4D600FACEEE /* RobustDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = A571E53017ECD4D600FACEEE /* RobustDocument.m */; };
 		A571E53717ECDFE000FACEEE /* UIBAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = A571E53617ECDFE000FACEEE /* UIBAlertView.m */; };
 		A589783B17F495B7007A9D25 /* MIT License.txt in Resources */ = {isa = PBXBuildFile; fileRef = A589783A17F495B7007A9D25 /* MIT License.txt */; };
 		A5BB09191794CB82006A3DDB /* UIDocument+NPExtending.m in Sources */ = {isa = PBXBuildFile; fileRef = A53B6C9A1794BA2F0097D5A1 /* UIDocument+NPExtending.m */; };
-		A5C6342A16F51E7A000A1E1E /* DocumentsListController+Making.m in Sources */ = {isa = PBXBuildFile; fileRef = A5C6342716F51E7A000A1E1E /* DocumentsListController+Making.m */; };
 		A5C6342B16F51E7A000A1E1E /* DocumentsListController+Querying.m in Sources */ = {isa = PBXBuildFile; fileRef = A5C6342916F51E7A000A1E1E /* DocumentsListController+Querying.m */; };
 		A5E4198215E9970A008D391E /* ModelVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E4198115E9970A008D391E /* ModelVersion.m */; };
 		A5F02C3017F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.m in Sources */ = {isa = PBXBuildFile; fileRef = A5F02C2F17F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.m */; };
@@ -51,9 +50,7 @@
 		345CF9561480A9CC0046F083 /* NPAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NPAppDelegate.h; sourceTree = "<group>"; };
 		345CF9571480A9CC0046F083 /* NPAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NPAppDelegate.m; sourceTree = "<group>"; };
 		345CF95C1480A9CC0046F083 /* DocumentsListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentsListController.h; sourceTree = "<group>"; };
-		345CF95D1480A9CC0046F083 /* DocumentsListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DocumentsListController.m; sourceTree = "<group>"; };
 		345CF95F1480A9CC0046F083 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
-		345CF9601480A9CC0046F083 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		345CF9681480AA170046F083 /* MultiDocumentDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiDocumentDataModel.xcdatamodel; sourceTree = "<group>"; };
 		345CF96D1480BD3F0046F083 /* DocumentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentCell.h; sourceTree = "<group>"; };
 		345CF96E1480BD3F0046F083 /* DocumentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentCell.m; sourceTree = "<group>"; };
@@ -70,14 +67,15 @@
 		A5369F1915E979D900DAD076 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = MultiDocument/Settings.bundle; sourceTree = "<group>"; };
 		A53B6C991794BA2F0097D5A1 /* UIDocument+NPExtending.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIDocument+NPExtending.h"; sourceTree = "<group>"; };
 		A53B6C9A1794BA2F0097D5A1 /* UIDocument+NPExtending.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIDocument+NPExtending.m"; sourceTree = "<group>"; };
-		A568CE4A17F50A7200554885 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
+		A56FD188188B6DC0004CF7EA /* DocumentsListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentsListController.m; sourceTree = "<group>"; };
+		A56FD18A188B6DCD004CF7EA /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		A56FD18C188B71EE004CF7EA /* DocumentsListController+Making.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DocumentsListController+Making.m"; sourceTree = "<group>"; };
 		A571E52F17ECD4D600FACEEE /* RobustDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RobustDocument.h; sourceTree = "<group>"; };
 		A571E53017ECD4D600FACEEE /* RobustDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RobustDocument.m; sourceTree = "<group>"; };
 		A571E53517ECDFE000FACEEE /* UIBAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBAlertView.h; sourceTree = "<group>"; };
 		A571E53617ECDFE000FACEEE /* UIBAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBAlertView.m; sourceTree = "<group>"; };
 		A589783A17F495B7007A9D25 /* MIT License.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "MIT License.txt"; sourceTree = "<group>"; };
 		A5C6342616F51E7A000A1E1E /* DocumentsListController+Making.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DocumentsListController+Making.h"; sourceTree = "<group>"; };
-		A5C6342716F51E7A000A1E1E /* DocumentsListController+Making.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DocumentsListController+Making.m"; sourceTree = "<group>"; };
 		A5C6342816F51E7A000A1E1E /* DocumentsListController+Querying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DocumentsListController+Querying.h"; sourceTree = "<group>"; };
 		A5C6342916F51E7A000A1E1E /* DocumentsListController+Querying.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DocumentsListController+Querying.m"; sourceTree = "<group>"; };
 		A5C9DC911799F0F000AD9A71 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
@@ -139,17 +137,17 @@
 				345CF9561480A9CC0046F083 /* NPAppDelegate.h */,
 				345CF9571480A9CC0046F083 /* NPAppDelegate.m */,
 				345CF95C1480A9CC0046F083 /* DocumentsListController.h */,
-				345CF95D1480A9CC0046F083 /* DocumentsListController.m */,
+				A56FD188188B6DC0004CF7EA /* DocumentsListController.m */,
 				A52AF77016F24CD800840918 /* DocumentsListController+Resources.h */,
 				A52AF77116F24CD800840918 /* DocumentsListController+Resources.m */,
 				A5C6342616F51E7A000A1E1E /* DocumentsListController+Making.h */,
-				A5C6342716F51E7A000A1E1E /* DocumentsListController+Making.m */,
+				A56FD18C188B71EE004CF7EA /* DocumentsListController+Making.m */,
 				A5C6342816F51E7A000A1E1E /* DocumentsListController+Querying.h */,
 				A5C6342916F51E7A000A1E1E /* DocumentsListController+Querying.m */,
 				A5F02C2E17F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.h */,
 				A5F02C2F17F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.m */,
 				345CF95F1480A9CC0046F083 /* DetailViewController.h */,
-				345CF9601480A9CC0046F083 /* DetailViewController.m */,
+				A56FD18A188B6DCD004CF7EA /* DetailViewController.m */,
 				A50D473616FA4D390098BAF8 /* DetailViewController+Pinging.h */,
 				A50D473716FA4D390098BAF8 /* DetailViewController+Pinging.m */,
 				A571E52F17ECD4D600FACEEE /* RobustDocument.h */,
@@ -176,7 +174,6 @@
 		345CF94E1480A9CC0046F083 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				A568CE4A17F50A7200554885 /* ReadMe.txt */,
 				A589783A17F495B7007A9D25 /* MIT License.txt */,
 				345CF9591480A9CC0046F083 /* MainStoryboard.storyboard */,
 				3478910514872255008CACC3 /* MultiDocument.entitlements */,
@@ -255,7 +252,6 @@
 				345CF95B1480A9CC0046F083 /* MainStoryboard.storyboard in Resources */,
 				A589783B17F495B7007A9D25 /* MIT License.txt in Resources */,
 				A5369F1A15E979D900DAD076 /* Settings.bundle in Resources */,
-				A568CE4B17F50A7200554885 /* ReadMe.txt in Resources */,
 				A5FD19C81682265800F39341 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -269,18 +265,18 @@
 			files = (
 				A5BB09191794CB82006A3DDB /* UIDocument+NPExtending.m in Sources */,
 				345CF9541480A9CC0046F083 /* main.m in Sources */,
+				A56FD18B188B6DCD004CF7EA /* DetailViewController.m in Sources */,
 				A571E53717ECDFE000FACEEE /* UIBAlertView.m in Sources */,
 				345CF9581480A9CC0046F083 /* NPAppDelegate.m in Sources */,
-				345CF95E1480A9CC0046F083 /* DocumentsListController.m in Sources */,
-				345CF9611480A9CC0046F083 /* DetailViewController.m in Sources */,
 				345CF9691480AA170046F083 /* MultiDocumentDataModel.xcdatamodeld in Sources */,
 				A571E53117ECD4D600FACEEE /* RobustDocument.m in Sources */,
+				A56FD189188B6DC0004CF7EA /* DocumentsListController.m in Sources */,
 				345CF96F1480BD3F0046F083 /* DocumentCell.m in Sources */,
 				342D6DAB14832B830035C137 /* TextEntry.m in Sources */,
+				A56FD18D188B71EE004CF7EA /* DocumentsListController+Making.m in Sources */,
 				A5E4198215E9970A008D391E /* ModelVersion.m in Sources */,
 				A51A70FE16E2AB4600D7030C /* NSURL+NPAssisting.m in Sources */,
 				A52AF77216F24CD900840918 /* DocumentsListController+Resources.m in Sources */,
-				A5C6342A16F51E7A000A1E1E /* DocumentsListController+Making.m in Sources */,
 				A527F605188720BC00137D97 /* NSDictionary+NPAssisting.m in Sources */,
 				A5F02C3017F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.m in Sources */,
 				A5C6342B16F51E7A000A1E1E /* DocumentsListController+Querying.m in Sources */,

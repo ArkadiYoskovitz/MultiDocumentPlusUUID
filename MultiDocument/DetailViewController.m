@@ -65,19 +65,7 @@
 {
     return (self.record)[NPDocumentKey];
 }
-<<<<<<< HEAD
-=======
-//-(void)setDocument:(UIManagedDocument *)aDocument
-//{
-//    [self ignoreDocument];{
-//        
-//        [self.record removeObjectForKey: NPDocumentKey];
-//        
-//        (self.record)[NPDocumentKey] = aDocument;
-//
-//    }[self observeDocument];
-//}
->>>>>>> 8be99aca0922fe320650b7b502319bbe1b947d5b
+
 
 -(NSFileManager*)fileManager
 {
