@@ -23,3 +23,7 @@ DerivedData
 
 # iOS
 *.entitlements
+
+# proprietary apps, documentation
+*.pages
+*.numbers
