@@ -8,7 +8,7 @@
 // See: http://www.freelancemadscience.com/fmslabs_blog/2011/12/19/syncing-multiple-core-data-documents-using-icloud.html
 //
 //  Modified by Don Briggs on 2013 March 22.
-//  Copyright (c) 2013.
+//  Copyright (c) 2014 Don Briggs. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -21,12 +21,10 @@
     NSMutableArray *m_notificationObservers;
     NSTimer *m_pingTimer;
 }
-//@property (readonly, strong) UIManagedDocument* document;
 
 @property (readonly, strong) NSFileManager *fileManager;
 @property (readwrite, strong) NSDictionary *record;
 
-//@property (strong, nonatomic) IBOutlet UITextField* documentTitleTextField;
 @property (strong, nonatomic) IBOutlet UITextField* docStateTextField;
 @property (strong, nonatomic) IBOutlet UITextView* textView;
 

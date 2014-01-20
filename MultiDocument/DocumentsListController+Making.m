@@ -8,7 +8,7 @@
 // See: http://www.freelancemadscience.com/fmslabs_blog/2011/12/19/syncing-multiple-core-data-documents-using-icloud.html
 //
 //  Modified by Don Briggs on 2013 March 22.
-//  Copyright (c) 2013.
+//  Copyright (c) 2014 Don Briggs. All rights reserved.
 //
 
 #import "DocumentsListController+Making.h"
@@ -58,14 +58,6 @@
         NSMutableDictionary *cloudOptions =
         [NSMutableDictionary dictionaryWithDictionary:options];
         
-        // It doesn't work to use <uuid>/<fileName> as the ucn.
-        //        NSString *ucn = [NSString stringWithFormat: @"%@/%@",
-        //                         uuid, [url lastPathComponent]];
-        //        cloudOptions[NSPersistentStoreUbiquitousContentNameKey] = ucn;
-        // We get a lot of
-        // > Confused by: UzX9BeaCI2Ev...blah
-        // Just use the uuid.
-        
         cloudOptions[NSPersistentStoreUbiquitousContentNameKey] = uuid;
         cloudOptions[NSPersistentStoreUbiquitousContentURLKey]  = logFilesURL;
         
@@ -95,7 +87,7 @@
      
      That's discovered knowledge.
      The approach I favor uses prior knowledge instead.
-     I compute the the document's NSPersistentStoreUbiquitousContentNameKey
+     We can compute the the document's NSPersistentStoreUbiquitousContentNameKey
      from its URL path components.
 
      Therefore, at least in early development, it might be good to check
@@ -217,7 +209,7 @@
 {
     
     if ([[self class] isCloudEnabled]) {
-                
+        
         NSURL *localDocURL = record[NPLocalDocURLKey];//[record objectForKey: NPLocalDocURLKey];
         [[self class] assureDirectoryURLExists: localDocURL];
         
@@ -231,50 +223,28 @@
             
             NSLog(@" -setUbiquitous:error: dispatch_async start");
             
-            /**
-             DON'T DO THIS:
-             
-             
-             BECAUSE:
-             
-             "Printing description of error:
-             *** Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'This NSPersistentStoreCoordinator has no persistent stores.  It cannot perform a save operation.'
-             *** First throw call stack:
-             (0x308b2e8b 0x3abac6c7 0x306094c9 0x3062adb1 0x3352e3bf 0x3068e855 0x3b0910ef 0x3b0958fb 0x3068e993 0x3352e141 0x3352da85 0x334f051b 0x31319fef 0x3131a28f 0x3131b2a3 0x3131bae3 0x3131a231 0x334efa63 0x334f0233 0x3b091103 0x3b095e77 0x3b092f9b 0x3b096751 0x3b0969d1 0x3b1c0dff 0x3b1c0cc4)
-             libc++abi.dylib: terminating with uncaught exception of type NSException"
-             
-
-
-            NSFileCoordinator *fc =
-            [[NSFileCoordinator alloc] initWithFilePresenter:record[NPDocumentKey]];
             
-            [fc coordinateWritingItemAtURL:cloudDocURL
-                                   options:NSFileCoordinatorWritingForMerging
-                                     error:nil
-                                byAccessor:^(NSURL *coordinatedCloudDocURL) {
-                                    
-                   */
-                                    NSFileManager *fm = [[NSFileManager alloc] init];
-                                    
-                                    NSError *error = nil;
-                                    BOOL success =
-                                    [fm setUbiquitous: YES
-                                            itemAtURL: localDocURL
-                                       destinationURL: cloudDocURL //coordinatedCloudDocURL
-                                                error: &error];
-                                    
-                                    if(success){
-                                        NSLog(@" -setUbiquitous:error: SUCCESS");
-                                    }else{
-                                        NSLog(@" -setUbiquitous:error: FAIL: %@", [error description]);
-                                        [NSException
-                                         raise:NSGenericException
-                                         format:@"Error moving to iCloud container: %@",
-                                         error.localizedDescription];
-                                        
-                                    }
-
-                           /**     }]; Matching  [fc coordinateWritingItemAtURL:.. */
+            NSFileManager *fm = [[NSFileManager alloc] init];
+            
+            NSError *error = nil;
+            BOOL success =
+            [fm setUbiquitous: YES
+                    itemAtURL: localDocURL
+               destinationURL: cloudDocURL //coordinatedCloudDocURL
+                        error: &error];
+            
+            if(success){
+                NSLog(@" -setUbiquitous:error: SUCCESS");
+            }else{
+                NSLog(@" -setUbiquitous:error: FAIL: %@", [error description]);
+                [NSException
+                 raise:NSGenericException
+                 format:@"Error moving to iCloud container: %@",
+                 error.localizedDescription];
+                
+            }
+            
+            /**     }]; Matching  [fc coordinateWritingItemAtURL:.. */
             NSLog(@" -setUbiquitous:error: dispatch_async end");
             
         });
@@ -304,10 +274,7 @@
              @"Bogus factory class");
     
     NSDictionary *storeOptions = record[NPStoreOptionsKey];
-//    if( nil == storeOptions ){
-//        storeOptions =
-//        [[self class] persistentStoreOptionsForRecord: record];
-//    }
+
     document.persistentStoreOptions = storeOptions;
     
     NSMutableDictionary *updatedRecord = record.mutableCopy;

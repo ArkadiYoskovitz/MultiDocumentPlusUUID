@@ -2,8 +2,8 @@
 //  RobustDocument.h
 //  MultiDocument
 //
-//  Created by DevGuy on 9/20/13.
-//  Copyright (c) 2013 Freelance Mad Science Labs. All rights reserved.
+//  Created by Don Briggs on 9/20/13.
+//  Copyright (c) 2014 Don Briggs. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

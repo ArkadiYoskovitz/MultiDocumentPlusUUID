@@ -2,8 +2,8 @@
 //  NSDictionary+NPAssisting.h
 //  MultiDocument
 //
-//  Created by DevGuy on 1/15/14.
-//  Copyright (c) 2014 Freelance Mad Science Labs. All rights reserved.
+//  Created by Don Briggs on 1/15/14.
+//  Copyright (c) 2014 Don Briggs. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

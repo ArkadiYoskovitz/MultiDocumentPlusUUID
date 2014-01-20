@@ -2,8 +2,8 @@
 //  RobustDocument.m
 //  MultiDocument
 //
-//  Created by DevGuy on 9/20/13.
-//  Copyright (c) 2013 Freelance Mad Science Labs. All rights reserved.
+//  Created by Don Briggs on 9/20/13.
+//  Copyright (c) 2014 Don Briggs. All rights reserved.
 //
 
 #import "UIBAlertView.h"
@@ -32,7 +32,7 @@
         
         [alert showWithDismissHandler:^(NSInteger selectedIndex, BOOL didCancel) {
             
-            if (didCancel){
+            if (didCancel){ // @"OK"
                 
                 NSLog(@"User cancelled alert.");
 
@@ -40,10 +40,13 @@
                 
                 switch (selectedIndex) {
                     
-                    case 1:
+                    case 1: // @"Crash, Burn"
                     {
                         NSLog(@"User clicked [Crash, Burn]");
-                        exit(-1);
+                        
+                        // This is where we might try error recovery.
+                        
+                        exit(-1); // But, ... no. Not now.
                         break;
                     }
                     default:

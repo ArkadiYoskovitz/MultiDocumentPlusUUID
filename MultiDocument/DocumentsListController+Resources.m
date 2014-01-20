@@ -8,7 +8,7 @@
 // See: http://www.freelancemadscience.com/fmslabs_blog/2011/12/19/syncing-multiple-core-data-documents-using-icloud.html
 //
 //  Modified by Don Briggs on 2013 March 22.
-//  Copyright (c) 2013.
+//  Copyright (c) 2014 Don Briggs. All rights reserved.
 //
 
 #import "DocumentsListController+Resources.h"
@@ -124,20 +124,7 @@
     
     return mm_containerURL;
 }
-/*
- // Don't call +nukeAndPave. It causes big trouble.
 
-+(void)nukeAndPave
-{
-    NSLog(@"All your cloud document are belong to us.");
-    // This is a nuke-and-pave operation.
-    [self clearCloudDir: [self iCloudDocumentsURL]];
-    [self clearCloudDir: [self iCloudLogFilesURL]];
-    NSLog(@"Nuked and paved the cloud.");
-    
-    [self clearCloudDir: [self localDocsURL]];
-}
-*/
 + (NSURL *)iCloudDocumentsURL
 {
     static NSURL *mm_iCloudDocumentsURL = nil;
@@ -257,42 +244,6 @@
     
     return [pathString hasPrefix: cloudContainerString];
 }
-/*
-
-+(void)clearCloudDir: (NSURL*)haplessCloudURLDir
-{
-    // Clear the container -- must be done inside a file coordinator
-    NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
-    [fileCoordinator coordinateWritingItemAtURL: haplessCloudURLDir
-                                        options:NSFileCoordinatorWritingForDeleting
-                                          error:nil
-                                     byAccessor:^(NSURL *coordinatedURL) {
-                                         
-                                         NSFileManager *fMgr = [self fileManager];
-                                         
-                                         NSUInteger options =
-                                         NSDirectoryEnumerationSkipsSubdirectoryDescendants |
-                                         NSDirectoryEnumerationSkipsPackageDescendants;
-                                         
-                                         NSDirectoryEnumerator *dirEnumerator =
-                                         [fMgr enumeratorAtURL: haplessCloudURLDir
-                                    includingPropertiesForKeys: nil
-                                                       options: options
-                                                  errorHandler: nil];
-                                         
-                                         for (NSURL *nextURL in dirEnumerator) {
-                                             
-                                             [fMgr removeItemAtURL: nextURL
-                                                             error: nil];
-
-                                         }
-                                         
-                                     }];
-    
-    
-    
-}
-*/
 
 +(NSURL*)sandboxDirPathforCopyOfCloudContainerDir
 {
@@ -349,6 +300,10 @@
     return result;
 }
 
+/**
+ The -copyCloudContainerToSandbox method is for the development phase only.
+ It's useful for bug reports and developer technical incidents.
+ */
 +(void)copyCloudContainerToSandbox
 {
     /**

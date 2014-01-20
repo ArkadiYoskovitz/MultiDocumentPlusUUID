@@ -4,7 +4,7 @@
 
 //
 //  Created by DevGuy on 7/15/13.
-//  Copyright (c) 2013 Freelance Mad Science Labs. All rights reserved.
+//  Copyright (c) 2014 Freelance Mad Science Labs. All rights reserved.
 //
 
 #import "UIDocument+NPExtending.h"

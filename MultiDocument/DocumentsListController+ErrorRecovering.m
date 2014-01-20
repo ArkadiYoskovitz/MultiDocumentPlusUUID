@@ -2,8 +2,8 @@
 //  DocumentsListController+ErrorRecovering.m
 //  MultiDocument
 //
-//  Created by DevGuy on 9/26/13.
-//  Copyright (c) 2013 Freelance Mad Science Labs. All rights reserved.
+//  Created by Don Briggs on 9/26/13.
+//  Copyright (c) 2014 Don Briggs. All rights reserved.
 //
 
 #import "DocumentsListController+ErrorRecovering.h"
@@ -51,7 +51,9 @@ static DocumentsListController *mm_activeController = nil;
     [nav popToRootViewControllerAnimated: YES];
 }
 
-
+/**
+ The method -closeReopen:onError: is untested.
+ */
 -(void)closeReopen: (UIManagedDocument*)haplessDocument
            onError: (NSError*)error
 {
@@ -63,16 +65,18 @@ static DocumentsListController *mm_activeController = nil;
     [haplessDocument closeWithCompletionHandler:^(BOOL success){
         if(success){
             
+            
             [record removeObjectForKey: NPDocumentKey];
             UIManagedDocument *document2 = [self instantiateDocumentFromRecord: record];
             record[NPDocumentKey] = document2;
+            [self updateRecord: record];
             
             [document2 openWithCompletionHandler:^(BOOL success){
                 
                 if(success){
                     NSLog(@"Re-opened successfully.");
                 }else{
-                    NSLog(@"Might as well have touched [Crash, Burn]");
+                    NSLog(@"Jelly side down...");
                 }
                 [haplessDocument finishedHandlingError: error
                                              recovered: success];

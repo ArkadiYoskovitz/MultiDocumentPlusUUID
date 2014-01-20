@@ -7,7 +7,7 @@
 // See: http://www.freelancemadscience.com/fmslabs_blog/2011/12/19/syncing-multiple-core-data-documents-using-icloud.html
 //
 //  Modified by Don Briggs on 2013 March 22.
-//  Copyright (c) 2013.
+//  Copyright (c) 2014 Don Briggs. All rights reserved.
 //
 
 
@@ -31,7 +31,6 @@
 @interface DetailViewController()
 
 @property (readonly, strong) NSMutableArray* notificationObservers;
-//@property (readwrite, strong) UIManagedDocument *document;
 
 @property (readonly, strong) NSURL *localDocURL;
 @property (readonly, strong) NSURL *cloudDocURL;
@@ -46,7 +45,6 @@
 
 @implementation DetailViewController
 
-//@synthesize documentTitleTextField = _documentTitle;
 @synthesize docStateTextField = _docStateTextField;
 @synthesize textView = _text;
 
@@ -105,9 +103,6 @@
 -(NSArray*)fetchedObjectsFromMocFetchRequest
 {
     NSManagedObjectContext *moc = [self.document managedObjectContext];
-    
-    // GLITCH: moc has no registered objects.
-    // The following call triggers -mocObjectsDidChange:
     
     NSArray __block *result = nil;
 
@@ -368,49 +363,6 @@
         NSLog(@"started = %@", (started ? @"YES" : @"NO"));
         NSAssert( started, @"Failed to start downloading. Better fix this...");
 
-//        NSArray *array =
-//        @[NSMetadataUbiquitousItemDownloadingStatusCurrent,
-//          NSMetadataUbiquitousItemDownloadingStatusDownloaded,
-//          NSMetadataUbiquitousItemDownloadingStatusNotDownloaded];
-//        NSMetadataItem *metadataItem = self.record[NPMetadataItemKey];
-//        
-//        NSString *status = [metadataItem valueForKey: NSMetadataUbiquitousItemDownloadingStatusKey];
-//        NSUInteger index = [array indexOfObject: status];
-//        switch( index ){
-//            case 0: // NSMetadataUbiquitousItemDownloadingStatusCurrent
-//            {
-//                /**
-//                 "... there is a local version of this item and
-//                 it is the most up-to-date version known to this device."
-//                 */
-//            }
-//            case 1: // NSMetadataUbiquitousItemDownloadingStatusDownloaded
-//            {
-//                /**
-//                 "...  there is a local version of this item available."
-//                 */
-//            }
-//            case 2: // NSMetadataUbiquitousItemDownloadingStatusNotDownloaded
-//            {
-//                /**
-//                 "... this item has not been downloaded yet."
-//                 */
-//                
-//                // Add a side-effect (mostly harmless):
-//                BOOL started =
-//                [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
-//                                                                error: nil];
-//                NSLog(@"started = %@", (started ? @"YES" : @"NO"));
-//                
-//                break;
-//            }
-//            case NSNotFound:
-//            default:
-//            {
-//                NSAssert( NO, @"Programming Error: RTFM");
-//                break;
-//            }
-//        }
 
     }
     [self readModelWriteView];
@@ -500,14 +452,16 @@
             NSUndoManager * undoManager = [moc undoManager];
             
             /*
-             For example, in some situations you want to alter—or, specifically, disable—undo behavior. This may be useful if you want to create a default set of objects when a new document is created (but want to ensure that the document is not shown as being dirty when it is displayed), or if you need to merge new state from another thread or process. In general, to perform operations without undo registration, you send an undo manager a disableUndoRegistration message, make the changes, and then send the undo manager an enableUndoRegistration message. Before each, you send the context a processPendingChanges message, as illustrated in the following code fragment:
+             See: https://developer.apple.com/library/mac/documentation/cocoa/conceptual/coredata/articles/cdUsingMOs.html
+             
+             "For example, in some situations you want to alter—or, specifically, disable—undo behavior. This may be useful if you want to create a default set of objects when a new document is created (but want to ensure that the document is not shown as being dirty when it is displayed), or if you need to merge new state from another thread or process. In general, to perform operations without undo registration, you send an undo manager a disableUndoRegistration message, make the changes, and then send the undo manager an enableUndoRegistration message. Before each, you send the context a processPendingChanges message, as illustrated in the following code fragment:
              
              NSManagedObjectContext *moc = ...;
              [moc processPendingChanges];  // flush operations for which you want undos
              [[moc undoManager] disableUndoRegistration];
              // make changes for which undo operations are not to be recorded
              [moc processPendingChanges];  // flush operations for which you do not want undos
-             [[moc undoManager] enableUndoRegistration];
+             [[moc undoManager] enableUndoRegistration]; "
 
              
              */
@@ -515,7 +469,8 @@
             [undoManager disableUndoRegistration];
             {
                 // Actually change the model, but don't "dirty" the document for undo:
-                // In this example, undo would just complicate things unnecessarily.
+                // In the MultiDocumentPlusUUID example application,
+                // undo would just complicate things unnecessarily.
                 textEntry.text = self.textView.text;
                 textEntry.modified = [NSDate date];
             }
@@ -526,6 +481,7 @@
         }]; //[moc performBlockAndWait:
         
         /*
+         See: https://developer.apple.com/library/mac/documentation/General/Conceptual/iCloudDesignGuide/Chapters/DesignForCoreDataIniCloud.html
          
          From Apple's iCloud Desing Guide:
          "If your app design requires explicit control over when pending changes are committed, 
