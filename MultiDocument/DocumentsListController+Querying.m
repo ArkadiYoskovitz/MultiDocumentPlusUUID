@@ -92,9 +92,10 @@ const NSString *PNDocMDataDotPlistKey = @"DocumentMetadata.plist";
     if( nil == m_query ){
         m_query = [[NSMetadataQuery alloc] init];
         
-        [m_query setSearchScopes:
-         @[NSMetadataQueryUbiquitousDataScope, NSMetadataQueryUbiquitousDocumentsScope]];
-        
+        [m_query setSearchScopes: @[NSMetadataQueryUbiquitousDocumentsScope]];
+        // Was: @[NSMetadataQueryUbiquitousDataScope, NSMetadataQueryUbiquitousDocumentsScope]];
+        //
+       
         // We cannot look for the folder--must look for the
         // contained DocumentMetadata.plist.
         NSPredicate *p =
@@ -197,12 +198,13 @@ const NSString *PNDocMDataDotPlistKey = @"DocumentMetadata.plist";
             NSURL* url = [item valueForAttribute:NSMetadataItemURLKey];
             url = [url npNormalizedURL];
             
-            NSNumber *isHidden = nil;
+            NSNumber *maybeHidden = nil;
             // Don't include hidden files.
-            [url getResourceValue:&isHidden
+            [url getResourceValue:&maybeHidden
                            forKey:NSURLIsHiddenKey
                             error:nil];
-            if (isHidden && ![isHidden boolValue]) {
+            
+            if (maybeHidden && ![maybeHidden boolValue]) {
                 
                 NSFileCoordinator* coordinator =
                 [[NSFileCoordinator alloc] initWithFilePresenter:nil];
