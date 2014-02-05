@@ -32,6 +32,9 @@ const NSString* NPMostRecentUpdateKey = @"Most Recent Update to psc";
 
 const NSString* NPDocumentPscImportObserverKey =
 @"NSPersistentStoreDidImportUbiquitousContentChangesNotification Observer";
+
+const NSString* NPDocumentPscStoresChangedObserverKey = @"NSPersistentStoreCoordinatorStoresDidChangeNotification Observer";
+
 const NSString* NPDocumentStateChangedObserverKey = @"UIDocumentStateChangedNotification Observer";
 
 

@@ -150,8 +150,24 @@
     [center removeObserver: pscImportObserver];
     [updatedRecord removeObjectForKey:NPDocumentPscImportObserverKey];
     
+    id pscStoresChangedObserver = updatedRecord[NPDocumentPscStoresChangedObserverKey];
+    [center removeObserver: pscStoresChangedObserver];
+    [updatedRecord removeObjectForKey:NPDocumentPscStoresChangedObserverKey];
+    
+    
     [self updateRecord: updatedRecord];
  
+}
+-(void)commonUpdate: (UIManagedDocument*)document
+{
+    NSMutableDictionary *updatedRecord = [[self recordForDocument:document] mutableCopy];
+    updatedRecord[NPMostRecentUpdateKey] = [NSDate date];
+    [self updateRecord: updatedRecord];
+    
+    [(self.tableView) reloadData];
+    [(self.tableView) setNeedsDisplay];
+
+    [self resetTableViewSnoozeAlarm];
 }
 -(void)observeDocument:(UIManagedDocument*)document
 {
@@ -160,6 +176,10 @@
      Each document has its own set of observers.
      The document's record stores the document's observers.
      */
+
+    NSAssert( (nil !=document),
+             @"-[%@ observeDocument] found nil document",
+             NSStringFromClass([self class]));
 
     [self ignoreDocument: document];
     
@@ -192,15 +212,23 @@
                          queue:nil
                     usingBlock:^(NSNotification *note) {
                         
-                        NSMutableDictionary *updatedRecord = [[self recordForDocument:document] mutableCopy];
-                        updatedRecord[NPMostRecentUpdateKey] = [NSDate date];
-                        [self updateRecord: updatedRecord];
+                        [self commonUpdate: document];
                         
-                        [self resetTableViewSnoozeAlarm];
                         
                     }];
     updatedRecord[NPDocumentPscImportObserverKey] = pscImportObserver;
     
+    id pscStoresChangedObserver =
+    [center addObserverForName:NSPersistentStoreCoordinatorStoresDidChangeNotification
+                        object:psc
+                         queue:nil
+                    usingBlock:^(NSNotification *note) {
+                        
+                        [self commonUpdate: document];
+                        
+                    }];
+    updatedRecord[NPDocumentPscStoresChangedObserverKey] = pscStoresChangedObserver;
+
     [self updateRecord: updatedRecord];
                         
 }
@@ -354,6 +382,8 @@
                               NSLog(@"In -establishDocument, Error closing file after creating.");
                               [failCallback invoke];
                           }else{
+                              [self ignoreDocument: document];
+                              
                               NSURL *cloudDocURL = record[NPCloudDocURLKey];
                               
                               UIManagedDocument *document2 = nil;

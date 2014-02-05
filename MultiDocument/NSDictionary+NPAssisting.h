@@ -22,6 +22,7 @@ extern NSString* NPDocumentKey;
 extern NSString* NPMostRecentUpdateKey;
 
 extern NSString* NPDocumentPscImportObserverKey;
+extern NSString* NPDocumentPscStoresChangedObserverKey;
 extern NSString* NPDocumentStateChangedObserverKey;
 
 @interface NSDictionary (NPAssisting)

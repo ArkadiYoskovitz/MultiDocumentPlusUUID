@@ -50,7 +50,7 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults removeObjectForKey: NPTextEntryLatencies];
 }
--(void)logLatency
+-(void)logPscImportLatency
 {
     NSDate *now = [NSDate date];
     TextEntry *textEntry = [self fetchedTextEntry];
@@ -62,17 +62,47 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
     
     NSNumber *latency = @(dT);
     
+    NSString *key = @"logPscImportLatency";
+    
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     
-    NSMutableArray *latencies = [[userDefaults objectForKey: NPTextEntryLatencies] mutableCopy];
+    NSMutableArray *latencies =
+    [[userDefaults objectForKey: key] mutableCopy];
     if( nil == latencies ){
         latencies = [NSMutableArray arrayWithCapacity:1];
     }
     [latencies addObject: latency];
     [userDefaults setObject: [latencies copy]
-                     forKey:NPTextEntryLatencies];
+                     forKey: key];
     return;
 }
+-(void)logPscStoresChangedLatency
+{
+    NSDate *now = [NSDate date];
+    TextEntry *textEntry = [self fetchedTextEntry];
+    NSDate *then = textEntry.modified;
+    
+    NSTimeInterval dT =
+    now.timeIntervalSinceReferenceDate -
+    then.timeIntervalSinceReferenceDate;
+    
+    NSNumber *latency = @(dT);
+    
+    NSString *key = @"logPscStoresChangedLatency";
+    
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    
+    NSMutableArray *latencies =
+    [[userDefaults objectForKey: key] mutableCopy];
+    if( nil == latencies ){
+        latencies = [NSMutableArray arrayWithCapacity:1];
+    }
+    [latencies addObject: latency];
+    [userDefaults setObject: [latencies copy]
+                     forKey: key];
+    return;
+}
+
 -(NSString*)latenciesAsString
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
