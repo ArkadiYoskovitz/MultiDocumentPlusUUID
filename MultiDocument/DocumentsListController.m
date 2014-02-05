@@ -18,7 +18,7 @@
 #import "DocumentsListController+Resources.h"
 
 #import "DetailViewController.h"
-#import "DocumentCell.h"
+//#import "DocumentCell.h"
 #import <CoreData/CoreData.h>
 
 #import "ModelVersion.h"
@@ -104,9 +104,13 @@ static NSString* const BaseFileName = @"TestDoc";
     [self.notificationObservers addObject: observer];
 
 }
+static NSString *defaultCellReuseIdentifier = @"DefaultCell";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [[self tableView] registerClass:[UITableViewCell class]
+             forCellReuseIdentifier:defaultCellReuseIdentifier];
     
     if ([[self class] isCloudEnabled]) {
         [self launchMetadataQuery];
@@ -138,7 +142,7 @@ static NSString* const BaseFileName = @"TestDoc";
         UIDocumentState state = document.documentState;
         
         NSAssert( (UIDocumentStateNormal == state),
-                 @"document state = %d",
+                 @"document state = %u",
                  state );
         
         NSString *path = [document fileURL].path;
@@ -147,7 +151,7 @@ static NSString* const BaseFileName = @"TestDoc";
                 NSLog(@"closed %@", path);
             }else{
                 NSLog(@"failed to close properly: %@", path);
-                NSLog(@"state = %d",
+                NSLog(@"document state = %u",
                       document.documentState);
             }
             
@@ -179,15 +183,14 @@ static NSString* const BaseFileName = @"TestDoc";
 }
 
 
--(void)configureCell: (DocumentCell *)cell
+-(void)configureCell: (UITableViewCell *)cell
                  row: (NSUInteger)row
 {
-    cell.fileNameUILabel.text = @"--";
-    
     NSMutableDictionary *record = (self.docRecords)[row];
-    cell.fileNameUILabel.text = [record npStatus];
-    cell.userInteractionEnabled = [record isDocumentViewable];
+    cell.textLabel.text = [record npStatus];
+    cell.detailTextLabel.text = record[NPFileNameKey];
     
+    cell.userInteractionEnabled = [record isDocumentViewable];
 }
 
 
@@ -213,19 +216,15 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 
-static NSString *cellID = @"Document Cell";
-
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-    DocumentCell *cell =
-    [tableView dequeueReusableCellWithIdentifier: cellID];
+    UITableViewCell *cell =
+    [tableView dequeueReusableCellWithIdentifier: defaultCellReuseIdentifier];
     
     if( nil == cell ){
-        cell = [[DocumentCell alloc] initWithStyle:UITableViewCellStyleValue1
-                                   reuseIdentifier:cellID];
-        
+        cell = [[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault
+                                      reuseIdentifier: defaultCellReuseIdentifier];
     }
     [self configureCell: cell
                     row: indexPath.row];
@@ -233,6 +232,15 @@ static NSString *cellID = @"Document Cell";
     return cell;
 }
 
+-(void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath: indexPath];
+    if( cell.userInteractionEnabled ){
+        [self performSegueWithIdentifier:@"Open File Segue"
+                                  sender:cell];
+    }
+}
 #pragma mark - Helper
 
 - (NSUInteger)calculateNextFileNameIndex {
@@ -788,12 +796,6 @@ NSString *NPCopyCloudContainerOnSequeKey = @"copyCloudContainerOnSeque";
         NSIndexPath *indexPath = [self.tableView indexPathForCell: sender];
         NSMutableDictionary *record = (self.docRecords)[indexPath.row];
         
-        // Afterthought: check for sanity:
-        DocumentCell* cell = sender;
-        NSString* fileName = cell.fileNameUILabel.text;
-        NSAssert( [fileName hasPrefix: record[NPFileNameKey]],
-                 @"Bogus cell file name or index");
-
         // Deliver the payload:
         DetailViewController* destination =
         segue.destinationViewController;

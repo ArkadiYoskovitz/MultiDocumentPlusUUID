@@ -16,7 +16,6 @@
 		345CF9581480A9CC0046F083 /* NPAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 345CF9571480A9CC0046F083 /* NPAppDelegate.m */; };
 		345CF95B1480A9CC0046F083 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345CF9591480A9CC0046F083 /* MainStoryboard.storyboard */; };
 		345CF9691480AA170046F083 /* MultiDocumentDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 345CF9671480AA170046F083 /* MultiDocumentDataModel.xcdatamodeld */; };
-		345CF96F1480BD3F0046F083 /* DocumentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 345CF96E1480BD3F0046F083 /* DocumentCell.m */; };
 		345CF9711480CCAA0046F083 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 345CF9701480CCAA0046F083 /* CoreData.framework */; };
 		A50D473816FA4D390098BAF8 /* DetailViewController+Pinging.m in Sources */ = {isa = PBXBuildFile; fileRef = A50D473716FA4D390098BAF8 /* DetailViewController+Pinging.m */; };
 		A51A70FE16E2AB4600D7030C /* NSURL+NPAssisting.m in Sources */ = {isa = PBXBuildFile; fileRef = A51A70FD16E2AB4600D7030C /* NSURL+NPAssisting.m */; };
@@ -52,8 +51,6 @@
 		345CF95C1480A9CC0046F083 /* DocumentsListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentsListController.h; sourceTree = "<group>"; };
 		345CF95F1480A9CC0046F083 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		345CF9681480AA170046F083 /* MultiDocumentDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiDocumentDataModel.xcdatamodel; sourceTree = "<group>"; };
-		345CF96D1480BD3F0046F083 /* DocumentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentCell.h; sourceTree = "<group>"; };
-		345CF96E1480BD3F0046F083 /* DocumentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentCell.m; sourceTree = "<group>"; };
 		345CF9701480CCAA0046F083 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		3478910514872255008CACC3 /* MultiDocument.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MultiDocument.entitlements; sourceTree = "<group>"; };
 		A50D473616FA4D390098BAF8 /* DetailViewController+Pinging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DetailViewController+Pinging.h"; sourceTree = "<group>"; };
@@ -160,8 +157,6 @@
 				A51A70FD16E2AB4600D7030C /* NSURL+NPAssisting.m */,
 				A53B6C991794BA2F0097D5A1 /* UIDocument+NPExtending.h */,
 				A53B6C9A1794BA2F0097D5A1 /* UIDocument+NPExtending.m */,
-				345CF96D1480BD3F0046F083 /* DocumentCell.h */,
-				345CF96E1480BD3F0046F083 /* DocumentCell.m */,
 				A5E4198015E9970A008D391E /* ModelVersion.h */,
 				A5E4198115E9970A008D391E /* ModelVersion.m */,
 				342D6DA914832B830035C137 /* TextEntry.h */,
@@ -212,7 +207,7 @@
 		345CF93A1480A9CC0046F083 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "Freelance Mad Science Labs";
 				TargetAttributes = {
 					345CF9421480A9CC0046F083 = {
@@ -271,7 +266,6 @@
 				345CF9691480AA170046F083 /* MultiDocumentDataModel.xcdatamodeld in Sources */,
 				A571E53117ECD4D600FACEEE /* RobustDocument.m in Sources */,
 				A56FD189188B6DC0004CF7EA /* DocumentsListController.m in Sources */,
-				345CF96F1480BD3F0046F083 /* DocumentCell.m in Sources */,
 				342D6DAB14832B830035C137 /* TextEntry.m in Sources */,
 				A56FD18D188B71EE004CF7EA /* DocumentsListController+Making.m in Sources */,
 				A5E4198215E9970A008D391E /* ModelVersion.m in Sources */,
@@ -329,6 +323,7 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -360,6 +355,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;

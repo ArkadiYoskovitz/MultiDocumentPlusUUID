@@ -302,7 +302,7 @@
 }
 -(void)establishDocument: (UIManagedDocument*)document
          successCallback: (NSInvocation*)successCallback
-            failCallback: (NSInvocation*)failCallback;
+            failCallback: (NSInvocation*)failCallback
 {
     NSDictionary *record = [self recordForDocument: document];
     NSURL *localDocURL = record[NPLocalDocURLKey];
