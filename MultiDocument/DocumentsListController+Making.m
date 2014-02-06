@@ -129,6 +129,64 @@
     }
     
 }
+-(void)receivedNotification: (NSNotification*)note
+                   document: (UIManagedDocument*)document
+{
+    NSMutableDictionary *updatedRecord = [[self recordForDocument:document] mutableCopy];{
+        
+        updatedRecord[NPMostRecentUpdateKey] = [NSDate date];
+        
+        if( [note.name isEqualToString: NPStealthyDidFinishImport] ){
+            
+            /**
+             Came from
+             id pscImportObserver =
+             [center addObserverForName:NSPersistentStoreDidImportUbiquitousContentChangesNotification
+                                 object:psc
+                                  queue:nil
+                             usingBlock:^(NSNotification *note) {
+             
+                  [self receivedNotification: note
+                                    document: document];
+             
+             
+             }];
+             
+             (lldb) po note
+             NSConcreteNotification 0x165ea720 {name = com.apple.coredata.ubiquity.importer.didfinishimport; object = <NSPersistentStoreCoordinator: 0x16695b40>; userInfo = {
+             deleted = "{(\n)}";
+             inserted = "{(\n    0x16586180 <x-coredata://E24729CE-4C32-4961-A228-005264DCA31B/ModelVersion/p2>,\n    0x165de350 <x-coredata://E24729CE-4C32-4961-A228-005264DCA31B/TextEntry/p2>\n)}";
+             updated = "{(\n)}";
+             }}
+
+             */
+            NSLog(@"%@", [note description]);
+        }
+        // An inner dictionary has entries of the form:
+        // @{ <notification name i>: <date i>, <notification name j>: <date j>, ...}
+        
+        NSMutableDictionary *notificationDates = nil;
+        {
+            id test = [updatedRecord objectForKey: NPNotificationDates];
+            if( [test isKindOfClass: [NSDictionary class]] ){
+                notificationDates = ((NSMutableDictionary*)test).mutableCopy;
+            }else{
+                notificationDates = [NSMutableDictionary dictionaryWithCapacity: 4];
+            }
+            
+            [notificationDates setObject: [NSDate date]
+                                  forKey: note.name];
+        }
+        [updatedRecord setObject: notificationDates
+                          forKey: NPNotificationDates];
+
+    }[self updateRecord: updatedRecord];
+
+    [(self.tableView) reloadData];
+    [(self.tableView) setNeedsDisplay];
+    
+    [self resetTableViewSnoozeAlarm];
+}
 
 -(void)ignoreDocument:(UIManagedDocument*)document
 {
@@ -154,20 +212,12 @@
     [center removeObserver: pscStoresChangedObserver];
     [updatedRecord removeObjectForKey:NPDocumentPscStoresChangedObserverKey];
     
+    id mocObjectsChangedObserver = updatedRecord[NPDocumentMocObjectsChangedObserverKey];
+    [center removeObserver: mocObjectsChangedObserver];
+    [updatedRecord removeObjectForKey:NPDocumentMocObjectsChangedObserverKey];
     
     [self updateRecord: updatedRecord];
  
-}
--(void)commonUpdate: (UIManagedDocument*)document
-{
-    NSMutableDictionary *updatedRecord = [[self recordForDocument:document] mutableCopy];
-    updatedRecord[NPMostRecentUpdateKey] = [NSDate date];
-    [self updateRecord: updatedRecord];
-    
-    [(self.tableView) reloadData];
-    [(self.tableView) setNeedsDisplay];
-
-    [self resetTableViewSnoozeAlarm];
 }
 -(void)observeDocument:(UIManagedDocument*)document
 {
@@ -194,7 +244,8 @@
                          queue:nil
                     usingBlock:^(NSNotification *note) {
                         
-                       [self resetTableViewSnoozeAlarm];
+                       [self receivedNotification: note
+                                         document: document];
                         
                     }];
     updatedRecord[NPDocumentStateChangedObserverKey] = stateChangedObserver;
@@ -212,7 +263,8 @@
                          queue:nil
                     usingBlock:^(NSNotification *note) {
                         
-                        [self commonUpdate: document];
+                        [self receivedNotification: note
+                                          document: document];
                         
                         
                     }];
@@ -224,10 +276,23 @@
                          queue:nil
                     usingBlock:^(NSNotification *note) {
                         
-                        [self commonUpdate: document];
-                        
+                        [self receivedNotification: note
+                                          document: document];
+                       
                     }];
     updatedRecord[NPDocumentPscStoresChangedObserverKey] = pscStoresChangedObserver;
+
+    id mocObjectsChangedObserver =
+    [center addObserverForName: NSManagedObjectContextObjectsDidChangeNotification
+                        object:document.managedObjectContext
+                         queue:nil
+                    usingBlock:^(NSNotification *note) {
+                        
+                        [self receivedNotification: note
+                                          document: document];
+                        
+                    }];
+    updatedRecord[NPDocumentMocObjectsChangedObserverKey] = mocObjectsChangedObserver;
 
     [self updateRecord: updatedRecord];
                         

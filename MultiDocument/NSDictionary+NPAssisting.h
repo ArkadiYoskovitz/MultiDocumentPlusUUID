@@ -20,10 +20,14 @@ extern NSString* NPFileNameKey;
 extern NSString* NPDocumentKey;
 
 extern NSString* NPMostRecentUpdateKey;
+extern NSString* NPNotificationDates;
+extern NSString* NPStealthyDidFinishImport;
 
 extern NSString* NPDocumentPscImportObserverKey;
 extern NSString* NPDocumentPscStoresChangedObserverKey;
 extern NSString* NPDocumentStateChangedObserverKey;
+extern NSString* NPDocumentMocObjectsChangedObserverKey;
+
 
 @interface NSDictionary (NPAssisting)
 
@@ -33,4 +37,5 @@ extern NSString* NPDocumentStateChangedObserverKey;
 
 -(NSString*)npStatus;
 -(BOOL)isDocumentViewable;
+
 @end

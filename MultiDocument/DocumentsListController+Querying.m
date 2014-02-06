@@ -40,8 +40,8 @@
                     usingBlock:^(NSNotification* notification) {
                         
                         [self.query disableUpdates];{
-                            NSLog(@"NSMetadataQuery finished gathering, found %d files",
-                                  [self.query resultCount]);
+                            NSLog(@"NSMetadataQuery finished gathering, found %lu files",
+                                  (unsigned long)[self.query resultCount]);
                          }[self.query enableUpdates];
                         
                     }];
@@ -54,8 +54,8 @@
                          queue:mainQueue
                     usingBlock:^(NSNotification *note) {
                         
-                        NSLog(@"NSMetadataQueryDidUpdateNotification: %d files found so far",
-                              [self.query resultCount]);
+                        NSLog(@"NSMetadataQueryDidUpdateNotification: %lu files found so far",
+                              (unsigned long)[self.query resultCount]);
                         
                         [self.query disableUpdates];{
                             [self processQueryUpdate];
@@ -73,8 +73,8 @@
                          queue:mainQueue
                     usingBlock:^(NSNotification *note) {
                         
-                        NSLog(@"Progress notification received. %d files found so far",
-                              [self.query resultCount]);
+                        NSLog(@"Progress notification received. %lu files found so far",
+                              (unsigned long)[self.query resultCount]);
                         
                         [self.query disableUpdates];{
                             [self processQueryUpdate];
@@ -175,7 +175,7 @@ const NSString *PNDocMDataDotPlistKey = @"DocumentMetadata.plist";
         NSUInteger currentCount = [self.docRecords count];
         NSUInteger updateCount = [self.query resultCount];
         
-        NSLog(@"-processUpdate: count: %d -> %d", currentCount, updateCount );
+        NSLog(@"-processUpdate: count: %lu -> %lu", (unsigned long)currentCount, (unsigned long)updateCount );
         [self enrollDocumentsFromQueryResults:self.query.results];
         
         

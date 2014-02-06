@@ -608,9 +608,9 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     
     // Create a blank document and save it to the local sandbox
     NSUInteger index = [self calculateNextFileNameIndex];
-    NSString* fileName = [NSString stringWithFormat:@"%@%d",
+    NSString* fileName = [NSString stringWithFormat:@"%@%lu",
                           BaseFileName,
-                          index];
+                          (unsigned long)index];
     
     NSString *uuid = [[NSUUID UUID] UUIDString];
     

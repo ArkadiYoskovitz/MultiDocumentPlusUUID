@@ -186,7 +186,7 @@
         }
         default:
         {
-            NSAssert( NO, @"Bogus count of fetched objects = %d", fObjs.count);
+            NSAssert( NO, @"Bogus count of fetched objects = %lu", (unsigned long)fObjs.count);
             break;
         }
     }

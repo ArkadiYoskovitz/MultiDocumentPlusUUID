@@ -28,7 +28,9 @@ const NSString* NPDocumentKey     = @"Document";
 
 const NSString* NPMostRecentUpdateKey = @"Most Recent Update to psc";
 
-//    The document's record stores the document's observers.
+const NSString* NPNotificationDates = @"Notification Dates";
+
+const NSString* NPStealthyDidFinishImport = @"com.apple.coredata.ubiquity.importer.didfinishimport";
 
 const NSString* NPDocumentPscImportObserverKey =
 @"NSPersistentStoreDidImportUbiquitousContentChangesNotification Observer";
@@ -37,6 +39,7 @@ const NSString* NPDocumentPscStoresChangedObserverKey = @"NSPersistentStoreCoord
 
 const NSString* NPDocumentStateChangedObserverKey = @"UIDocumentStateChangedNotification Observer";
 
+const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContextObjectsDidChangeNotification Observer";
 
 @implementation NSDictionary (NPAssisting)
 
@@ -153,39 +156,50 @@ const NSString* NPDocumentStateChangedObserverKey = @"UIDocumentStateChangedNoti
         return NO;
     }
     
-    // This test is specific to this application, not general.
-    // See -[DocumentsListController(Making) observeDocument:],
-    // and the observer for NSPersistentStoreDidImportUbiquitousContentChangesNotification.
-    // On the first import, we add to the record the current date
-    // as the value for NPMostRecentUpdateKey.
-    // More generally, such an observer might post a notification of its first import,
-    // with the document as the notification's object.
-    NSDate *test = self[NPMostRecentUpdateKey];
-    BOOL updated = (nil != test);
-    if( !updated ){
-        return  NO;
-    }
-    
-    NSMetadataItem *metadataItem = self[NPMetadataItemKey];
-    
+    // A locally created document that is not [Closed] should be viewable
     if( [self npCreatedLocally] ){
         return YES;;
     }
     
-    NSString *status = [metadataItem valueForKey: NSMetadataUbiquitousItemDownloadingStatusKey];
-    
-    BOOL downloaded =
-    [NSMetadataUbiquitousItemDownloadingStatusDownloaded isEqualToString: status];
-    BOOL current =
-    [NSMetadataUbiquitousItemDownloadingStatusCurrent    isEqualToString: status];
-    
-    if( downloaded || current ){
-        return YES;
+    NSDictionary *notificationDates = [self objectForKey: NPNotificationDates];
+    if( nil != notificationDates ){
+        // e.g.,
+        // notificationDates =
+        // {
+        //     NSObjectsChangedInManagingContextNotification = "2014-02-06 20:01:12 +0000";
+        //     "com.apple.coredata.ubiquity.importer.didfinishimport" = "2014-02-06 20:03:04 +0000";
+        // }
+
+        id test = [notificationDates objectForKey: NPStealthyDidFinishImport];
+        if( nil != test ){
+            return YES;
+        }
+//        NSArray *allKeys = [notificationDates allKeys];
+//        NSMutableSet *keySet = [NSMutableSet setWithArray: allKeys];
+//        [keySet removeObject: UIDocumentStateChangedNotification];
+//        
+//        if( 0 != keySet.count ){
+//            NSLog( @" notificationDates = \n%@",
+//                  [notificationDates description]);
+//            return YES;
+//        }
+
     }
+    
+//    NSMetadataItem *metadataItem = self[NPMetadataItemKey];
+//    NSString *status = [metadataItem valueForKey: NSMetadataUbiquitousItemDownloadingStatusKey];
+//    
+//    BOOL downloaded =
+//    [NSMetadataUbiquitousItemDownloadingStatusDownloaded isEqualToString: status];
+//    BOOL current =
+//    [NSMetadataUbiquitousItemDownloadingStatusCurrent    isEqualToString: status];
+//    
+//    if( downloaded || current ){
+//        return YES;
+//    }
     
     return NO;
     
 }
-
 
 @end

@@ -50,7 +50,7 @@
                         break;
                     }
                     default:
-                        NSLog(@"Programming error: selected index = %d ", selectedIndex);
+                        NSLog(@"Programming error: selected index = %ld ", (long)selectedIndex);
                         
                         break;
                 }
