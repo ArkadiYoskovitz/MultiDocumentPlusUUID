@@ -26,8 +26,6 @@ const NSString* NPFileNameKey     = @"File Name";
 
 const NSString* NPDocumentKey     = @"Document";
 
-const NSString* NPMostRecentUpdateKey = @"Most Recent Update to psc";
-
 const NSString* NPNotificationDates = @"Notification Dates";
 
 const NSString* NPStealthyDidFinishImport = @"com.apple.coredata.ubiquity.importer.didfinishimport";
@@ -161,8 +159,14 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
         return YES;;
     }
     
+    // When is the object graph of a disovered document avalable for inspection?
+    // The entire dictionary named NPNotificationDates may be overkill,
+    // because the pertinent signal seems to be the arrival of the notification named
+    // "com.apple.coredata.ubiquity.importer.didfinishimport".
+    // See also: -[DocumentsListController+Making receivedNotification:document:]
     NSDictionary *notificationDates = [self objectForKey: NPNotificationDates];
     if( nil != notificationDates ){
+        
         // e.g.,
         // notificationDates =
         // {
@@ -174,29 +178,8 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
         if( nil != test ){
             return YES;
         }
-//        NSArray *allKeys = [notificationDates allKeys];
-//        NSMutableSet *keySet = [NSMutableSet setWithArray: allKeys];
-//        [keySet removeObject: UIDocumentStateChangedNotification];
-//        
-//        if( 0 != keySet.count ){
-//            NSLog( @" notificationDates = \n%@",
-//                  [notificationDates description]);
-//            return YES;
-//        }
 
     }
-    
-//    NSMetadataItem *metadataItem = self[NPMetadataItemKey];
-//    NSString *status = [metadataItem valueForKey: NSMetadataUbiquitousItemDownloadingStatusKey];
-//    
-//    BOOL downloaded =
-//    [NSMetadataUbiquitousItemDownloadingStatusDownloaded isEqualToString: status];
-//    BOOL current =
-//    [NSMetadataUbiquitousItemDownloadingStatusCurrent    isEqualToString: status];
-//    
-//    if( downloaded || current ){
-//        return YES;
-//    }
     
     return NO;
     

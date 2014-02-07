@@ -21,7 +21,6 @@
 @interface DetailViewController (Pinging)
 
 -(void)logPscImportLatency;
--(void)logPscStoresChangedLatency;
 
 -(void)snoozeToPingAfterMostRecentUbiquitousContentChange;
 

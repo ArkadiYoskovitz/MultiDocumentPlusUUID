@@ -266,39 +266,6 @@
 
                     }];
     [self.notificationObservers addObject:observer];
- 
-    
-    observer =
-    [center addObserverForName:NSPersistentStoreCoordinatorStoresDidChangeNotification
-                        object:psc
-                         queue:nil
-                    usingBlock:^(NSNotification *note) {
-                        
-                        [self logPscStoresChangedLatency];
-                        
-                        NSString *currentDeviceModel = [[UIDevice currentDevice] model];
-                        
-                        NSLog(@"%@: NSPersistentStoreDidImportUbiquitousContentChangesNotification: Merging changes",
-                              currentDeviceModel );
-                        
-                        NSManagedObjectContext* moc =
-                        self.document.managedObjectContext;
-                        
-                        [moc performBlockAndWait: ^() {
-                            
-                            NSUndoManager * undoManager = [moc undoManager];
-                            [undoManager disableUndoRegistration];{
-                                [moc mergeChangesFromContextDidSaveNotification:note];
-                                [moc processPendingChanges];
-                            }[undoManager enableUndoRegistration];
-                            
-                        }];
-                        
-                        [self readModelWriteView];
-                        [self snoozeToPingAfterMostRecentUbiquitousContentChange];
-                        
-                    }];
-    [self.notificationObservers addObject:observer];
     
     
     observer =

@@ -134,8 +134,12 @@
 {
     NSMutableDictionary *updatedRecord = [[self recordForDocument:document] mutableCopy];{
         
-        updatedRecord[NPMostRecentUpdateKey] = [NSDate date];
-        
+        // When is the object graph of a disovered document avalable for inspection?
+        // The entire dictionary named NPNotificationDates may be overkill,
+        // because the pertinent signal seems to be the arrival of the notification named
+        // "com.apple.coredata.ubiquity.importer.didfinishimport".
+        // See also: -[NSDictionary+NPAssisting isDocumentViewable]
+
         if( [note.name isEqualToString: NPStealthyDidFinishImport] ){
             
             /**
@@ -160,7 +164,7 @@
              }}
 
              */
-            NSLog(@"%@", [note description]);
+            NSLog(@"NPStealthyDidFinishImport: \n%@", [note description]);
         }
         // An inner dictionary has entries of the form:
         // @{ <notification name i>: <date i>, <notification name j>: <date j>, ...}
@@ -411,10 +415,6 @@
                 [failCallback invoke];
             }else{
                 
-                NSMutableDictionary *updatedRecord = record.mutableCopy;
-                [updatedRecord removeObjectForKey: NPMostRecentUpdateKey];
-                [self updateRecord: updatedRecord];
-                
                 NSLog(@"File opened");
                 [successCallback invoke];
             }
@@ -435,11 +435,6 @@
                   if( [record npCreatedLocally] ){
                       [self addObjectGraphToDocument: document];
                       
-                      NSMutableDictionary *updatedRecord = record.mutableCopy;
-                      updatedRecord[NPMostRecentUpdateKey] = [NSDate date];
-                      [self updateRecord: updatedRecord];
-                      
-                      
                       [document closeWithCompletionHandler:^(BOOL success){
                           NSLog(@"Closed new file: %@", success ? @"Success" : @"Failure");
                           
@@ -448,18 +443,11 @@
                               [failCallback invoke];
                           }else{
                               [self ignoreDocument: document];
-                              
-                              NSURL *cloudDocURL = record[NPCloudDocURLKey];
-                              
+                                                            
                               UIManagedDocument *document2 = nil;
                               NSMutableDictionary *updatedRecord = record.mutableCopy;{
                                   
-                                  if ([[[self class] fileManager] fileExistsAtPath: cloudDocURL.path]){
-                                      [updatedRecord removeObjectForKey: NPMostRecentUpdateKey];
-                                  }else{
-                                      [self setUbiquitous: record];
-                                      [updatedRecord setObject: [NSDate date] forKey: NPMostRecentUpdateKey];
-                                  }
+                                  [self setUbiquitous: record];
                                   
                                   // After we close the doc, we can no longer use that instance.
                                   // We must instantiate a new one and set its store options again:

@@ -19,7 +19,6 @@ extern NSString* NPMetadataDictionaryKey;
 extern NSString* NPFileNameKey;
 extern NSString* NPDocumentKey;
 
-extern NSString* NPMostRecentUpdateKey;
 extern NSString* NPNotificationDates;
 extern NSString* NPStealthyDidFinishImport;
 

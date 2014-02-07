@@ -200,18 +200,9 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 {
 
     if( cell.userInteractionEnabled ){
-
         cell.backgroundColor = [UIColor whiteColor];
     }else{
         cell.backgroundColor = [UIColor lightGrayColor];
-        
-        // Let's see if we can force some downloading progress:
-        NSMutableDictionary *record = (self.docRecords)[indexPath.row];
-        NSURL *cloudDocURL = record[NPCloudDocURLKey];
-        [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
-                                                        error: nil];
-        // And try again in a second:
-        [self resetTableViewSnoozeAlarm];
     }
 }
 
@@ -528,7 +519,7 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
                                    inSection: 0];
                 
                 [(self.tableView) reloadRowsAtIndexPaths: @[justOneRow]
-                                        withRowAnimation: YES];
+                                        withRowAnimation: UITableViewRowAnimationAutomatic];
             }
 
         }

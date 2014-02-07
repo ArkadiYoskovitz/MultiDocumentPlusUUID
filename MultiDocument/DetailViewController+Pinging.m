@@ -14,8 +14,7 @@
 #import "DetailViewController+Pinging.h"
 #import "TextEntry.h"
 
-NSString *NPTextEntryLatencies = @"TextEntry Latencies across Devices";
-
+NSString *NPCloudSyncLatencies = @"Cloud Sync Latencies";
 NSString *NPPingEnabledKey = @"pingEnabled";
 
 @implementation DetailViewController (Pinging)
@@ -48,7 +47,7 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
 -(void)clearLatencies
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults removeObjectForKey: NPTextEntryLatencies];
+    [userDefaults removeObjectForKey: NPCloudSyncLatencies];
 }
 -(void)logPscImportLatency
 {
@@ -62,33 +61,7 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
     
     NSNumber *latency = @(dT);
     
-    NSString *key = @"logPscImportLatency";
-    
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    
-    NSMutableArray *latencies =
-    [[userDefaults objectForKey: key] mutableCopy];
-    if( nil == latencies ){
-        latencies = [NSMutableArray arrayWithCapacity:1];
-    }
-    [latencies addObject: latency];
-    [userDefaults setObject: [latencies copy]
-                     forKey: key];
-    return;
-}
--(void)logPscStoresChangedLatency
-{
-    NSDate *now = [NSDate date];
-    TextEntry *textEntry = [self fetchedTextEntry];
-    NSDate *then = textEntry.modified;
-    
-    NSTimeInterval dT =
-    now.timeIntervalSinceReferenceDate -
-    then.timeIntervalSinceReferenceDate;
-    
-    NSNumber *latency = @(dT);
-    
-    NSString *key = @"logPscStoresChangedLatency";
+    NSString *key = NPCloudSyncLatencies;
     
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     
@@ -107,7 +80,7 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     
-    NSArray *latencies = [userDefaults objectForKey: NPTextEntryLatencies];
+    NSArray *latencies = [userDefaults objectForKey: NPCloudSyncLatencies];
     
     NSMutableString *report = [NSMutableString stringWithCapacity: 128];
     for( NSNumber *n in latencies ){
@@ -148,7 +121,7 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
                  self.textView.text,
                  device.name];
                 
-                self.textView.text = blargSpaceDeviceName;
+                self.textView.text = blargSpaceDeviceName.copy;
 
             }[self readViewWriteModel]; // Also updates TextEntry.modified.
     
