@@ -142,8 +142,8 @@ static NSString *defaultCellReuseIdentifier = @"DefaultCell";
         UIDocumentState state = document.documentState;
         
         NSAssert( (UIDocumentStateNormal == state),
-                 @"document state = %u",
-                 state );
+                 @"document state = %lu",
+                 (unsigned long)state );
         
         NSString *path = [document fileURL].path;
         [document closeWithCompletionHandler: ^(BOOL success) {
@@ -151,8 +151,8 @@ static NSString *defaultCellReuseIdentifier = @"DefaultCell";
                 NSLog(@"closed %@", path);
             }else{
                 NSLog(@"failed to close properly: %@", path);
-                NSLog(@"document state = %u",
-                      document.documentState);
+                NSLog(@"document state = %lu",
+                      (unsigned long)document.documentState);
             }
             
         }];
