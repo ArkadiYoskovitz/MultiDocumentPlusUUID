@@ -156,7 +156,7 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
     
     // A locally created document that is not [Closed] should be viewable
     if( [self npCreatedLocally] ){
-        return YES;;
+        return YES;
     }
     
     // When is the object graph of a disovered document avalable for inspection?

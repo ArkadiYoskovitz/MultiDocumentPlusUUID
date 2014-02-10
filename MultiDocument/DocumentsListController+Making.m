@@ -447,7 +447,14 @@
                               UIManagedDocument *document2 = nil;
                               NSMutableDictionary *updatedRecord = record.mutableCopy;{
                                   
+                                  // Some developers find it is unnecessary to "setUbiquitous".
+                                  // My experience finds that the following call IS necessary.
                                   [self setUbiquitous: record];
+                                  // If I comment the line above,
+                                  // then OS X Preferences->iCloud [Manage] -> multidocument
+                                  // shows only a single "Documents & Data" item, and never a list of
+                                  //    "DocumentMetadata.plist"
+                                  // items.
                                   
                                   // After we close the doc, we can no longer use that instance.
                                   // We must instantiate a new one and set its store options again:
