@@ -493,35 +493,44 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     
     @synchronized( self.docRecords ){
         
+        
         if( nil == existingRecord ){
             
             [(self.docRecords) addObject: newRecord.copy];
              
         }else{
             
-            // [0] Get the current table view row count BEFORE adding a new row to the
-            NSUInteger existingTableviewRowCount = [(self.tableView) numberOfRowsInSection: 0];
-
             // [1] Replace the record:
-            NSUInteger recordRow = [(self.docRecords) indexOfObject: existingRecord];
-            [(self.docRecords) replaceObjectAtIndex: recordRow
+            NSUInteger existingRecordRow = [(self.docRecords) indexOfObject: existingRecord];
+            
+            [(self.docRecords) replaceObjectAtIndex: existingRecordRow
                                          withObject: newRecord];
            
-            
-            // [2] If there's already a table view row for this record,
+            /* ****
+             
+             This passage doesn't work in iOS 7.1 GM (11D167),
+             but it's unnecessary anyway.
+             
+             // [2] Get the current table view row count BEFORE adding a new row to the
+             NSUInteger existingTableviewRowCount = [(self.tableView) numberOfRowsInSection: 0];
+
+            // [3] If there's already a table view row for this record,
             //     reload that row using animation:
 
-            if( recordRow < existingTableviewRowCount ){
+            if( existingRecordRow < existingTableviewRowCount ){
                 
                 
                 NSIndexPath *justOneRow =
-                [NSIndexPath indexPathForRow: recordRow
+                [NSIndexPath indexPathForRow: existingRecordRow
                                    inSection: 0];
+                NSArray *indexPaths =  @[justOneRow];
                 
-                [(self.tableView) reloadRowsAtIndexPaths: @[justOneRow]
+                [(self.tableView) reloadRowsAtIndexPaths: indexPaths
                                         withRowAnimation: UITableViewRowAnimationAutomatic];
+            }else{
+                
             }
-
+             **** */
         }
     }
     
