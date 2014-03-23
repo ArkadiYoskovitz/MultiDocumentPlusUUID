@@ -511,6 +511,8 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
              This passage doesn't work in iOS 7.1 GM (11D167),
              but it's unnecessary anyway.
              
+             THIS IS NOW A MISLEADING COMMENT.
+             
              // [2] Get the current table view row count BEFORE adding a new row to the
              NSUInteger existingTableviewRowCount = [(self.tableView) numberOfRowsInSection: 0];
 
