@@ -503,8 +503,7 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
             // [1] Replace the record:
             NSUInteger existingRecordRow = [(self.docRecords) indexOfObject: existingRecord];
             
-            [(self.docRecords) replaceObjectAtIndex: existingRecordRow
-                                         withObject: newRecord];
+            ((self.docRecords))[existingRecordRow] = newRecord;
            
             /* ****
              
@@ -782,6 +781,7 @@ NSString *NPCopyCloudContainerOnSequeKey = @"copyCloudContainerOnSeque";
     if ([segue.identifier isEqualToString:@"Open File Segue"]) {
         
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults synchronize];
         
         BOOL copyContainer = [userDefaults boolForKey:NPCopyCloudContainerOnSequeKey];
         

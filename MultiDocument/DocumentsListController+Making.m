@@ -171,18 +171,16 @@
         
         NSMutableDictionary *notificationDates = nil;
         {
-            id test = [updatedRecord objectForKey: NPNotificationDates];
+            id test = updatedRecord[NPNotificationDates];
             if( [test isKindOfClass: [NSDictionary class]] ){
                 notificationDates = ((NSMutableDictionary*)test).mutableCopy;
             }else{
                 notificationDates = [NSMutableDictionary dictionaryWithCapacity: 4];
             }
             
-            [notificationDates setObject: [NSDate date]
-                                  forKey: note.name];
+            notificationDates[note.name] = [NSDate date];
         }
-        [updatedRecord setObject: notificationDates
-                          forKey: NPNotificationDates];
+        updatedRecord[NPNotificationDates] = notificationDates;
 
     }[self updateRecord: updatedRecord];
 
@@ -302,6 +300,18 @@
                         
 }
 
+/**
+ See: Document-Based Programming GUide for iOS: Managing the Life Cycle of a Document
+ 
+ "Moving a Document to iCloud Storage
+ Programmatically, you put a document in iCloud storage by calling the NSFileManager method setUbiquitous:itemAtURL:destinationURL:error:. This method requires the file URL of the document file in the application sandbox (source URL) and the destination file URL of the document file in the application’s iCloud container directory. The first parameter takes a Boolean value, which should be YES.
+ 
+ Important: You should not call setUbiquitous:itemAtURL:destinationURL:error: from your application’s main thread, especially if the document is not closed. Because this method performs a coordinated write operation on the specified file, calling this method from the main thread can trigger a deadlock with any file presenter monitoring the file. (In addition, this method executing on the main thread can take an indeterminate amount of time to complete.) Instead, call the method in a block running in a dispatch queue other than the main-thread queue. You can always message your main thread after the call finishes to update the rest of your application’s data structures."
+ 
+ See Listing 4-9  Moving a document file to iCloud storage from local storage.
+ 
+ @param record the document's helper dictionary
+ */
 -(void)setUbiquitous: (NSDictionary*)record
 {
     
@@ -310,15 +320,21 @@
         NSURL *localDocURL = record[NPLocalDocURLKey];//[record objectForKey: NPLocalDocURLKey];
         [[self class] assureDirectoryURLExists: localDocURL];
         
-        NSURL* cloudDocURL = [record objectForKey: NPCloudDocURLKey];
+        NSURL* cloudDocURL = record[NPCloudDocURLKey];
+        
+        // Just checking:
+//        BOOL isMainThread = [[NSThread currentThread] isMainThread];
+//        NSLog(@"Main Thread: %@", isMainThread ? @"YES" : @"NO");
         
         
+        // 2014 mar 27 test:
         dispatch_queue_t queue =
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         
         dispatch_async(queue, ^{
-            
-            NSLog(@" -setUbiquitous:error: dispatch_async start");
+        
+            //NSLog(@" -setUbiquitous:error: dispatch_async start");
+            NSLog(@" dispatch_async  -setUbiquitous:error: ");
             
             
             NSFileManager *fm = [[NSFileManager alloc] init];
@@ -332,6 +348,13 @@
             
             if(success){
                 NSLog(@" -setUbiquitous:error: SUCCESS");
+                
+                // 2014 Mar 24 Investigating:
+                success = [fm startDownloadingUbiquitousItemAtURL: cloudDocURL
+                                                            error: &error];
+                if(success){
+                    NSLog(@"startDownloadingUbiquitousItemAtURL SUCCESS");
+                }
             }else{
                 NSLog(@" -setUbiquitous:error: FAIL: %@", [error description]);
                 [NSException
@@ -341,12 +364,14 @@
                 
             }
             
-            /**     }]; Matching  [fc coordinateWritingItemAtURL:.. */
-            NSLog(@" -setUbiquitous:error: dispatch_async end");
+            NSLog(@"dispatch_async  -setUbiquitous:error: end");
             
         });
+        
+        NSLog(@"-setUbiquitous: async queue did dispatch");
     }
 }
+
 -(void)mostlyHarmlessMethod: (NSString*)haplessArgument
 {
     // Strive to do nothing in this method.
@@ -456,7 +481,7 @@
                                   //    "DocumentMetadata.plist"
                                   // items.
                                   
-                                  // After we close the doc, we can no longer use that instance.
+                                  // After we close the document, we can no longer use that instance of UIManagedDocument.
                                   // We must instantiate a new one and set its store options again:
                                   
                                   [updatedRecord removeObjectForKey: NPDocumentKey];

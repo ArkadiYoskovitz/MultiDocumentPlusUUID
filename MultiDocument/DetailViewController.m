@@ -484,7 +484,7 @@
         /*
          See: https://developer.apple.com/library/mac/documentation/General/Conceptual/iCloudDesignGuide/Chapters/DesignForCoreDataIniCloud.html
          
-         From Apple's iCloud Desing Guide:
+         From Apple's iCloud Design Guide:
          "If your app design requires explicit control over when pending changes are committed, 
          use the UIDocument method 
             saveToURL:forSaveOperation:completionHandler:.
@@ -498,22 +498,32 @@
          So, [2] requires the explicit save operation.
          
          */
+        
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults synchronize];
+        BOOL fastSave = [userDefaults boolForKey: @"fastSave"];
+
         [self.document updateChangeCount: UIDocumentChangeDone];
-        [self.document saveToURL: [self.document fileURL]
-                forSaveOperation: UIDocumentSaveForOverwriting
-               completionHandler:^(BOOL success) {
-                   
-                   if( success ){
-                       NSLog(@"-[DetailViewController readViewWriteModel] Saved changes");
+        if( fastSave ){
+            
+            [self.document saveToURL: [self.document fileURL]
+                    forSaveOperation: UIDocumentSaveForOverwriting
+                   completionHandler:^(BOOL success) {
                        
-                       /* Results in error:
-                        NSUnderlyingError=0x15e90720 "The operation couldn’t be completed. File exists"
-                        */
-                   }else{
-                       NSLog(@"-[DetailViewController readViewWriteModel] Failed to Save changes");
-                       
-                   }
-               }];
+                       if( success ){
+                           NSLog(@"-[DetailViewController readViewWriteModel] Saved changes");
+                           
+                           /* Results in error:
+                            NSUnderlyingError=0x15e90720 "The operation couldn’t be completed. File exists"
+                            */
+                       }else{
+                           NSLog(@"-[DetailViewController readViewWriteModel] Failed to Save changes");
+                           
+                       }
+                   }];
+
+        }
+        
 
     } //if( [self anyUnsavedChanges] )
     

@@ -8,6 +8,16 @@
 			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
+			<string>pingEnabled</string>
+			<key>Title</key>
+			<string>Enable ping</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
 			<string>errorRecoveryEnabled</string>
 			<key>Title</key>
 			<string>Attempt Error Recovery</string>
@@ -16,7 +26,7 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<false/>
+			<true/>
 			<key>Key</key>
 			<string>copyCloudContainerOnSeque</string>
 			<key>Title</key>
@@ -26,11 +36,11 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<false/>
+			<true/>
 			<key>Key</key>
-			<string>pingEnabled</string>
+			<string>fastSave</string>
 			<key>Title</key>
-			<string>Enable ping</string>
+			<string>Fast Save</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>

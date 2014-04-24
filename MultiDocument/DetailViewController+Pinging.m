@@ -48,6 +48,7 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults removeObjectForKey: NPCloudSyncLatencies];
+    [userDefaults synchronize];
 }
 -(void)logPscImportLatency
 {
@@ -64,21 +65,26 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
     NSString *key = NPCloudSyncLatencies;
     
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    
-    NSMutableArray *latencies =
-    [[userDefaults objectForKey: key] mutableCopy];
-    if( nil == latencies ){
-        latencies = [NSMutableArray arrayWithCapacity:1];
-    }
-    [latencies addObject: latency];
-    [userDefaults setObject: [latencies copy]
-                     forKey: key];
+    [userDefaults synchronize];{
+        
+        NSMutableArray *latencies =
+        [[userDefaults objectForKey: key] mutableCopy];
+        if( nil == latencies ){
+            latencies = [NSMutableArray arrayWithCapacity:1];
+        }
+        [latencies addObject: latency];
+        [userDefaults setObject: [latencies copy]
+                         forKey: key];
+
+    }[userDefaults synchronize];
+
     return;
 }
 
 -(NSString*)latenciesAsString
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults synchronize];
     
     NSArray *latencies = [userDefaults objectForKey: NPCloudSyncLatencies];
     
@@ -103,6 +109,7 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
     NSAssert( (mainRunLoop == runLoop), @"Not main run loop.");
 
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults synchronize];
     
     BOOL pingEnabled = [userDefaults boolForKey:NPPingEnabledKey];
     

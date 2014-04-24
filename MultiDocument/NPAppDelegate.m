@@ -18,11 +18,66 @@
 @implementation NPAppDelegate
 
 @synthesize window = _window;
-
+/**
+ See:
+ http://stackoverflow.com/questions/510216/can-you-make-the-settings-in-settings-bundle-default-even-if-you-dont-open-the
+ 
+ This method follows:
+ http://ijure.org/wp/archives/179
+ 
+ I applied Xcode’s Edit->Refactor->”Convert to Modern Objective-C Syntax...” operation.
+ 
+ */
+- (void)registerDefaultsFromSettingsBundle
+{
+    NSLog(@"See: http://ijure.org/wp/archives/179");
+    NSLog(@"Registering default values from Settings.bundle");
+    NSUserDefaults * defs = [NSUserDefaults standardUserDefaults];
+    [defs synchronize];
+    
+    NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
+    
+    if(!settingsBundle)
+    {
+        NSLog(@"Could not find Settings.bundle");
+        return;
+    }
+    
+    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
+    NSArray *preferences = settings[@"PreferenceSpecifiers"];
+    NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
+    
+    for (NSDictionary *prefSpecification in preferences)
+    {
+        NSString *key = prefSpecification[@"Key"];
+        if (key)
+        {
+            // check if value readable in userDefaults
+            id currentObject = [defs objectForKey:key];
+            if (currentObject == nil)
+            {
+                // not readable: set value from Settings.bundle
+                id objectToSet = prefSpecification[@"DefaultValue"];
+                defaultsToRegister[key] = objectToSet;
+                NSLog(@"Setting object %@ for key %@", objectToSet, key);
+            }
+            else
+            {
+                // already readable: don't touch
+                NSLog(@"Key %@ is readable (value: %@), nothing written to defaults.", key, currentObject);
+            }
+        }
+    }
+    
+    [defs registerDefaults:defaultsToRegister];
+    [defs synchronize];
+}
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
-        
+    
+    [self registerDefaultsFromSettingsBundle];
+    
     return YES;
 }
 							

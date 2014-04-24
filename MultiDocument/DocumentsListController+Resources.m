@@ -330,7 +330,7 @@
                              error: &error
                         byAccessor:^(NSURL *coordinatedSrcURL) {
                             
-                            NSArray *justOneKey = @[NSURLUbiquitousItemIsDownloadedKey];
+                            NSArray *justOneKey = @[NSURLUbiquitousItemDownloadingStatusKey];
                             
                             NSDirectoryEnumerator *dirEnum =
                             [fm enumeratorAtURL:coordinatedSrcURL
@@ -362,17 +362,20 @@
                                         
                                     }else{
                                         // By default, assume all files are able to be copied.
-                                        NSNumber *ableToBeCopied = [NSNumber numberWithBool:YES];
+                                        NSString *downloadingStatus = @"?";
                                         
                                         // However, ubiquitous items that are not downloaded CANNOT be copied
                                         if ([fm isUbiquitousItemAtURL:sourceFileURL]) {
-                                            [sourceFileURL getResourceValue:&ableToBeCopied
-                                                                     forKey:NSURLUbiquitousItemIsDownloadedKey
+                                            [sourceFileURL getResourceValue:&downloadingStatus
+                                                                     forKey:NSURLUbiquitousItemDownloadingStatusKey
                                                                       error:nil];
                                         }
                                         
                                         // Now copy the file if we can.
-                                        if ( [ableToBeCopied boolValue] ) {
+                                        NSArray *okDownloadingValues =
+                                        @[NSURLUbiquitousItemDownloadingStatusCurrent, NSURLUbiquitousItemDownloadingStatusDownloaded];
+                                        
+                                        if ( [okDownloadingValues containsObject: downloadingStatus] ) {
                                             
                                             
                                             if (![fm copyItemAtURL:sourceFileURL

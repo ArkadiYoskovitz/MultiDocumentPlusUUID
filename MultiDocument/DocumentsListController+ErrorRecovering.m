@@ -29,6 +29,7 @@ static DocumentsListController *mm_activeController = nil;
 -(Class)factory
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults synchronize];
     
     BOOL errorRecoveryEnabled = [userDefaults boolForKey: NPErrorRecoveryEnabledKey];
 

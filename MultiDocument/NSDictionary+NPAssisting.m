@@ -46,7 +46,7 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
     NSDictionary *fileAttribs =
     [[NSFileManager defaultManager] attributesOfItemAtPath:[url path]
                                                      error:nil];
-    NSNumber *size = [fileAttribs objectForKey:NSFileSize];
+    NSNumber *size = fileAttribs[NSFileSize];
     NSString *sizeString = [NSString stringWithFormat:@"%@ bytes", [size stringValue]];
 
     return sizeString;
@@ -58,7 +58,7 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
      */
     NSNumber *isUbiquitous           = [item valueForAttribute:NSMetadataItemIsUbiquitousKey];
     NSNumber *hasUnresolvedConflicts = [item valueForAttribute:NSMetadataUbiquitousItemHasUnresolvedConflictsKey];
-    NSNumber *isDownloaded           = [item valueForAttribute:NSMetadataUbiquitousItemIsDownloadedKey];
+    NSString *downloadingStatus      = [item valueForAttribute:NSMetadataUbiquitousItemDownloadingStatusKey];
     NSNumber *isDownloading          = [item valueForAttribute:NSMetadataUbiquitousItemIsDownloadingKey];
     NSNumber *isUploaded             = [item valueForAttribute:NSMetadataUbiquitousItemIsUploadedKey];
     NSNumber *isUploading            = [item valueForAttribute:NSMetadataUbiquitousItemIsUploadingKey];
@@ -71,7 +71,8 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
     NSLog(@"%@", [url lastPathComponent]);
     NSLog(@"%@", url.path);
     
-    NSLog(@"isUbiquitous:%@ \nhasUnresolvedConflicts:%@ \nisDownloaded:%@ \nisDownloading:%@ \nisUploaded:%@ \nisUploading:%@ \n%%downloaded:%@ \n%%uploaded:%@ \ndocumentExists:%i \n%@", isUbiquitous, hasUnresolvedConflicts, isDownloaded, isDownloading, isUploaded, isUploading, percentDownloaded, percentUploaded, documentExists, url);
+    NSLog(@"isUbiquitous:%@ \nhasUnresolvedConflicts:%@ \nisDownloaded:%@ \ndownloadingStatus:%@ \nisUploaded:%@ \nisUploading:%@ \n%%downloaded:%@ \n%%uploaded:%@ \ndocumentExists:%i \n%@",
+          isUbiquitous,      hasUnresolvedConflicts,    isDownloading,     downloadingStatus, isUploaded, isUploading, percentDownloaded, percentUploaded, documentExists, url);
 }
 -(BOOL)npCreatedLocally
 {
@@ -126,7 +127,7 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
           @"Downloaded",
           @"Not Downloaded"];
         
-        [components addObject: [npStatus objectAtIndex: index]];
+        [components addObject: npStatus[index]];
         
         NSNumber *pctDn = [metadataItem valueForKey: NSMetadataUbiquitousItemPercentDownloadedKey];
         
@@ -164,7 +165,7 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
     // because the pertinent signal seems to be the arrival of the notification named
     // "com.apple.coredata.ubiquity.importer.didfinishimport".
     // See also: -[DocumentsListController+Making receivedNotification:document:]
-    NSDictionary *notificationDates = [self objectForKey: NPNotificationDates];
+    NSDictionary *notificationDates = self[NPNotificationDates];
     if( nil != notificationDates ){
         
         // e.g.,
@@ -174,7 +175,7 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
         //     "com.apple.coredata.ubiquity.importer.didfinishimport" = "2014-02-06 20:03:04 +0000";
         // }
 
-        id test = [notificationDates objectForKey: NPStealthyDidFinishImport];
+        id test = notificationDates[NPStealthyDidFinishImport];
         if( nil != test ){
             return YES;
         }
