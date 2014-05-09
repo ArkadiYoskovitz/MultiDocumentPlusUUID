@@ -334,7 +334,7 @@
         dispatch_async(queue, ^{
         
             //NSLog(@" -setUbiquitous:error: dispatch_async start");
-            NSLog(@" dispatch_async  -setUbiquitous:error: ");
+            NSLog(@" in dispatch_async  -setUbiquitous:error: ");
             
             
             NSFileManager *fm = [[NSFileManager alloc] init];
@@ -347,16 +347,16 @@
                         error: &error];
             
             if(success){
-                NSLog(@" -setUbiquitous:error: SUCCESS");
+                NSLog(@" in dispatch_async -setUbiquitous:error: SUCCESS");
                 
                 // 2014 Mar 24 Investigating:
                 success = [fm startDownloadingUbiquitousItemAtURL: cloudDocURL
                                                             error: &error];
                 if(success){
-                    NSLog(@"startDownloadingUbiquitousItemAtURL SUCCESS");
+                    NSLog(@" in dispatch_async startDownloadingUbiquitousItemAtURL SUCCESS");
                 }
             }else{
-                NSLog(@" -setUbiquitous:error: FAIL: %@", [error description]);
+                NSLog(@" in dispatch_async -setUbiquitous:error: FAIL: %@", [error description]);
                 [NSException
                  raise:NSGenericException
                  format:@"Error moving to iCloud container: %@",
@@ -364,7 +364,7 @@
                 
             }
             
-            NSLog(@"dispatch_async  -setUbiquitous:error: end");
+            NSLog(@" in dispatch_async -setUbiquitous:error: end");
             
         });
         
@@ -455,13 +455,13 @@
                   NSLog(@"In -establishDocument, Error creating file");
                   [failCallback invoke];
               }else{
-                  NSLog(@"File created");
+                  NSLog(@"Saved new document for creating");
                   
                   if( [record npCreatedLocally] ){
                       [self addObjectGraphToDocument: document];
                       
                       [document closeWithCompletionHandler:^(BOOL success){
-                          NSLog(@"Closed new file: %@", success ? @"Success" : @"Failure");
+                          NSLog(@"Closed new document: %@", success ? @"Success" : @"Failure");
                           
                           if (!success) {
                               NSLog(@"In -establishDocument, Error closing file after creating.");
@@ -497,6 +497,7 @@
                                [self checkPriorKnowledgeAgainstDiscoveredMetadataForDocument: document2];
                                }
                                */
+                              NSLog(@"openWithCompletionHandler:");
                               [document2 openWithCompletionHandler:^(BOOL success){
                                   
                                   if (!success) {
