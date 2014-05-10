@@ -33,6 +33,9 @@ const NSString* NPStealthyDidFinishImport = @"com.apple.coredata.ubiquity.import
 const NSString* NPDocumentPscImportObserverKey =
 @"NSPersistentStoreDidImportUbiquitousContentChangesNotification Observer";
 
+const NSString* NPDocumentStealthyImportObserverKey =
+@"NPDocumentStealthyImportObserverKey";
+
 const NSString* NPDocumentPscStoresChangedObserverKey = @"NSPersistentStoreCoordinatorStoresDidChangeNotification Observer";
 
 const NSString* NPDocumentStateChangedObserverKey = @"UIDocumentStateChangedNotification Observer";

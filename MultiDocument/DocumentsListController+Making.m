@@ -272,6 +272,27 @@
                     }];
     updatedRecord[NPDocumentPscImportObserverKey] = pscImportObserver;
     
+    id stealthyImportObserver =
+    [center addObserverForName:NPDocumentStealthyImportObserverKey
+                        object:psc
+                         queue:nil
+                    usingBlock:^(NSNotification *note) {
+                        
+                        // Check the documentation:
+                        // see ReadMore.pdf
+                        // Updates for iOS 7.1 (11D5145e)
+                        //
+                        // Umm... In 7.1.1 (11D201), I no loner receive a
+                        // notification named:
+                        // "com.apple.coredata.ubiquity.importer.didfinishimport"
+                        //
+                        [self receivedNotification: note
+                                          document: document];
+                        
+                        
+                    }];
+    updatedRecord[NPDocumentStealthyImportObserverKey] = stealthyImportObserver;
+
     id pscStoresChangedObserver =
     [center addObserverForName:NSPersistentStoreCoordinatorStoresDidChangeNotification
                         object:psc
@@ -284,6 +305,8 @@
                     }];
     updatedRecord[NPDocumentPscStoresChangedObserverKey] = pscStoresChangedObserver;
 
+    
+    
     id mocObjectsChangedObserver =
     [center addObserverForName: NSManagedObjectContextObjectsDidChangeNotification
                         object:document.managedObjectContext
@@ -398,6 +421,17 @@
     NSDictionary *storeOptions = record[NPStoreOptionsKey];
 
     document.persistentStoreOptions = storeOptions;
+    
+    NSFileCoordinator *haplessCoordinator =
+    [[NSFileCoordinator alloc] initWithFilePresenter: document];
+    
+    // If I don't add this passage, the compiler complains that haplessCoordinator is an unused variable.
+    if( !haplessCoordinator ){
+        NSAssert( (nil != haplessCoordinator),
+                 @"Bogus file coordinator");
+    }
+    [NSFileCoordinator addFilePresenter: document];
+
     
     NSMutableDictionary *updatedRecord = record.mutableCopy;
     updatedRecord[NPDocumentKey] = document;

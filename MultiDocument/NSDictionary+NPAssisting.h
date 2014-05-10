@@ -23,6 +23,7 @@ extern NSString* NPNotificationDates;
 extern NSString* NPStealthyDidFinishImport;
 
 extern NSString* NPDocumentPscImportObserverKey;
+extern NSString* NPDocumentStealthyImportObserverKey;
 extern NSString* NPDocumentPscStoresChangedObserverKey;
 extern NSString* NPDocumentStateChangedObserverKey;
 extern NSString* NPDocumentMocObjectsChangedObserverKey;
