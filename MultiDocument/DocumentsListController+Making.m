@@ -471,6 +471,13 @@
     
     NSFileManager *fMgr = [[self class] fileManager];
     
+    NSURL *targetDocURL = nil;
+    if( [record npCreatedLocally] ){
+        targetDocURL = localDocURL;
+    }else{
+        targetDocURL = record[NPCloudDocURLKey];
+    }
+    
     if( [fMgr fileExistsAtPath: [localDocURL path]]){
         [document openWithCompletionHandler:^(BOOL success){
             
