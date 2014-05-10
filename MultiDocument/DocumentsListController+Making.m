@@ -422,15 +422,21 @@
 
     document.persistentStoreOptions = storeOptions;
     
-    NSFileCoordinator *haplessCoordinator =
-    [[NSFileCoordinator alloc] initWithFilePresenter: document];
-    
-    // If I don't add this passage, the compiler complains that haplessCoordinator is an unused variable.
-    if( !haplessCoordinator ){
-        NSAssert( (nil != haplessCoordinator),
-                 @"Bogus file coordinator");
+    {
+        // This passage may be superfluous, but seems innocuous.
+        // I haven't found Apple Developer document that clarifies the issue.
+        
+        NSFileCoordinator *haplessCoordinator =
+        [[NSFileCoordinator alloc] initWithFilePresenter: document];
+        
+        // If I don't add this passage, the compiler complains that haplessCoordinator is an unused variable.
+        if( !haplessCoordinator ){
+            NSAssert( (nil != haplessCoordinator),
+                     @"Bogus file coordinator");
+        }
+        [NSFileCoordinator addFilePresenter: document];
+ 
     }
-    [NSFileCoordinator addFilePresenter: document];
 
     
     NSMutableDictionary *updatedRecord = record.mutableCopy;
@@ -506,15 +512,6 @@
                               UIManagedDocument *document2 = nil;
                               NSMutableDictionary *updatedRecord = record.mutableCopy;{
                                   
-                                  // Some developers find it is unnecessary to "setUbiquitous".
-                                  // My experience finds that the following call IS necessary.
-                                  [self setUbiquitous: record];
-                                  // If I comment the line above,
-                                  // then OS X Preferences->iCloud [Manage] -> multidocument
-                                  // shows only a single "Documents & Data" item, and never a list of
-                                  //    "DocumentMetadata.plist"
-                                  // items.
-                                  
                                   // After we close the document, we can no longer use that instance of UIManagedDocument.
                                   // We must instantiate a new one and set its store options again:
                                   
@@ -525,6 +522,16 @@
                                   
                               }[self updateRecord: updatedRecord];
                               
+                              // -----------
+                              // Some developers find it is unnecessary to "setUbiquitous".
+                              // My experience finds that the following call IS necessary.
+                              [self setUbiquitous: updatedRecord];
+                              // If I comment the line above,
+                              // then OS X Preferences->iCloud [Manage] -> multidocument
+                              // shows only a single "Documents & Data" item, and never a list of
+                              //    "DocumentMetadata.plist"
+                              // items.
+                              // -----------
                               
                               /*
                                if( nil != record[NPMetadataDictionaryKey]){
