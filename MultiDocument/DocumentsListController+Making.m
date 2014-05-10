@@ -282,7 +282,7 @@
                         // see ReadMore.pdf
                         // Updates for iOS 7.1 (11D5145e)
                         //
-                        // Umm... In 7.1.1 (11D201), I no loner receive a
+                        // Umm... In 7.1.1 (11D201), I no longer receive a
                         // notification named:
                         // "com.apple.coredata.ubiquity.importer.didfinishimport"
                         //
