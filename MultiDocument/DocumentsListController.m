@@ -344,7 +344,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         record[NPStoreOptionsKey] = storeOptions;
         
-        [self updateRecord: [record copy]];
+        [self updateTableViewWithRecord: [record copy]];
         
         return record;
     }
@@ -466,7 +466,7 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
         [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
                                                         error: nil];
         
-        [self updateRecord: newRecord.copy];
+        [self updateTableViewWithRecord: newRecord.copy];
         
         return newRecord;
     }else{
@@ -484,7 +484,7 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
 
     return record;
 }
--(void)updateRecord: (NSDictionary*)newRecord
+-(void)updateTableViewWithRecord: (NSDictionary*)newRecord
 {
     NSString *uuid = newRecord[NPUUIDKey];
     NSAssert( (nil != uuid), @"Bogus record");
@@ -496,46 +496,24 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
         
         if( nil == existingRecord ){
             
+            // Make a new record:
             [(self.docRecords) addObject: newRecord.copy];
              
         }else{
             
-            // [1] Replace the record:
+            // Replace the existing record:
             NSUInteger existingRecordRow = [(self.docRecords) indexOfObject: existingRecord];
             
             ((self.docRecords))[existingRecordRow] = newRecord;
            
-            /* ****
-             
-             This passage doesn't work in iOS 7.1 GM (11D167),
-             but it's unnecessary anyway.
-             
-             THIS IS NOW A MISLEADING COMMENT.
-             
-             // [2] Get the current table view row count BEFORE adding a new row to the
-             NSUInteger existingTableviewRowCount = [(self.tableView) numberOfRowsInSection: 0];
-
-            // [3] If there's already a table view row for this record,
-            //     reload that row using animation:
-
-            if( existingRecordRow < existingTableviewRowCount ){
-                
-                
-                NSIndexPath *justOneRow =
-                [NSIndexPath indexPathForRow: existingRecordRow
-                                   inSection: 0];
-                NSArray *indexPaths =  @[justOneRow];
-                
-                [(self.tableView) reloadRowsAtIndexPaths: indexPaths
-                                        withRowAnimation: UITableViewRowAnimationAutomatic];
-            }else{
-                
-            }
-             **** */
         }
     }
     
+    [(self.tableView) reloadData];
+    [(self.tableView) setNeedsDisplay];
+    
     [self resetTableViewSnoozeAlarm];
+
 }
 
 #pragma mark Model Operations
@@ -649,10 +627,9 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     
     UIManagedDocument *document = [self instantiateDocumentFromRecord: record];
     
-    NSMutableDictionary *updatedRecord = record.mutableCopy;
-    
-    updatedRecord[NPDocumentKey] = document;
-    [self updateRecord: updatedRecord];
+    NSMutableDictionary *updatedRecord = record.mutableCopy;{
+        updatedRecord[NPDocumentKey] = document;
+    }[self updateTableViewWithRecord: updatedRecord];
     
     NSInvocation *successCallback =
     [self callbackForSelector: @selector(didOpenDocument:)

@@ -182,12 +182,8 @@
         }
         updatedRecord[NPNotificationDates] = notificationDates;
 
-    }[self updateRecord: updatedRecord];
+    }[self updateTableViewWithRecord: updatedRecord];
 
-    [(self.tableView) reloadData];
-    [(self.tableView) setNeedsDisplay];
-    
-    [self resetTableViewSnoozeAlarm];
 }
 
 -(void)ignoreDocument:(UIManagedDocument*)document
@@ -218,7 +214,7 @@
     [center removeObserver: mocObjectsChangedObserver];
     [updatedRecord removeObjectForKey:NPDocumentMocObjectsChangedObserverKey];
     
-    [self updateRecord: updatedRecord];
+    [self updateTableViewWithRecord: updatedRecord];
  
 }
 -(void)observeDocument:(UIManagedDocument*)document
@@ -319,7 +315,7 @@
                     }];
     updatedRecord[NPDocumentMocObjectsChangedObserverKey] = mocObjectsChangedObserver;
 
-    [self updateRecord: updatedRecord];
+    [self updateTableViewWithRecord: updatedRecord];
                         
 }
 
@@ -441,7 +437,7 @@
     
     NSMutableDictionary *updatedRecord = record.mutableCopy;
     updatedRecord[NPDocumentKey] = document;
-    [self updateRecord: updatedRecord];
+    [self updateTableViewWithRecord: updatedRecord];
     
     [self observeDocument: document];
     
@@ -527,7 +523,7 @@
                                   [self instantiateDocumentFromRecord: updatedRecord];
                                   updatedRecord[NPDocumentKey] = document2;
                                   
-                              }[self updateRecord: updatedRecord];
+                              }[self updateTableViewWithRecord: updatedRecord];
                               
                               // -----------
                               // Some developers find it is unnecessary to "setUbiquitous".
@@ -552,7 +548,9 @@
                                       NSLog(@"In -establishDocument, Error opening file after creating and closing.");
                                       [failCallback invoke];
                                   }else{
-                                      NSLog(@"Opened created file for reading.");
+                                      NSLog(@"openWithCompletionHandler: succeeded. Opened the created file for reading.");
+                                      
+                                      [self setUbiquitous: updatedRecord];
                                       
                                       [successCallback invoke];
                                       

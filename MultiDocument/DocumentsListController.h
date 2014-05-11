@@ -56,7 +56,7 @@ extern NSString* NPDocumentStateChangedObserverKey;
 #pragma mark Utility methods:
 -(BOOL)validUuidString: (NSString*)testUuidString;
 -(NSDictionary*)recordForUuid: (NSString*)uuid;
--(void)updateRecord: (NSDictionary*)newRecord;
+-(void)updateTableViewWithRecord: (NSDictionary*)newRecord;
 
 #pragma mark Model-Controller methods:
 -(NSMutableDictionary*)recordEnrolledForFilename: (NSString*)filename

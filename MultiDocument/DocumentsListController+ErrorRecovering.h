@@ -9,8 +9,6 @@
 #import "DocumentsListController.h"
 
 @interface DocumentsListController (ErrorRecovering)
-+(DocumentsListController*)activeController;
-+(void)setActiveController: (DocumentsListController*)activeInstance;
 -(Class)factory;
 
 /**

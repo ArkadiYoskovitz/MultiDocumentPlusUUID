@@ -15,25 +15,13 @@
 NSString *NPErrorRecoveryEnabledKey = @"errorRecoveryEnabled";
 
 @implementation DocumentsListController (ErrorRecovering)
-static DocumentsListController *mm_activeController = nil;
 
-
-+(DocumentsListController*)activeController
-{
-    return mm_activeController;
-}
-+(void)setActiveController: (DocumentsListController*)activeInstance
-{
-    mm_activeController = activeInstance;
-}
 -(Class)factory
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults synchronize];
     
     BOOL errorRecoveryEnabled = [userDefaults boolForKey: NPErrorRecoveryEnabledKey];
-
-    [DocumentsListController setActiveController: self];
     
     Class factory = nil;
     
@@ -70,7 +58,7 @@ static DocumentsListController *mm_activeController = nil;
             [record removeObjectForKey: NPDocumentKey];
             UIManagedDocument *document2 = [self instantiateDocumentFromRecord: record];
             record[NPDocumentKey] = document2;
-            [self updateRecord: record];
+            [self updateTableViewWithRecord: record];
             
             [document2 openWithCompletionHandler:^(BOOL success){
                 

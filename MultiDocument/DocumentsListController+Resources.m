@@ -18,13 +18,18 @@
 
 @implementation DocumentsListController (Resources)
 
+/**
+ Returns an instance of NSFilemanager. It's thread-safe.
+ 
+ Note:
+ "Threading Considerations
+ The methods of the shared NSFileManager object can be called from multiple threads safely. However, if you use a delegate to receive notifications about the status of move, copy, remove, and link operations, you should create a unique instance of the file manager object, assign your delegate to that object, and use that file manager to initiate your operations."
+ 
+ @return thread-safe file manager
+ */
 +(NSFileManager*)fileManager
-{
-    static NSFileManager *mm_fileManager = nil;
-    if( nil == mm_fileManager ){
-        mm_fileManager = [[NSFileManager alloc] init];
-    }
-    return mm_fileManager;
+{    
+    return [NSFileManager defaultManager];
 }
 
 +(void)actuallyCreateDirectoryAtURL: (NSURL*)url
