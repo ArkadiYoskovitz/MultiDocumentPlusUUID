@@ -335,10 +335,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         record[NPLocalDocURLKey] = localDocURL;
         
         if( nil != cloudDocURL ){
-            record[NPCloudDocURLKey] = cloudDocURL;
+            record[NPDocCloudSyncURLKey] = cloudDocURL;
         }else{
-            [record removeObjectForKey: NPCloudDocURLKey];
+            [record removeObjectForKey: NPDocCloudSyncURLKey];
         }
+
         
         NSDictionary *storeOptions = [[self class] persistentStoreOptionsForRecord: record];
         
@@ -462,7 +463,7 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
         
         newRecord[NPMetadataDictionaryKey] = metadataDictionary;
         
-        NSURL *cloudDocURL = newRecord[NPCloudDocURLKey];
+        NSURL *cloudDocURL = newRecord[NPDocCloudSyncURLKey];
         [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
                                                         error: nil];
         
@@ -629,21 +630,25 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     
     NSMutableDictionary *updatedRecord = record.mutableCopy;{
         updatedRecord[NPDocumentKey] = document;
+        
+        NSInvocation *successCallback =
+        [self callbackForSelector: @selector(didOpenDocument:)
+                         document: document];
+        updatedRecord[NPSuccessCallbackKey] = successCallback;
+        
+        NSInvocation *failCallback =
+        [self callbackForSelector: @selector(didFailToOpenDocument:)
+                         document: document];
+        updatedRecord[NPFailureCallbackKey] = failCallback;
+        
+        
     }[self updateTableViewWithRecord: updatedRecord];
     
-    NSInvocation *successCallback =
-    [self callbackForSelector: @selector(didOpenDocument:)
-                     document: document];
-    NSInvocation *failCallback =
-    [self callbackForSelector: @selector(didFailToOpenDocument:)
-                     document: document];
     
     [self resetTableViewSnoozeAlarm];
     
     
-    [self establishDocument: document
-            successCallback: successCallback
-               failCallback: failCallback];
+    [self establishDocument: document];
     
 }
 -(void)resetTableViewSnoozeAlarm

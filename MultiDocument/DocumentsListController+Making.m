@@ -45,7 +45,7 @@
     if( [self isCloudEnabled] ){
         //NSString *ucName = [url lastPathComponent];
         
-        NSURL *url = record[NPCloudDocURLKey];
+        NSURL *url = record[NPDocCloudSyncURLKey];
         
         NSURL *uuidDir = [url URLByDeletingLastPathComponent];
         NSString *uuid = [uuidDir lastPathComponent];
@@ -101,7 +101,7 @@
     NSAssert( [document isKindOfClass:[UIManagedDocument class]], @"Bogus document.");
     NSDictionary *record = [self recordForDocument: document];
 
-    NSURL *docMDataPlistURL = [record[NPCloudDocURLKey] URLByAppendingPathComponent: @"DocumentMetadata.plist"];
+    NSURL *docMDataPlistURL = [record[NPDocCloudSyncURLKey] URLByAppendingPathComponent: @"DocumentMetadata.plist"];
     NSAssert( [docMDataPlistURL isKindOfClass:[NSURL class]], @"Bogus URL for documentMetadata.plist.");
     
     NSDictionary *discoveredDocMDataDict = [NSDictionary dictionaryWithContentsOfURL:docMDataPlistURL];
@@ -339,7 +339,7 @@
         NSURL *localDocURL = record[NPLocalDocURLKey];//[record objectForKey: NPLocalDocURLKey];
         [[self class] assureDirectoryURLExists: localDocURL];
         
-        NSURL* cloudDocURL = record[NPCloudDocURLKey];
+        NSURL* cloudDocURL = record[NPDocCloudSyncURLKey];
         
         // Just checking:
 //        BOOL isMainThread = [[NSThread currentThread] isMainThread];
@@ -435,9 +435,10 @@
     }
 
     
-    NSMutableDictionary *updatedRecord = record.mutableCopy;
-    updatedRecord[NPDocumentKey] = document;
-    [self updateTableViewWithRecord: updatedRecord];
+    NSMutableDictionary *updatedRecord = record.mutableCopy;{
+        updatedRecord[NPDocumentKey] = document;
+
+    }[self updateTableViewWithRecord: updatedRecord];
     
     [self observeDocument: document];
     
@@ -459,19 +460,23 @@
     return document;
 }
 -(void)establishDocument: (UIManagedDocument*)document
-         successCallback: (NSInvocation*)successCallback
-            failCallback: (NSInvocation*)failCallback
 {
     NSDictionary *record = [self recordForDocument: document];
+    
+    NSInvocation *successCallback = record[NPSuccessCallbackKey];
+    NSInvocation *failCallback = record[NPFailureCallbackKey];
+    
     NSURL *localDocURL = record[NPLocalDocURLKey];
     
     NSFileManager *fMgr = [[self class] fileManager];
+    
+    
     
     NSURL *targetDocURL = nil;
     if( [record npCreatedLocally] ){
         targetDocURL = localDocURL;
     }else{
-        targetDocURL = record[NPCloudDocURLKey];
+        targetDocURL = record[NPDocCloudSyncURLKey];
     }
     
     if( [fMgr fileExistsAtPath: [localDocURL path]]){
@@ -549,8 +554,6 @@
                                       [failCallback invoke];
                                   }else{
                                       NSLog(@"openWithCompletionHandler: succeeded. Opened the created file for reading.");
-                                      
-                                      [self setUbiquitous: updatedRecord];
                                       
                                       [successCallback invoke];
                                       

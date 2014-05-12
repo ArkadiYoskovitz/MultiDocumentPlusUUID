@@ -72,7 +72,7 @@ NSString *NPErrorRecoveryEnabledKey = @"errorRecoveryEnabled";
             }];
         }else{
             NSLog(@"Could not close, let alone re-open, document: %@",
-                  record[NPCloudDocURLKey] );
+                  record[NPDocCloudSyncURLKey] );
             NSLog(@"Might as well touch [Crash, Burn]");
             exit(-1);
         }

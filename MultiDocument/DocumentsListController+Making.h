@@ -26,7 +26,5 @@
 
 +(NSDictionary*)persistentStoreOptionsForRecord: (NSDictionary*)record;
 
--(void)establishDocument: (UIManagedDocument*)document
-         successCallback: (NSInvocation*)successCallback
-            failCallback: (NSInvocation*)failCallback;
+-(void)establishDocument: (UIManagedDocument*)document;
 @end
