@@ -334,16 +334,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         record[NPLocalDocURLKey] = localDocURL;
         
+        NSURL *x = [localDocURL URLByAppendingPathComponent: @"StoreContent"];
+        x = [x URLByAppendingPathComponent: @"persistentStore"];
+        record[NPLocalStoreContentPersistentStoreURLKey] = x;
+        
         if( nil != cloudDocURL ){
             record[NPDocCloudSyncURLKey] = cloudDocURL;
         }else{
             [record removeObjectForKey: NPDocCloudSyncURLKey];
         }
 
-        
-        NSDictionary *storeOptions = [[self class] persistentStoreOptionsForRecord: record];
-        
-        record[NPStoreOptionsKey] = storeOptions;
+        record[NPLocalStoreOptionsKey] = [[self class] localPersistentStoreOptions];
+        record[NPCloudStoreOptionsKey] = [[self class] cloudPersistentStoreOptionsForRecord: record];
         
         [self updateTableViewWithRecord: [record copy]];
         

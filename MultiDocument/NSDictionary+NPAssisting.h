@@ -12,7 +12,11 @@ extern NSString* NPLocalDocURLKey;
 extern NSString* NPDocCloudSyncURLKey;
 extern NSString* NPCloudLogFilesURLKey;
 extern NSString* NPUUIDKey;
-extern NSString* NPStoreOptionsKey;
+
+extern NSString* NPLocalStoreOptionsKey;
+extern NSString* NPCloudStoreOptionsKey;
+
+extern NSString* NPLocalStoreContentPersistentStoreURLKey;
 
 extern NSString* NPSuccessCallbackKey;
 extern NSString* NPFailureCallbackKey;

@@ -82,10 +82,10 @@
 {
     return (self.record)[NPFileNameKey];
 }
--(NSDictionary*)storeOptions
-{
-    return (self.record)[NPStoreOptionsKey];
-}
+//-(NSDictionary*)localStoreOptions
+//{
+//    return (self.record)[NPLocalStoreOptionsKey];
+//}
 -(NSString*)uuid
 {
     return (self.record)[NPUUIDKey];

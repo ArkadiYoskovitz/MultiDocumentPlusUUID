@@ -31,7 +31,7 @@
                              NSInferMappingModelAutomaticallyOption: @YES};
     return options;
 }
-+(NSDictionary*)persistentStoreOptionsForRecord: (NSDictionary*)record
++(NSDictionary*)cloudPersistentStoreOptionsForRecord: (NSDictionary*)record
 {
     // Returns a dictionary:
     // contains localPersistentStoreOptions.
@@ -78,26 +78,30 @@
 }
 
 
+/**
+ This method is not called in this version. It's a sanity check.
+ 
+ Apple Documentation:
+ "To open a document that uses the SQLite store, you must retrieve the value of the NSPersistentStoreUbiquitousContentNameKey from the DocumentMetadata.plist file and set that content name key in the persistentStoreOptions dictionary before you open the document with openWithCompletionHandler:."
+ 
+ That's discovered knowledge.
+ The approach I favor uses prior knowledge instead.
+ We can compute the the document's NSPersistentStoreUbiquitousContentNameKey
+ from its URL path components.
+ 
+ Therefore, at least in early development, it might be good to check
+ prior knowledge against discovered knowledge
+ with a method like this one.
+ 
+ This would be unnecessary in deployment,
+ but it might prove helpful--even if merely reassuring--in development.
+ 
+
+ @param document the document to check
+ */
 -(void)checkPriorKnowledgeAgainstDiscoveredMetadataForDocument: (UIManagedDocument*)document
 {
     
-    /**
-     Apple Documentation:
-     "To open a document that uses the SQLite store, you must retrieve the value of the NSPersistentStoreUbiquitousContentNameKey from the DocumentMetadata.plist file and set that content name key in the persistentStoreOptions dictionary before you open the document with openWithCompletionHandler:."
-     
-     That's discovered knowledge.
-     The approach I favor uses prior knowledge instead.
-     We can compute the the document's NSPersistentStoreUbiquitousContentNameKey
-     from its URL path components.
-
-     Therefore, at least in early development, it might be good to check
-     prior knowledge against discovered knowledge 
-     with a method like this one.
-     
-     This would be unnecessary in deployment, 
-     but it might prove helpful--even if merely reassuring--in development.
-     
-     */
     NSAssert( [document isKindOfClass:[UIManagedDocument class]], @"Bogus document.");
     NSDictionary *record = [self recordForDocument: document];
 
@@ -319,8 +323,123 @@
                         
 }
 
+-(void)addedCloudSyncStore: (NSPersistentStore*)store
+                    record: (NSDictionary*)record
+{
+    if(nil==store){
+        NSInvocation *failed = record[NPFailureCallbackKey];
+        [failed invoke];
+    }else{
+        
+        NSInvocation *success = record[NPSuccessCallbackKey];
+        [success invoke];
+        
+    }
+    
+    
+}
 /**
- See: Document-Based Programming GUide for iOS: Managing the Life Cycle of a Document
+ This method has no callers, because it does not yield its intended effect: to make a document ubiquitous after opening it.
+ See -
+ See:
+ Core Data, 2nd Edition
+ Data Storage and Management for iOS, OS X, and iCloud
+ by Marcus S. Zarra
+ ISBN-13: 978-1-937785-08-6
+ Chapter 6. Using iCloud • Page 108
+ 
+ Adds a persistent store to the document (to its persistent store coordinator).
+ 
+ Zarra:
+ "The process of configuring iCloud happens when we add the NSPersistentStore to the NSPersistentStoreCoordinator, and it happens before the call returns. If iCloud needs to download data and that download takes several seconds, our application will be unresponsive while the download occurs, and our application could be potentially killed from the watchdog for taking too long to start up.
+ Currently, the best solution to this problem is to add the NSPersistentStore to the NSPersistentStoreCoordinator on a background thread. We can use dispatch queues and blocks to make this relatively painless."
+ 
+ @param record the dictionary specifies a document to make ubiquitous
+ */
+-(void)addCloudPersistentStore: (NSDictionary*)record
+{
+    NSLog(@"-addCloudPersistentStore: start");
+    NSURL __block *docCloudSyncURL = record[NPDocCloudSyncURLKey];
+    if( nil == docCloudSyncURL) return;
+    UIManagedDocument __block *document = record[NPDocumentKey];
+    if(nil == document ) return;
+    NSManagedObjectContext __block *moc = document.managedObjectContext;
+    
+    dispatch_queue_t queue;
+    queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_async(queue, ^{
+        
+        NSLog(@"-addCloudPersistentStore: dispatch_async start");
+        
+        
+        NSDictionary *options = [[self class] cloudPersistentStoreOptionsForRecord: record];
+        
+        NSURL *storeURL = record[NPLocalStoreContentPersistentStoreURLKey];
+
+        NSFileCoordinator *fCoord = [[NSFileCoordinator alloc] init];
+        NSError __block *fError  = nil;
+        NSError __block *psError = nil;
+        NSPersistentStore __block *store = nil;
+
+        [fCoord coordinateWritingItemAtURL: storeURL
+                                   options: NSFileCoordinatorWritingForMerging
+                                     error: &fError
+                                byAccessor: ^(NSURL *coordinatedURL){
+                                
+                                    NSLog(@"-addCloudPersistentStore: dispatch_async NSFileCoordinator block start");
+                                    NSPersistentStoreCoordinator *psCoord = nil;
+                                    psCoord = [moc persistentStoreCoordinator];
+                                    store = [psCoord addPersistentStoreWithType:NSSQLiteStoreType
+                                                                  configuration:nil
+                                                                            URL:coordinatedURL
+                                                                        options:options
+                                                                          error:&psError];
+                                    
+                                    NSURL *sourceURL = store.URL;
+                                    /*
+                                     For example, 
+                                     (lldb) po sourceURL
+                                     file:///var/mobile/Applications/33D2A092-139B-4BF5-B3A5-A0792F0AC20F/Documents/C671DA1D-D649-4C9A-B750-047681957225/TestDoc1/StoreContent/CoreDataUbiquitySupport/mobile~49846490-B574-407D-8543-928C562B80E9/C671DA1D-D649-4C9A-B750-047681957225/3733A495-5461-49C5-B006-01BA88E7E2B4/store/persistentStore
+                                     */
+                                    NSURL *destURL = record[NPDocCloudSyncURLKey];
+                                    [destURL URLByAppendingPathComponent: @"StoreContent"];
+                                    [[self class] assureDirectoryURLExists: destURL];
+                               
+                                    
+                                    NSFileManager *fm = [NSFileManager defaultManager];
+                                    NSError *fmError = nil;
+                                    
+                                    [fm setUbiquitous: YES
+                                            itemAtURL: sourceURL
+                                       destinationURL: destURL
+                                                error: &fmError];
+                                    
+                                    NSLog(@"  store = %@", [store description]);
+                                    NSLog(@"-addCloudPersistentStore: dispatch_async NSFileCoordinator block end");
+                                    
+                                }];
+
+         if (!store) {
+            NSLog(@"Error adding persistent store to persistent store coordinator %@\n%@",
+                 [psError localizedDescription], [psError userInfo]);
+            //Present a user facing error
+         }else{
+             NSLog(@"Succeeded adding persistent store to persistent store coordinator");
+            
+         }
+        
+        
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self addedCloudSyncStore: store
+                               record: record];
+        });
+        
+        NSLog(@"-addCloudPersistentStore: dispatch_async start");
+        
+    });
+}
+/**
+ See: Document-Based Programming Guide for iOS: Managing the Life Cycle of a Document
  
  "Moving a Document to iCloud Storage
  Programmatically, you put a document in iCloud storage by calling the NSFileManager method setUbiquitous:itemAtURL:destinationURL:error:. This method requires the file URL of the document file in the application sandbox (source URL) and the destination file URL of the document file in the application’s iCloud container directory. The first parameter takes a Boolean value, which should be YES.
@@ -356,7 +475,7 @@
             NSLog(@" in dispatch_async  -setUbiquitous:error: ");
             
             
-            NSFileManager *fm = [[NSFileManager alloc] init];
+            NSFileManager *fm = [NSFileManager defaultManager];
             
             NSError *error = nil;
             BOOL success =
@@ -414,7 +533,7 @@
     NSAssert( [document isKindOfClass:[UIManagedDocument class]],
              @"Bogus factory class");
     
-    NSDictionary *storeOptions = record[NPStoreOptionsKey];
+    NSDictionary *storeOptions = record[NPCloudStoreOptionsKey];
 
     document.persistentStoreOptions = storeOptions;
     
@@ -546,7 +665,7 @@
                                [self checkPriorKnowledgeAgainstDiscoveredMetadataForDocument: document2];
                                }
                                */
-                              NSLog(@"openWithCompletionHandler:");
+                              NSLog(@"openWithCompletionHandler: start");
                               [document2 openWithCompletionHandler:^(BOOL success){
                                   
                                   if (!success) {
@@ -555,7 +674,21 @@
                                   }else{
                                       NSLog(@"openWithCompletionHandler: succeeded. Opened the created file for reading.");
                                       
-                                      [successCallback invoke];
+                                      BOOL attemptToMakeDocumentUbiqitousAfterOpening = NO;
+                                      
+                                      if( attemptToMakeDocumentUbiqitousAfterOpening ){
+                                          // I have not found a way to make the document ubiquitous after opening it.
+                                          // In -instantiateDocumentFromRecord:
+                                          // I first set the document's persistent store options to local:
+                                          // NSDictionary *storeOptions = record[NPLocalStoreOptionsKey];
+                                          // (instead of NPCloudStoreOptionsKey),
+                                          // then tried -addCloudPersistentStore:
+                                          [self addCloudPersistentStore: updatedRecord];
+                                          // but that failed.
+                                          
+                                      }else{
+                                          [successCallback invoke];
+                                      }
                                       
                                   }
                                   

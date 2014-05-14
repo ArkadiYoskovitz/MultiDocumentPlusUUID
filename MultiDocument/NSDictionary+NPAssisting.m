@@ -16,7 +16,10 @@ const NSString* NPLocalDocURLKey     = @"Local Document URL";
 const NSString* NPDocCloudSyncURLKey     = @"Document Cloud Sync URL";
 const NSString* NPCloudLogFilesURLKey     = @"Cloud Log Files URL";
 const NSString* NPUUIDKey         = @"UUID";
-const NSString* NPStoreOptionsKey = @"Persistent Store Options dictionary";
+
+const NSString* NPLocalStoreOptionsKey = @"Local Persistent Store Options dictionary";
+const NSString* NPCloudStoreOptionsKey = @"Cloud Persistent Store Options dictionary";
+const NSString* NPLocalStoreContentPersistentStoreURLKey = @"Local Store URL";
 
 
 const NSString* NPSuccessCallbackKey = @"Success Callback";

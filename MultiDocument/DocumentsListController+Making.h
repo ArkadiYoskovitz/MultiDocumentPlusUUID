@@ -24,7 +24,8 @@
 
 -(UIManagedDocument*)instantiateDocumentFromRecord: (NSDictionary*)record;
 
-+(NSDictionary*)persistentStoreOptionsForRecord: (NSDictionary*)record;
++(NSDictionary*)localPersistentStoreOptions;
++(NSDictionary*)cloudPersistentStoreOptionsForRecord: (NSDictionary*)record;
 
 -(void)establishDocument: (UIManagedDocument*)document;
 @end

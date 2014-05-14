@@ -58,9 +58,13 @@
   userInteractionPermitted:(BOOL)userInteractionPermitted
 {
     
+    NSLog(@"----");
     NSLog(@"-[CSxRobustDocument handleError:userInteractionPermitted:]");
+    NSLog(@"error = %@", [error description]);
+    NSLog(@"[error userInfo] = %@", [error userInfo]);
+    NSLog(@"----");
     
-    if( userInteractionPermitted ){
+   if( userInteractionPermitted ){
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self showError: error];

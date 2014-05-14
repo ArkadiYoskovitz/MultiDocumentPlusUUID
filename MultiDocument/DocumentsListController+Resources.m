@@ -103,9 +103,9 @@
         dispatch_once(&onceToken, ^{
             
 
-            NSFileManager *fileManager = [[self class] fileManager]; //[[NSFileManager alloc] init];
+            NSFileManager *fMgr = [[self class] fileManager]; 
             mm_containerURL =
-            [[fileManager URLForUbiquityContainerIdentifier: nil] npNormalizedURL];
+            [[fMgr URLForUbiquityContainerIdentifier: nil] npNormalizedURL];
             
             NSDate *complete = [NSDate date];
             
@@ -319,7 +319,7 @@
      */
     NSURL __block *sandoxDestDirURL = [self sandboxDirPathforCopyOfCloudContainerDir];
     
-    NSFileManager __block *fm = [[NSFileManager alloc] init];
+    NSFileManager __block *fm = [NSFileManager defaultManager];
     NSError *error = nil;
     
     [self assureDirectoryURLExists: sandoxDestDirURL];
