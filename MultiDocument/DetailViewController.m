@@ -231,6 +231,7 @@
     
     NSPersistentStoreCoordinator *psc =
     self.document.managedObjectContext.persistentStoreCoordinator;
+    
     NSAssert( (nil !=psc),
              @"-[%@ observeDocument] found nil psc",
              NSStringFromClass([self class]));
@@ -294,6 +295,53 @@
                     }];
     [self.notificationObservers addObject:observer];
     
+    
+    observer =
+    [center addObserverForName:NSPersistentStoreCoordinatorStoresWillChangeNotification
+                        object:self.document.managedObjectContext
+                         queue:nil
+                    usingBlock:^(NSNotification *note) {
+                        
+                        NSLog(@"%@: NSManagedObjectContextObjectsDidChangeNotification",
+                              [[UIDevice currentDevice] model]);
+                        
+                        NSManagedObjectContext* moc =
+                        self.document.managedObjectContext;
+
+                        [moc performBlockAndWait:^{
+                            NSError *error;
+                            
+                            if ([moc hasChanges]) {
+                                BOOL success = [moc save:&error];
+                                
+                                if (!success && error) {
+                                    // perform error handling
+                                    NSLog(@"%@",[error localizedDescription]);
+                                }
+                            }
+                            
+                            [moc reset];
+                        }];
+
+                        [self readModelWriteView];
+                        
+                    }];
+    [self.notificationObservers addObject:observer];
+
+    observer =
+    [center addObserverForName:NSPersistentStoreCoordinatorStoresDidChangeNotification
+                        object:self.document.managedObjectContext
+                         queue:nil
+                    usingBlock:^(NSNotification *note) {
+                        
+                        NSLog(@"%@: NSManagedObjectContextObjectsDidChangeNotification",
+                              [[UIDevice currentDevice] model]);
+                        
+                        [self readModelWriteView];
+                        
+                    }];
+    [self.notificationObservers addObject:observer];
+
     observer =
     [center addObserverForName:NSManagedObjectContextObjectsDidChangeNotification
                         object:self.document.managedObjectContext

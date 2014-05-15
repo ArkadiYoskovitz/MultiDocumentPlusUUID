@@ -32,7 +32,10 @@ extern NSString* NPStealthyDidFinishImport;
 
 extern NSString* NPDocumentPscImportObserverKey;
 extern NSString* NPDocumentStealthyImportObserverKey;
-extern NSString* NPDocumentPscStoresChangedObserverKey;
+
+extern NSString* NPDocumentPscStoresWillChangeObserverKey;
+extern NSString* NPDocumentPscStoresDidChangeObserverKey;
+
 extern NSString* NPDocumentStateChangedObserverKey;
 extern NSString* NPDocumentMocObjectsChangedObserverKey;
 

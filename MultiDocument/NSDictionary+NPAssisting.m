@@ -43,7 +43,10 @@ const NSString* NPDocumentPscImportObserverKey =
 const NSString* NPDocumentStealthyImportObserverKey =
 @"NPDocumentStealthyImportObserverKey";
 
-const NSString* NPDocumentPscStoresChangedObserverKey = @"NSPersistentStoreCoordinatorStoresDidChangeNotification Observer";
+
+const NSString* NPDocumentPscStoresWillChangeObserverKey = @"NSPersistentStoreCoordinatorStoresWillChangeNotification Observer";
+
+const NSString* NPDocumentPscStoresDidChangeObserverKey = @"NSPersistentStoreCoordinatorStoresDidChangeNotification Observer";
 
 const NSString* NPDocumentStateChangedObserverKey = @"UIDocumentStateChangedNotification Observer";
 

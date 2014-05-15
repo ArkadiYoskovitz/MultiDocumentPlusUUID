@@ -190,13 +190,15 @@
 
 }
 
+/**
+ This class handles 0 or more documents. Each document has its own set of observers. The document's record stores the document's observers.
+ 
+ 
+ @param document the document to ignore
+ */
+
 -(void)ignoreDocument:(UIManagedDocument*)document
 {
-    /**
-     This class handles 0 or more documents.
-     Each document has its own set of observers.
-     The document's record stores the document's observers.
-     */
     NSNotificationCenter* center =
     [NSNotificationCenter defaultCenter];
 
@@ -210,9 +212,9 @@
     [center removeObserver: pscImportObserver];
     [updatedRecord removeObjectForKey:NPDocumentPscImportObserverKey];
     
-    id pscStoresChangedObserver = updatedRecord[NPDocumentPscStoresChangedObserverKey];
+    id pscStoresChangedObserver = updatedRecord[NPDocumentPscStoresDidChangeObserverKey];
     [center removeObserver: pscStoresChangedObserver];
-    [updatedRecord removeObjectForKey:NPDocumentPscStoresChangedObserverKey];
+    [updatedRecord removeObjectForKey:NPDocumentPscStoresDidChangeObserverKey];
     
     id mocObjectsChangedObserver = updatedRecord[NPDocumentMocObjectsChangedObserverKey];
     [center removeObserver: mocObjectsChangedObserver];
@@ -221,14 +223,15 @@
     [self updateTableViewWithRecord: updatedRecord];
  
 }
+
+/**
+ This class handles 0 or more documents. Each document has its own set of observers. The document's record stores the document's observers.
+
+ 
+ @param document the document to observe
+ */
 -(void)observeDocument:(UIManagedDocument*)document
 {
-    /**
-     This class handles 0 or more documents.
-     Each document has its own set of observers.
-     The document's record stores the document's observers.
-     */
-
     NSAssert( (nil !=document),
              @"-[%@ observeDocument] found nil document",
              NSStringFromClass([self class]));
@@ -253,8 +256,8 @@
     updatedRecord[NPDocumentStateChangedObserverKey] = stateChangedObserver;
     
     
-    NSPersistentStoreCoordinator *psc =
-    document.managedObjectContext.persistentStoreCoordinator;
+    NSManagedObjectContext __block *moc = document.managedObjectContext;
+    NSPersistentStoreCoordinator *psc = moc.persistentStoreCoordinator;
     NSAssert( (nil !=psc),
              @"-[%@ observeDocument] found nil psc",
              NSStringFromClass([self class]));
@@ -267,6 +270,10 @@
                         
                         [self receivedNotification: note
                                           document: document];
+                        
+                        [moc performBlock:^{
+                            [moc mergeChangesFromContextDidSaveNotification:note];
+                        }];
                         
                         
                     }];
@@ -282,10 +289,6 @@
                         // see ReadMore.pdf
                         // Updates for iOS 7.1 (11D5145e)
                         //
-                        // Umm... In 7.1.1 (11D201), I no longer receive a
-                        // notification named:
-                        // "com.apple.coredata.ubiquity.importer.didfinishimport"
-                        //
                         [self receivedNotification: note
                                           document: document];
                         
@@ -293,7 +296,35 @@
                     }];
     updatedRecord[NPDocumentStealthyImportObserverKey] = stealthyImportObserver;
 
-    id pscStoresChangedObserver =
+    id pscStoresWillChangeObserver =
+    [center addObserverForName:NSPersistentStoreCoordinatorStoresWillChangeNotification
+                        object:psc
+                         queue:nil
+                    usingBlock:^(NSNotification *note) {
+                        
+                         [moc performBlockAndWait:^{
+                            NSError *error;
+                            
+                            if ([moc hasChanges]) {
+                                BOOL success = [moc save:&error];
+                                
+                                if (!success && error) {
+                                    // perform error handling
+                                    NSLog(@"%@",[error localizedDescription]);
+                                }
+                            }
+                            
+                            [moc reset];
+                        }];
+                        
+                        [self receivedNotification: note
+                                          document: document];
+                        
+
+                    }];
+    updatedRecord[NPDocumentPscStoresWillChangeObserverKey] = pscStoresWillChangeObserver;
+
+    id pscStoresDidChangeObserver =
     [center addObserverForName:NSPersistentStoreCoordinatorStoresDidChangeNotification
                         object:psc
                          queue:nil
@@ -303,7 +334,7 @@
                                           document: document];
                        
                     }];
-    updatedRecord[NPDocumentPscStoresChangedObserverKey] = pscStoresChangedObserver;
+    updatedRecord[NPDocumentPscStoresDidChangeObserverKey] = pscStoresDidChangeObserver;
 
     
     
