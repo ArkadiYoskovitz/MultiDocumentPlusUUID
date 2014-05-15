@@ -674,21 +674,7 @@
                                   }else{
                                       NSLog(@"openWithCompletionHandler: succeeded. Opened the created file for reading.");
                                       
-                                      BOOL attemptToMakeDocumentUbiqitousAfterOpening = NO;
-                                      
-                                      if( attemptToMakeDocumentUbiqitousAfterOpening ){
-                                          // I have not found a way to make the document ubiquitous after opening it.
-                                          // In -instantiateDocumentFromRecord:
-                                          // I first set the document's persistent store options to local:
-                                          // NSDictionary *storeOptions = record[NPLocalStoreOptionsKey];
-                                          // (instead of NPCloudStoreOptionsKey),
-                                          // then tried -addCloudPersistentStore:
-                                          [self addCloudPersistentStore: updatedRecord];
-                                          // but that failed.
-                                          
-                                      }else{
-                                          [successCallback invoke];
-                                      }
+                                      [successCallback invoke];
                                       
                                   }
                                   
