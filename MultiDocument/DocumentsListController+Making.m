@@ -565,8 +565,15 @@
              @"Bogus factory class");
     
     NSDictionary *storeOptions = record[NPCloudStoreOptionsKey];
-
     document.persistentStoreOptions = storeOptions;
+
+    /*
+     See: http://www.objc.io/issue-10/icloud-core-data.html
+     
+     Apple recommends NSMergeByPropertyObjectTrumpMergePolicy, which will merge conflicts, giving priority to in-memory changes over the changes on disk.
+     */
+
+    document.managedObjectContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;
     
     {
         // This passage may be superfluous, but seems innocuous.

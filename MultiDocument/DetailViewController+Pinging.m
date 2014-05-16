@@ -23,7 +23,10 @@ NSString *NPPingEnabledKey = @"pingEnabled";
 // We want one responding ping for each burst, not a ping for each update.
 NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recent cloud update to fire the responding ping.
 
+/**
+    This method imposes some "hysteresis" on the responding ping. The cloud updates sometimes come in bursts. This method provides one responding ping after each burst of updates, not a ping for each update.
 
+ */
 -(void)snoozeToPingAfterMostRecentUbiquitousContentChange
 {
     /*
@@ -50,6 +53,10 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
     [userDefaults removeObjectForKey: NPCloudSyncLatencies];
     [userDefaults synchronize];
 }
+
+/**
+ Adds the discovered latency (current time - time of remote modification) to an array in user defaults.
+ */
 -(void)logPscImportLatency
 {
     NSDate *now = [NSDate date];
@@ -81,6 +88,11 @@ NSTimeInterval mm_snoozeInterval = 1.0; // Wait a short bit after the most recen
     return;
 }
 
+/**
+ Generates a string of successive recorded latencies, suitable for pasting into a desktop spreadsheet app (e.g., Numbers).
+ 
+ @return a string of successive recorded latencies, one number per line.
+ */
 -(NSString*)latenciesAsString
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
