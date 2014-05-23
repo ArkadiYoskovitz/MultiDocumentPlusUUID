@@ -13,13 +13,22 @@
 //#import <UIKit/UIKit.h>
 
 const NSString* NPLocalDocURLKey     = @"Local Document URL";
-const NSString* NPDocCloudSyncURLKey     = @"Document Cloud Sync URL";
+const NSString* NPCloudDocURLKey     = @"Document Cloud Sync URL";
 const NSString* NPCloudLogFilesURLKey     = @"Cloud Log Files URL";
+
+const NSString* NPLocalDocPersistentStoreURLKey = @"Local Document Persistent Store URL";
+const NSString* NPCloudDocPersistentStoreURLKey = @"Cloud Document Persistent Store URL";
+
+const NSString* NPLocalDocumentMetadataPlistURLKey = @"Local DocumentMetadata.plist URL";
+
+const NSString* NPCloudDocumentMetadataPlistURLKey= @"Cloud DocumentMetadata.plist URL";
+
+
 const NSString* NPUUIDKey         = @"UUID";
 
 const NSString* NPLocalStoreOptionsKey = @"Local Persistent Store Options dictionary";
 const NSString* NPCloudStoreOptionsKey = @"Cloud Persistent Store Options dictionary";
-const NSString* NPLocalStoreContentPersistentStoreURLKey = @"Local Store URL";
+//const NSString* NPLocalStoreContentPersistentStoreURLKey = @"Local Store URL";
 
 
 const NSString* NPSuccessCallbackKey = @"Success Callback";
@@ -98,7 +107,7 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
     if( [self npCreatedLocally] ){
         return self[NPLocalDocURLKey];
     }else{
-        return self[NPDocCloudSyncURLKey];
+        return self[NPCloudDocURLKey];
     }
 }
 -(NSString*)npStatus

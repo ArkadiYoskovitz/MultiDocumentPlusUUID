@@ -9,14 +9,23 @@
 #import <Foundation/Foundation.h>
 
 extern NSString* NPLocalDocURLKey;
-extern NSString* NPDocCloudSyncURLKey;
+extern NSString* NPCloudDocURLKey;
+
+extern NSString* NPLocalDocPersistentStoreURLKey;
+extern NSString* NPCloudDocPersistentStoreURLKey;
+
+extern NSString* NPLocalDocumentMetadataPlistURLKey;
+extern NSString* NPCloudDocumentMetadataPlistURLKey;
+
 extern NSString* NPCloudLogFilesURLKey;
 extern NSString* NPUUIDKey;
+
+
 
 extern NSString* NPLocalStoreOptionsKey;
 extern NSString* NPCloudStoreOptionsKey;
 
-extern NSString* NPLocalStoreContentPersistentStoreURLKey;
+//extern NSString* NPLocalStoreContentPersistentStoreURLKey;
 
 extern NSString* NPSuccessCallbackKey;
 extern NSString* NPFailureCallbackKey;

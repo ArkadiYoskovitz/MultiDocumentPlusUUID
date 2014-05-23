@@ -45,7 +45,7 @@
     if( [self isCloudEnabled] ){
         //NSString *ucName = [url lastPathComponent];
         
-        NSURL *url = record[NPDocCloudSyncURLKey];
+        NSURL *url = record[NPCloudDocURLKey];
         
         NSURL *uuidDir = [url URLByDeletingLastPathComponent];
         NSString *uuid = [uuidDir lastPathComponent];
@@ -105,7 +105,7 @@
     NSAssert( [document isKindOfClass:[UIManagedDocument class]], @"Bogus document.");
     NSDictionary *record = [self recordForDocument: document];
 
-    NSURL *docMDataPlistURL = [record[NPDocCloudSyncURLKey] URLByAppendingPathComponent: @"DocumentMetadata.plist"];
+    NSURL *docMDataPlistURL = [record[NPCloudDocURLKey] URLByAppendingPathComponent: @"DocumentMetadata.plist"];
     NSAssert( [docMDataPlistURL isKindOfClass:[NSURL class]], @"Bogus URL for documentMetadata.plist.");
     
     NSDictionary *discoveredDocMDataDict = [NSDictionary dictionaryWithContentsOfURL:docMDataPlistURL];
@@ -390,7 +390,7 @@
 -(void)addCloudPersistentStore: (NSDictionary*)record
 {
     NSLog(@"-addCloudPersistentStore: start");
-    NSURL __block *docCloudSyncURL = record[NPDocCloudSyncURLKey];
+    NSURL __block *docCloudSyncURL = record[NPCloudDocURLKey];
     if( nil == docCloudSyncURL) return;
     UIManagedDocument __block *document = record[NPDocumentKey];
     if(nil == document ) return;
@@ -405,7 +405,7 @@
         
         NSDictionary *options = [[self class] cloudPersistentStoreOptionsForRecord: record];
         
-        NSURL *storeURL = record[NPLocalStoreContentPersistentStoreURLKey];
+        NSURL *storeURL = record[NPLocalDocPersistentStoreURLKey];
 
         NSFileCoordinator *fCoord = [[NSFileCoordinator alloc] init];
         NSError __block *fError  = nil;
@@ -432,7 +432,7 @@
                                      (lldb) po sourceURL
                                      file:///var/mobile/Applications/33D2A092-139B-4BF5-B3A5-A0792F0AC20F/Documents/C671DA1D-D649-4C9A-B750-047681957225/TestDoc1/StoreContent/CoreDataUbiquitySupport/mobile~49846490-B574-407D-8543-928C562B80E9/C671DA1D-D649-4C9A-B750-047681957225/3733A495-5461-49C5-B006-01BA88E7E2B4/store/persistentStore
                                      */
-                                    NSURL *destURL = record[NPDocCloudSyncURLKey];
+                                    NSURL *destURL = record[NPCloudDocURLKey];
                                     [destURL URLByAppendingPathComponent: @"StoreContent"];
                                     [[self class] assureDirectoryURLExists: destURL];
                                
@@ -469,6 +469,71 @@
         
     });
 }
+-(void)copyDocumentMetadataPlistToICloud: (NSDictionary*)record
+{
+    UIManagedDocument *doc = record[NPDocumentKey];
+    NSAssert( (nil != doc), @"Bogus nil document");
+    
+    NSFileCoordinator *fCoord = [[NSFileCoordinator alloc] initWithFilePresenter:doc];
+    
+    NSURL *destURL = record[NPCloudDocumentMetadataPlistURLKey];
+    // e.g.,
+    // (lldb) po destURL
+    // file:///var/mobile/Library/Mobile%20Documents/YHVGV9RUH4~com~nowpicture~multidocument/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1/DocumentMetadata.plist
+
+    NSError *outError = nil;
+    
+    [fCoord coordinateWritingItemAtURL: destURL
+                               options: NSFileCoordinatorWritingForMoving
+                                 error: &outError
+                            byAccessor: ^(NSURL *newURL){
+  
+                                NSURL *destDirURL = [newURL URLByDeletingLastPathComponent];
+                                // e.g.,
+                                // (lldb) po destDirURL
+                                // file:///var/mobile/Library/Mobile%20Documents/YHVGV9RUH4~com~nowpicture~multidocument/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1/
+                                
+                                
+                                NSError *createError = nil;
+                                
+                                NSFileManager *fm = [NSFileManager defaultManager];
+                                BOOL successOnCreate =
+                                [fm createDirectoryAtURL: destDirURL
+                             withIntermediateDirectories: YES
+                                              attributes: nil
+                                                   error: &createError];
+                                
+                                if( !successOnCreate || (nil!=createError) ){
+                                    NSLog( @"createError= %@",
+                                          [createError description] );
+                                    NSAssert( NO, @"failed to create the directory");
+                                    
+                                }else{
+                                    NSURL *sourceURL = record[NPLocalDocumentMetadataPlistURLKey];
+                                    // e.g.,
+                                    // (lldb) po sourceURL
+                                    // file:///var/mobile/Applications/1D7E3A9D-6F98-4831-BC4C-1F35BC7165A1/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1/DocumentMetadata.plist
+
+                                    NSError *copyError = nil;
+                                    BOOL successOnCopy =
+                                    [fm copyItemAtURL: sourceURL
+                                                toURL: newURL
+                                                error: &copyError];
+                                    
+                                    if( !successOnCopy || (nil != copyError) ){
+                                        NSLog( @"successOnCopy= %@",
+                                              [copyError description] );
+                                        NSAssert( NO, @"failed to copy the URL");
+                                    }else{
+                                        
+                                        // I think the document should now be ubiquitous.
+                                    }
+                                    
+                                }
+                            
+                            }];
+}
+
 /**
  See: Document-Based Programming Guide for iOS: Managing the Life Cycle of a Document
  
@@ -486,15 +551,15 @@
     
     if ([[self class] isCloudEnabled]) {
         
-        NSURL *localDocURL = record[NPLocalDocURLKey];//[record objectForKey: NPLocalDocURLKey];
-        [[self class] assureDirectoryURLExists: localDocURL];
+        NSURL *localStoreURL = record[NPLocalDocPersistentStoreURLKey];
+        [[self class] assureDirectoryURLExists: localStoreURL];
+        // <local documents>/<uuid>/<document name>/StoreContent/persistentStore
+        // e.g.,
+        //  file:///var/mobile/Applications/EC1478F8-7189-493A-B6DD-BD375C4C55EE/Documents/DA5113F5-EA50-4B4B-94BD-40233B7EE18E/TestDoc1/StoreContent/persistentStore
         
-        NSURL* cloudDocURL = record[NPDocCloudSyncURLKey];
-        
-        // Just checking:
-//        BOOL isMainThread = [[NSThread currentThread] isMainThread];
-//        NSLog(@"Main Thread: %@", isMainThread ? @"YES" : @"NO");
-        
+        NSURL* cloudStoreURL = record[NPCloudDocPersistentStoreURLKey];
+        // DON'T! [[self class] assureDirectoryURLExists: cloudStoreURL];
+        //  file:///var/mobile/Library/Mobile%20Documents/YHVGV9RUH4~com~nowpicture~multidocument/Documents/77088660-3B00-4A53-8180-9D26E999526F/TestDoc1/StoreContent.nosync
         
         // 2014 mar 27 test:
         dispatch_queue_t queue =
@@ -511,15 +576,15 @@
             NSError *error = nil;
             BOOL success =
             [fm setUbiquitous: YES
-                    itemAtURL: localDocURL
-               destinationURL: cloudDocURL //coordinatedCloudDocURL
+                    itemAtURL: localStoreURL
+               destinationURL: cloudStoreURL
                         error: &error];
             
             if(success){
                 NSLog(@" in dispatch_async -setUbiquitous:error: SUCCESS");
                 
                 // 2014 Mar 24 Investigating:
-                success = [fm startDownloadingUbiquitousItemAtURL: cloudDocURL
+                success = [fm startDownloadingUbiquitousItemAtURL: cloudStoreURL
                                                             error: &error];
                 if(success){
                     NSLog(@" in dispatch_async startDownloadingUbiquitousItemAtURL SUCCESS");
@@ -633,7 +698,7 @@
     if( [record npCreatedLocally] ){
         targetDocURL = localDocURL;
     }else{
-        targetDocURL = record[NPDocCloudSyncURLKey];
+        targetDocURL = record[NPCloudDocURLKey];
     }
     
     if( [fMgr fileExistsAtPath: [localDocURL path]]){
@@ -690,7 +755,7 @@
                               // -----------
                               // Some developers find it is unnecessary to "setUbiquitous".
                               // My experience finds that the following call IS necessary.
-                              [self setUbiquitous: updatedRecord];
+                              [self copyDocumentMetadataPlistToICloud: updatedRecord];
                               // If I comment the line above,
                               // then OS X Preferences->iCloud [Manage] -> multidocument
                               // shows only a single "Documents & Data" item, and never a list of

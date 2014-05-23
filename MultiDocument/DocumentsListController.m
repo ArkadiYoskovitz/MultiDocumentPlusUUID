@@ -286,18 +286,44 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     NSMutableDictionary *map = [self mapUuidsToRecords];
     return  map[uuid];
 }
+/**
+ This method retrieves a record for a uuid, or builds and stores an appropriate record for the uuid if no such record exists.
+ 
+ Note that the MultiDocument app only adds documents;
+ it never removes any.
 
+ Example:
+ (lldb) po record
+ {
+ "Cloud Document Persistent Store URL" = "file:///var/mobile/Library/Mobile%20Documents/YHVGV9RUH4~com~nowpicture~multidocument/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1/StoreContent.nosync";
+ "Cloud DocumentMetadata.plist URL" = "file:///var/mobile/Library/Mobile%20Documents/YHVGV9RUH4~com~nowpicture~multidocument/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1/DocumentMetadata.plist";
+ "Cloud Persistent Store Options dictionary" =     {
+ NSInferMappingModelAutomaticallyOption = 1;
+ NSMigratePersistentStoresAutomaticallyOption = 1;
+ NSPersistentStoreUbiquitousContentNameKey = "89C68DD4-0F34-4CFB-8D57-89531B288979";
+ NSPersistentStoreUbiquitousContentURLKey = "file:///var/mobile/Library/Mobile%20Documents/YHVGV9RUH4~com~nowpicture~multidocument/LogFiles";
+ };
+ "Document Cloud Sync URL" = "file:///var/mobile/Library/Mobile%20Documents/YHVGV9RUH4~com~nowpicture~multidocument/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1";
+ "File Name" = TestDoc1;
+ "Local Document Persistent Store URL" = "file:///var/mobile/Applications/1D7E3A9D-6F98-4831-BC4C-1F35BC7165A1/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1/StoreContent/persistentStore";
+ "Local Document URL" = "file:///var/mobile/Applications/1D7E3A9D-6F98-4831-BC4C-1F35BC7165A1/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1";
+ "Local DocumentMetadata.plist URL" = "file:///var/mobile/Applications/1D7E3A9D-6F98-4831-BC4C-1F35BC7165A1/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1/DocumentMetadata.plist";
+ "Local Persistent Store Options dictionary" =     {
+ NSInferMappingModelAutomaticallyOption = 1;
+ NSMigratePersistentStoresAutomaticallyOption = 1;
+ };
+ UUID = "89C68DD4-0F34-4CFB-8D57-89531B288979";
+ }
+ 
+ 
+ @param filename <#filename description#>
+ @param uuid     <#uuid description#>
+ 
+ @return <#return value description#>
+ */
 -(NSDictionary*)recordEnrolledForFilename: (NSString*)filename
                                      uuid: (NSString*)uuid
 {
-    /**
-     This method retrieves a record for a uuid,
-     or builds and stores an appropriate record for the uuid is no such record exists.
-     
-     Note that the MultiDocument app only adds documents;
-     it never removes any.
-     
-     */
     
     NSAssert( [self validUuidString: uuid], @"Bogus uuid: %@", uuid);
     NSAssert( (0 != filename.length), @"Bogus filename, empty");
@@ -333,16 +359,27 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         record[NPFileNameKey] = filename;
         
         record[NPLocalDocURLKey] = localDocURL;
+        NSURL *w = [localDocURL URLByAppendingPathComponent:@"DocumentMetadata.plist"];
+        record[NPLocalDocumentMetadataPlistURLKey] = w;
         
         NSURL *x = [localDocURL URLByAppendingPathComponent: @"StoreContent"];
         x = [x URLByAppendingPathComponent: @"persistentStore"];
-        record[NPLocalStoreContentPersistentStoreURLKey] = x;
+        record[NPLocalDocPersistentStoreURLKey] = x;
         
         if( nil != cloudDocURL ){
-            record[NPDocCloudSyncURLKey] = cloudDocURL;
+            record[NPCloudDocURLKey] = cloudDocURL;
+            
+            NSURL *y = [cloudDocURL URLByAppendingPathComponent: @"StoreContent.nosync"];
+            
+            record[NPCloudDocPersistentStoreURLKey] = y;
+            NSURL *z = [cloudDocURL URLByAppendingPathComponent: @"DocumentMetadata.plist"];
+            record[NPCloudDocumentMetadataPlistURLKey] = z;
+            
         }else{
-            [record removeObjectForKey: NPDocCloudSyncURLKey];
-        }
+            [record removeObjectForKey: NPCloudDocURLKey];
+            [record removeObjectForKey: NPCloudDocPersistentStoreURLKey];
+            [record removeObjectForKey: NPCloudDocumentMetadataPlistURLKey];
+       }
 
         record[NPLocalStoreOptionsKey] = [[self class] localPersistentStoreOptions];
         record[NPCloudStoreOptionsKey] = [[self class] cloudPersistentStoreOptionsForRecord: record];
@@ -465,7 +502,7 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
         
         newRecord[NPMetadataDictionaryKey] = metadataDictionary;
         
-        NSURL *cloudDocURL = newRecord[NPDocCloudSyncURLKey];
+        NSURL *cloudDocURL = newRecord[NPCloudDocURLKey];
         [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
                                                         error: nil];
         

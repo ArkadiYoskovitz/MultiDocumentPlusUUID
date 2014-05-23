@@ -76,7 +76,7 @@
 }
 -(NSURL*)cloudDocURL
 {
-    return (self.record)[NPDocCloudSyncURLKey];
+    return (self.record)[NPCloudDocURLKey];
 }
 -(NSString*)fileName
 {
@@ -405,7 +405,7 @@
     
     if(!createdLocally){
         
-        NSURL *cloudDocURL = self.record[NPDocCloudSyncURLKey];
+        NSURL *cloudDocURL = self.record[NPCloudDocURLKey];
         BOOL started =
         [self.fileManager startDownloadingUbiquitousItemAtURL:cloudDocURL
                                                         error: nil];
