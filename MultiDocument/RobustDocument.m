@@ -10,10 +10,6 @@
 
 #import "RobustDocument.h"
 
-//#import "DocumentsListController+Making.h"
-
-#import "DocumentsListController+ErrorRecovering.h"
-
 @implementation RobustDocument
 
 -(void)showError:(NSError *)error

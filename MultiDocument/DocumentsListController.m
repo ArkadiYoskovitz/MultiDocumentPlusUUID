@@ -316,10 +316,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
  }
  
  
- @param filename <#filename description#>
- @param uuid     <#uuid description#>
+ @param filename a string suitable for a document's file name
+ @param uuid     NSUUID in string form
  
- @return <#return value description#>
+ @return a dictionary
  */
 -(NSDictionary*)recordEnrolledForFilename: (NSString*)filename
                                      uuid: (NSString*)uuid
@@ -359,25 +359,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         record[NPFileNameKey] = filename;
         
         record[NPLocalDocURLKey] = localDocURL;
-        NSURL *w = [localDocURL URLByAppendingPathComponent:@"DocumentMetadata.plist"];
+        NSURL *w = [localDocURL URLByAppendingPathComponent:NPDocumentMetadataDotPlist];
         record[NPLocalDocumentMetadataPlistURLKey] = w;
-        
-        NSURL *x = [localDocURL URLByAppendingPathComponent: @"StoreContent"];
-        x = [x URLByAppendingPathComponent: @"persistentStore"];
-        record[NPLocalDocPersistentStoreURLKey] = x;
         
         if( nil != cloudDocURL ){
             record[NPCloudDocURLKey] = cloudDocURL;
             
-            NSURL *y = [cloudDocURL URLByAppendingPathComponent: @"StoreContent.nosync"];
-            
-            record[NPCloudDocPersistentStoreURLKey] = y;
-            NSURL *z = [cloudDocURL URLByAppendingPathComponent: @"DocumentMetadata.plist"];
+            NSURL *z = [cloudDocURL URLByAppendingPathComponent: NPDocumentMetadataDotPlist];
             record[NPCloudDocumentMetadataPlistURLKey] = z;
             
         }else{
             [record removeObjectForKey: NPCloudDocURLKey];
-            [record removeObjectForKey: NPCloudDocPersistentStoreURLKey];
             [record removeObjectForKey: NPCloudDocumentMetadataPlistURLKey];
        }
 
@@ -427,15 +419,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
 }
 
-const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
-
 -(NSString*)uuidFromMetadataItem: (NSMetadataItem*)item
 {
     NSString *result = nil;
     
     NSURL *url = [item valueForKey: NSMetadataItemURLKey];
     NSString *last = [url lastPathComponent];
-    BOOL isDocMDataPlist = [last isEqualToString: (NSString*)NPDocMDataDotPlistKey];
+    BOOL isDocMDataPlist = [last isEqualToString: (NSString*)NPDocumentMetadataDotPlist];
     
     if( isDocMDataPlist ){
         
@@ -455,7 +445,7 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     
     NSURL *url = [item valueForKey: NSMetadataItemURLKey];
     NSString *last = [url lastPathComponent];
-    BOOL isDocMDataPlist = [last isEqualToString: (NSString*)NPDocMDataDotPlistKey];
+    BOOL isDocMDataPlist = [last isEqualToString: (NSString*)NPDocumentMetadataDotPlist];
     
     if( isDocMDataPlist ){
         
@@ -690,20 +680,19 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
     [self establishDocument: document];
     
 }
+
+/**
+ This method delays the call to -actuallyReloadTableView:until 1.0 second after the most recent call to -resetTableViewSnoozeAlarm.
+ 
+ Suppose we get a burst of calls to -resetTableViewSnoozeAlarm over a short period,
+ but each within 1.0 second of the previous. The burst ends when 1.0 second elapses with no call to -resetTableViewSnoozeAlarm.
+ 
+ When the burst ends, the timer, m_tableViewSnoozeAlarm, finally invokes -actuallyReloadTableView:.
+ 
+ */
 -(void)resetTableViewSnoozeAlarm
 {
-    /**
-     This method delays the call to -actuallyReloadTableView:
-     until 1.0 second after the most recent call to -resetTableViewSnoozeAlarm.
-     
-     Suppose we get a burst of calls to -resetTableViewSnoozeAlarm over a short period,
-     but each within 1.0 second of the previous.
-     The burst ends when 1.0 second elapses with no call to -resetTableViewSnoozeAlarm.
-     
-     When the burst ends,
-     the timer, m_tableViewSnoozeAlarm, finally invokes -actuallyReloadTableView:.
-     
-     */
+
     /*
      "-[NSTimer invalidate] Stops the receiver from ever firing again and requests its removal from its run loop."
      */
@@ -743,14 +732,14 @@ const NSString *NPDocMDataDotPlistKey = @"DocumentMetadata.plist";
 
 #pragma mark addDocumentFromRecord:documentExists: callbacks:
 
+/*
+ When creating or opening a document, I disable the [+] button until the document opens.
+ I did this to prevent myself from activating [+] multiple times.
+ There's considerable delay in the UI.
+ This supporting logic expects only one document to be opening or creating at any one time.
+ */
 -(void)restoreAddButton
 {
-    /*
-     When creating or opening a document, I disable the [+] button until the document opens.
-     I did this to prevent myself from activating [+] multiple times.
-     There's considerable delay in the UI.
-     This supporting logic expects only one document to be opening or creating at any one time.
-     */
     
     // Perturb the view in the main thread:
     dispatch_async(dispatch_get_main_queue(), ^{

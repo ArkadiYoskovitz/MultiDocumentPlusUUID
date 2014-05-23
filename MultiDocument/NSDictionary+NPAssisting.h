@@ -8,11 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString *NPDocumentMetadataDotPlist;
+
 extern NSString* NPLocalDocURLKey;
 extern NSString* NPCloudDocURLKey;
-
-extern NSString* NPLocalDocPersistentStoreURLKey;
-extern NSString* NPCloudDocPersistentStoreURLKey;
 
 extern NSString* NPLocalDocumentMetadataPlistURLKey;
 extern NSString* NPCloudDocumentMetadataPlistURLKey;
@@ -24,8 +23,6 @@ extern NSString* NPUUIDKey;
 
 extern NSString* NPLocalStoreOptionsKey;
 extern NSString* NPCloudStoreOptionsKey;
-
-//extern NSString* NPLocalStoreContentPersistentStoreURLKey;
 
 extern NSString* NPSuccessCallbackKey;
 extern NSString* NPFailureCallbackKey;

@@ -13,7 +13,6 @@
 
 #import "DocumentsListController+Making.h"
 #import "DocumentsListController+Resources.h"
-#import "DocumentsListController+ErrorRecovering.h"
 
 #import <CoreData/CoreData.h>
 
@@ -105,8 +104,7 @@
     NSAssert( [document isKindOfClass:[UIManagedDocument class]], @"Bogus document.");
     NSDictionary *record = [self recordForDocument: document];
 
-    NSURL *docMDataPlistURL = [record[NPCloudDocURLKey] URLByAppendingPathComponent: @"DocumentMetadata.plist"];
-    NSAssert( [docMDataPlistURL isKindOfClass:[NSURL class]], @"Bogus URL for documentMetadata.plist.");
+    NSURL *docMDataPlistURL = record[NPCloudDocumentMetadataPlistURLKey];
     
     NSDictionary *discoveredDocMDataDict = [NSDictionary dictionaryWithContentsOfURL:docMDataPlistURL];
     NSAssert( [discoveredDocMDataDict isKindOfClass:[NSDictionary class]], @"Bogus NSDictionary from documentMetadata.plist.");
@@ -354,122 +352,7 @@
                         
 }
 
--(void)addedCloudSyncStore: (NSPersistentStore*)store
-                    record: (NSDictionary*)record
-{
-    if(nil==store){
-        NSInvocation *failed = record[NPFailureCallbackKey];
-        [failed invoke];
-    }else{
-        
-        NSInvocation *success = record[NPSuccessCallbackKey];
-        [success invoke];
-        
-    }
-    
-    
-}
-/**
- This method has no callers, because it does not yield its intended effect: to make a document ubiquitous after opening it.
- See -
- See:
- Core Data, 2nd Edition
- Data Storage and Management for iOS, OS X, and iCloud
- by Marcus S. Zarra
- ISBN-13: 978-1-937785-08-6
- Chapter 6. Using iCloud • Page 108
- 
- Adds a persistent store to the document (to its persistent store coordinator).
- 
- Zarra:
- "The process of configuring iCloud happens when we add the NSPersistentStore to the NSPersistentStoreCoordinator, and it happens before the call returns. If iCloud needs to download data and that download takes several seconds, our application will be unresponsive while the download occurs, and our application could be potentially killed from the watchdog for taking too long to start up.
- Currently, the best solution to this problem is to add the NSPersistentStore to the NSPersistentStoreCoordinator on a background thread. We can use dispatch queues and blocks to make this relatively painless."
- 
- @param record the dictionary specifies a document to make ubiquitous
- */
--(void)addCloudPersistentStore: (NSDictionary*)record
-{
-    NSLog(@"-addCloudPersistentStore: start");
-    NSURL __block *docCloudSyncURL = record[NPCloudDocURLKey];
-    if( nil == docCloudSyncURL) return;
-    UIManagedDocument __block *document = record[NPDocumentKey];
-    if(nil == document ) return;
-    NSManagedObjectContext __block *moc = document.managedObjectContext;
-    
-    dispatch_queue_t queue;
-    queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_async(queue, ^{
-        
-        NSLog(@"-addCloudPersistentStore: dispatch_async start");
-        
-        
-        NSDictionary *options = [[self class] cloudPersistentStoreOptionsForRecord: record];
-        
-        NSURL *storeURL = record[NPLocalDocPersistentStoreURLKey];
-
-        NSFileCoordinator *fCoord = [[NSFileCoordinator alloc] init];
-        NSError __block *fError  = nil;
-        NSError __block *psError = nil;
-        NSPersistentStore __block *store = nil;
-
-        [fCoord coordinateWritingItemAtURL: storeURL
-                                   options: NSFileCoordinatorWritingForMerging
-                                     error: &fError
-                                byAccessor: ^(NSURL *coordinatedURL){
-                                
-                                    NSLog(@"-addCloudPersistentStore: dispatch_async NSFileCoordinator block start");
-                                    NSPersistentStoreCoordinator *psCoord = nil;
-                                    psCoord = [moc persistentStoreCoordinator];
-                                    store = [psCoord addPersistentStoreWithType:NSSQLiteStoreType
-                                                                  configuration:nil
-                                                                            URL:coordinatedURL
-                                                                        options:options
-                                                                          error:&psError];
-                                    
-                                    NSURL *sourceURL = store.URL;
-                                    /*
-                                     For example, 
-                                     (lldb) po sourceURL
-                                     file:///var/mobile/Applications/33D2A092-139B-4BF5-B3A5-A0792F0AC20F/Documents/C671DA1D-D649-4C9A-B750-047681957225/TestDoc1/StoreContent/CoreDataUbiquitySupport/mobile~49846490-B574-407D-8543-928C562B80E9/C671DA1D-D649-4C9A-B750-047681957225/3733A495-5461-49C5-B006-01BA88E7E2B4/store/persistentStore
-                                     */
-                                    NSURL *destURL = record[NPCloudDocURLKey];
-                                    [destURL URLByAppendingPathComponent: @"StoreContent"];
-                                    [[self class] assureDirectoryURLExists: destURL];
-                               
-                                    
-                                    NSFileManager *fm = [NSFileManager defaultManager];
-                                    NSError *fmError = nil;
-                                    
-                                    [fm setUbiquitous: YES
-                                            itemAtURL: sourceURL
-                                       destinationURL: destURL
-                                                error: &fmError];
-                                    
-                                    NSLog(@"  store = %@", [store description]);
-                                    NSLog(@"-addCloudPersistentStore: dispatch_async NSFileCoordinator block end");
-                                    
-                                }];
-
-         if (!store) {
-            NSLog(@"Error adding persistent store to persistent store coordinator %@\n%@",
-                 [psError localizedDescription], [psError userInfo]);
-            //Present a user facing error
-         }else{
-             NSLog(@"Succeeded adding persistent store to persistent store coordinator");
-            
-         }
-        
-        
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            [self addedCloudSyncStore: store
-                               record: record];
-        });
-        
-        NSLog(@"-addCloudPersistentStore: dispatch_async start");
-        
-    });
-}
--(void)copyDocumentMetadataPlistToICloud: (NSDictionary*)record
+-(void)copyDocumentMetadataPlistToCloud: (NSDictionary*)record
 {
     UIManagedDocument *doc = record[NPDocumentKey];
     NSAssert( (nil != doc), @"Bogus nil document");
@@ -497,113 +380,68 @@
                                 NSError *createError = nil;
                                 
                                 NSFileManager *fm = [NSFileManager defaultManager];
-                                BOOL successOnCreate =
-                                [fm createDirectoryAtURL: destDirURL
-                             withIntermediateDirectories: YES
-                                              attributes: nil
-                                                   error: &createError];
                                 
-                                if( !successOnCreate || (nil!=createError) ){
-                                    NSLog( @"createError= %@",
-                                          [createError description] );
-                                    NSAssert( NO, @"failed to create the directory");
+                                BOOL fileAlreadyExists =
+                                [fm fileExistsAtPath: newURL.path];
+                                
+                                if( !fileAlreadyExists ){
                                     
-                                }else{
-                                    NSURL *sourceURL = record[NPLocalDocumentMetadataPlistURLKey];
-                                    // e.g.,
-                                    // (lldb) po sourceURL
-                                    // file:///var/mobile/Applications/1D7E3A9D-6F98-4831-BC4C-1F35BC7165A1/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1/DocumentMetadata.plist
-
-                                    NSError *copyError = nil;
-                                    BOOL successOnCopy =
-                                    [fm copyItemAtURL: sourceURL
-                                                toURL: newURL
-                                                error: &copyError];
+                                    BOOL successOnCreate =
+                                    [fm createDirectoryAtURL: destDirURL
+                                 withIntermediateDirectories: YES
+                                                  attributes: nil
+                                                       error: &createError];
                                     
-                                    if( !successOnCopy || (nil != copyError) ){
-                                        NSLog( @"successOnCopy= %@",
-                                              [copyError description] );
-                                        NSAssert( NO, @"failed to copy the URL");
-                                    }else{
+                                    if( !successOnCreate || (nil!=createError) ){
+                                        NSLog( @"createError= %@",
+                                              [createError description] );
+                                        NSAssert( NO, @"failed to create the directory");
                                         
-                                        // I think the document should now be ubiquitous.
+                                    }else{
+                                        NSURL *sourceURL = record[NPLocalDocumentMetadataPlistURLKey];
+                                        // e.g.,
+                                        // (lldb) po sourceURL
+                                        // file:///var/mobile/Applications/1D7E3A9D-6F98-4831-BC4C-1F35BC7165A1/Documents/89C68DD4-0F34-4CFB-8D57-89531B288979/TestDoc1/DocumentMetadata.plist
+                                        
+                                        NSError *copyError = nil;
+                                        BOOL successOnCopy =
+                                        [fm copyItemAtURL: sourceURL
+                                                    toURL: newURL
+                                                    error: &copyError];
+                                        
+                                        if( !successOnCopy || (nil != copyError) ){
+                                            NSLog( @"successOnCopy= %@",
+                                                  [copyError description] );
+                                            NSAssert( NO, @"failed to copy the URL");
+                                        }else{
+                                            
+                                            // I think the document should now be ubiquitous.
+                                        }
+                                        
                                     }
-                                    
                                 }
+
                             
                             }];
 }
 
-/**
- See: Document-Based Programming Guide for iOS: Managing the Life Cycle of a Document
- 
- "Moving a Document to iCloud Storage
- Programmatically, you put a document in iCloud storage by calling the NSFileManager method setUbiquitous:itemAtURL:destinationURL:error:. This method requires the file URL of the document file in the application sandbox (source URL) and the destination file URL of the document file in the application’s iCloud container directory. The first parameter takes a Boolean value, which should be YES.
- 
- Important: You should not call setUbiquitous:itemAtURL:destinationURL:error: from your application’s main thread, especially if the document is not closed. Because this method performs a coordinated write operation on the specified file, calling this method from the main thread can trigger a deadlock with any file presenter monitoring the file. (In addition, this method executing on the main thread can take an indeterminate amount of time to complete.) Instead, call the method in a block running in a dispatch queue other than the main-thread queue. You can always message your main thread after the call finishes to update the rest of your application’s data structures."
- 
- See Listing 4-9  Moving a document file to iCloud storage from local storage.
- 
- @param record the document's helper dictionary
- */
--(void)setUbiquitous: (NSDictionary*)record
+NSString *NPErrorRecoveryEnabledKey = @"errorRecoveryEnabled";
+
+-(Class)factory
 {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults synchronize];
     
-    if ([[self class] isCloudEnabled]) {
-        
-        NSURL *localStoreURL = record[NPLocalDocPersistentStoreURLKey];
-        [[self class] assureDirectoryURLExists: localStoreURL];
-        // <local documents>/<uuid>/<document name>/StoreContent/persistentStore
-        // e.g.,
-        //  file:///var/mobile/Applications/EC1478F8-7189-493A-B6DD-BD375C4C55EE/Documents/DA5113F5-EA50-4B4B-94BD-40233B7EE18E/TestDoc1/StoreContent/persistentStore
-        
-        NSURL* cloudStoreURL = record[NPCloudDocPersistentStoreURLKey];
-        // DON'T! [[self class] assureDirectoryURLExists: cloudStoreURL];
-        //  file:///var/mobile/Library/Mobile%20Documents/YHVGV9RUH4~com~nowpicture~multidocument/Documents/77088660-3B00-4A53-8180-9D26E999526F/TestDoc1/StoreContent.nosync
-        
-        // 2014 mar 27 test:
-        dispatch_queue_t queue =
-        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        
-        dispatch_async(queue, ^{
-        
-            //NSLog(@" -setUbiquitous:error: dispatch_async start");
-            NSLog(@" in dispatch_async  -setUbiquitous:error: ");
-            
-            
-            NSFileManager *fm = [NSFileManager defaultManager];
-            
-            NSError *error = nil;
-            BOOL success =
-            [fm setUbiquitous: YES
-                    itemAtURL: localStoreURL
-               destinationURL: cloudStoreURL
-                        error: &error];
-            
-            if(success){
-                NSLog(@" in dispatch_async -setUbiquitous:error: SUCCESS");
-                
-                // 2014 Mar 24 Investigating:
-                success = [fm startDownloadingUbiquitousItemAtURL: cloudStoreURL
-                                                            error: &error];
-                if(success){
-                    NSLog(@" in dispatch_async startDownloadingUbiquitousItemAtURL SUCCESS");
-                }
-            }else{
-                NSLog(@" in dispatch_async -setUbiquitous:error: FAIL: %@", [error description]);
-                [NSException
-                 raise:NSGenericException
-                 format:@"Error moving to iCloud container: %@",
-                 error.localizedDescription];
-                
-            }
-            
-            NSLog(@" in dispatch_async -setUbiquitous:error: end");
-            
-        });
-        
-        NSLog(@"-setUbiquitous: async queue did dispatch");
+    BOOL errorRecoveryEnabled = [userDefaults boolForKey: NPErrorRecoveryEnabledKey];
+    
+    Class factory = nil;
+    
+    if( errorRecoveryEnabled ){
+        factory = [RobustDocument class];
+    }else{
+        factory = [UIManagedDocument class];
     }
+    return factory;
 }
 
 -(void)mostlyHarmlessMethod: (NSString*)haplessArgument
@@ -755,7 +593,7 @@
                               // -----------
                               // Some developers find it is unnecessary to "setUbiquitous".
                               // My experience finds that the following call IS necessary.
-                              [self copyDocumentMetadataPlistToICloud: updatedRecord];
+                              [self copyDocumentMetadataPlistToCloud: updatedRecord];
                               // If I comment the line above,
                               // then OS X Preferences->iCloud [Manage] -> multidocument
                               // shows only a single "Documents & Data" item, and never a list of

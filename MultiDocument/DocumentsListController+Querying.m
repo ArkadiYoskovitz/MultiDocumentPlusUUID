@@ -85,7 +85,6 @@
     [self.notificationObservers addObject:observer];
 
 }
-const NSString *PNDocMDataDotPlistKey = @"DocumentMetadata.plist";
 
 -(NSMetadataQuery*)query
 {
@@ -100,9 +99,8 @@ const NSString *PNDocMDataDotPlistKey = @"DocumentMetadata.plist";
         // contained DocumentMetadata.plist.
         NSPredicate *p =
         [NSPredicate predicateWithFormat:@"%K like %@",
-         NSMetadataItemFSNameKey, PNDocMDataDotPlistKey];
-        //NSMetadataItemFSNameKey, @"*"];
-       
+         NSMetadataItemFSNameKey, NPDocumentMetadataDotPlist];
+        
         [m_query setPredicate:p];
         
         [self observeQuery];

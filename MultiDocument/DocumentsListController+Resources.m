@@ -12,6 +12,7 @@
 //
 
 #import "DocumentsListController+Resources.h"
+#import "DocumentsListController+Querying.h"
 
 
 #import "NSURL+NPAssisting.h"
@@ -123,7 +124,6 @@
             
             NSLog(@"mm_containerURL = %@", [mm_containerURL description]);
             
-
         });
     }
     

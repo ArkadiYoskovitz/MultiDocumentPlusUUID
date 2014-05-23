@@ -12,8 +12,10 @@
 
 //#import <UIKit/UIKit.h>
 
+const NSString *NPDocumentMetadataDotPlist = @"DocumentMetadata.plist";
+
 const NSString* NPLocalDocURLKey     = @"Local Document URL";
-const NSString* NPCloudDocURLKey     = @"Document Cloud Sync URL";
+const NSString* NPCloudDocURLKey     = @"Cloud Document URL";
 const NSString* NPCloudLogFilesURLKey     = @"Cloud Log Files URL";
 
 const NSString* NPLocalDocPersistentStoreURLKey = @"Local Document Persistent Store URL";
@@ -197,8 +199,12 @@ const NSString* NPDocumentMocObjectsChangedObserverKey = @"NSManagedObjectContex
         //     "com.apple.coredata.ubiquity.importer.didfinishimport" = "2014-02-06 20:03:04 +0000";
         // }
 
-        id test = notificationDates[NPStealthyDidFinishImport];
-        if( nil != test ){
+//        id test1 = notificationDates[NSPersistentStoreCoordinatorStoresDidChangeNotification];
+//        if( nil != test1 ){
+//            return YES;
+//        }
+        id test2 = notificationDates[NPStealthyDidFinishImport];
+        if( nil != test2 ){
             return YES;
         }
 

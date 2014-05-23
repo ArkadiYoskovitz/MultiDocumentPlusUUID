@@ -31,7 +31,6 @@
 		A5BB09191794CB82006A3DDB /* UIDocument+NPExtending.m in Sources */ = {isa = PBXBuildFile; fileRef = A53B6C9A1794BA2F0097D5A1 /* UIDocument+NPExtending.m */; };
 		A5C6342B16F51E7A000A1E1E /* DocumentsListController+Querying.m in Sources */ = {isa = PBXBuildFile; fileRef = A5C6342916F51E7A000A1E1E /* DocumentsListController+Querying.m */; };
 		A5E4198215E9970A008D391E /* ModelVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E4198115E9970A008D391E /* ModelVersion.m */; };
-		A5F02C3017F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.m in Sources */ = {isa = PBXBuildFile; fileRef = A5F02C2F17F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.m */; };
 		A5FD19C81682265800F39341 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A5FD19C71682265800F39341 /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
@@ -78,8 +77,6 @@
 		A5C9DC911799F0F000AD9A71 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		A5E4198015E9970A008D391E /* ModelVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelVersion.h; sourceTree = "<group>"; };
 		A5E4198115E9970A008D391E /* ModelVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModelVersion.m; sourceTree = "<group>"; };
-		A5F02C2E17F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DocumentsListController+ErrorRecovering.h"; sourceTree = "<group>"; };
-		A5F02C2F17F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DocumentsListController+ErrorRecovering.m"; sourceTree = "<group>"; };
 		A5FD19C71682265800F39341 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -141,8 +138,6 @@
 				A56FD18C188B71EE004CF7EA /* DocumentsListController+Making.m */,
 				A5C6342816F51E7A000A1E1E /* DocumentsListController+Querying.h */,
 				A5C6342916F51E7A000A1E1E /* DocumentsListController+Querying.m */,
-				A5F02C2E17F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.h */,
-				A5F02C2F17F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.m */,
 				345CF95F1480A9CC0046F083 /* DetailViewController.h */,
 				A56FD18A188B6DCD004CF7EA /* DetailViewController.m */,
 				A50D473616FA4D390098BAF8 /* DetailViewController+Pinging.h */,
@@ -272,7 +267,6 @@
 				A51A70FE16E2AB4600D7030C /* NSURL+NPAssisting.m in Sources */,
 				A52AF77216F24CD900840918 /* DocumentsListController+Resources.m in Sources */,
 				A527F605188720BC00137D97 /* NSDictionary+NPAssisting.m in Sources */,
-				A5F02C3017F4A08100A0DFA0 /* DocumentsListController+ErrorRecovering.m in Sources */,
 				A5C6342B16F51E7A000A1E1E /* DocumentsListController+Querying.m in Sources */,
 				A50D473816FA4D390098BAF8 /* DetailViewController+Pinging.m in Sources */,
 			);
