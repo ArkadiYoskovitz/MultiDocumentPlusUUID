@@ -91,42 +91,43 @@
    return result;
 }
 
-+ (NSURL*)containerURL {
-    
-    static NSURL *mm_containerURL = nil;
-    
-    if( nil == mm_containerURL ){
-        
-        NSDate *start = [[NSDate date] copy];
-        
-        static dispatch_once_t onceToken;
-        
-        dispatch_once(&onceToken, ^{
-            
+static NSURL *mm_containerURL = nil;
 
-            NSFileManager *fMgr = [[self class] fileManager]; 
-            mm_containerURL =
-            [[fMgr URLForUbiquityContainerIdentifier: nil] npNormalizedURL];
-            
-            NSDate *complete = [NSDate date];
-            
-            NSTimeInterval dT =
-            [complete timeIntervalSinceReferenceDate] -
-            [start timeIntervalSinceReferenceDate];
-            
-            NSLog(@" latency for -[NSFileManager URLForUbiquityContainerIdentifier:] = %f", dT);
-            // In iOS 6 on iPhone 4:
-            // The lowest I saw was about 0.2 sec.
-            // The highest was about 3.3 sec.
-            
-            // Faster in iOS 7 on iPhone 5
-            // lowest about 0.1 sec
-            
-            NSLog(@"mm_containerURL = %@", [mm_containerURL description]);
-            
-        });
-    }
++(void)getContainerURLWithCallback: (NSInvocation*)callback
+{
     
+    NSDate *start = [[NSDate date] copy];
+    
+    static dispatch_once_t onceToken;
+    
+    dispatch_once(&onceToken, ^{
+        
+        
+        NSFileManager *fMgr = [[self class] fileManager];
+        mm_containerURL =
+        [[fMgr URLForUbiquityContainerIdentifier: nil] npNormalizedURL];
+        
+        NSDate *complete = [NSDate date];
+        
+        NSTimeInterval dT =
+        [complete timeIntervalSinceReferenceDate] -
+        [start timeIntervalSinceReferenceDate];
+        
+        NSLog(@" latency for -[NSFileManager URLForUbiquityContainerIdentifier:] = %f", dT);
+        // In iOS 6 on iPhone 4:
+        // The lowest I saw was about 0.2 sec.
+        // The highest was about 3.3 sec.
+        
+        // Faster in iOS 7 on iPhone 5
+        // lowest about 0.1 sec
+        
+        NSLog(@"mm_containerURL = %@", [mm_containerURL description]);
+        
+        [callback invoke];
+        
+    });
+}
++ (NSURL*)containerURL {
     return mm_containerURL;
 }
 

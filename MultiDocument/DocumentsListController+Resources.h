@@ -23,6 +23,7 @@
 +(void)actuallyCreateDirectoryAtURL: (NSURL*)url;
 +(BOOL)assureDirectoryURLExists: (NSURL*)url;
 
++(void)getContainerURLWithCallback: (NSInvocation*)callback;
 + (NSURL*)containerURL;
 + (NSURL *)iCloudLogFilesURL;
 + (NSURL *)iCloudDocumentsURL;

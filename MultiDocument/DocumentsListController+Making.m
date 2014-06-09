@@ -531,21 +531,13 @@ NSString *NPErrorRecoveryEnabledKey = @"errorRecoveryEnabled";
     NSFileManager *fMgr = [[self class] fileManager];
     
     
-    
-    NSURL *targetDocURL = nil;
-    if( [record npCreatedLocally] ){
-        targetDocURL = localDocURL;
-    }else{
-        targetDocURL = record[NPCloudDocURLKey];
-    }
-    
     if( [fMgr fileExistsAtPath: [localDocURL path]]){
         [document openWithCompletionHandler:^(BOOL success){
             
             if (!success) {
                 NSLog(@"In -establishDocument:, Error opening file");
-                return;
                 [failCallback invoke];
+                return;
             }else{
                 
                 NSLog(@"File opened");

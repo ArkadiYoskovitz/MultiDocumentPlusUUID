@@ -112,17 +112,31 @@ static NSString *defaultCellReuseIdentifier = @"DefaultCell";
     [[self tableView] registerClass:[UITableViewCell class]
              forCellReuseIdentifier:defaultCellReuseIdentifier];
     
-    if ([[self class] isCloudEnabled]) {
-        [self launchMetadataQuery];
-    } else {
-        //[self discoverLocalDocs]; // This app is limited.
-    }
-    
-    
     [self observeWillTerminate];
+}
+-(void)didGetContainerURL
+{
+    [self restoreAddButton];
+    [self launchMetadataQuery];
 }
 -(void)viewWillAppear:(BOOL)animated
 {
+    SEL callbackSelector = @selector(didGetContainerURL);
+    
+    self.addButton.enabled = NO;
+    
+    NSMethodSignature *sig = [self methodSignatureForSelector: callbackSelector];
+    
+    NSInvocation *callback = [NSInvocation invocationWithMethodSignature: sig];
+    [callback setTarget: self];
+    [callback setSelector: callbackSelector];
+    
+    if( nil == [[self class] containerURL] ){
+        [[self class] getContainerURLWithCallback: callback];
+    }else{
+        [self restoreAddButton];
+    }
+    
     [super viewWillAppear:animated];
     [self resetTableViewSnoozeAlarm];
 }
@@ -740,13 +754,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
  */
 -(void)restoreAddButton
 {
-    
     // Perturb the view in the main thread:
     dispatch_async(dispatch_get_main_queue(), ^{
         self.addButton.enabled = YES;
         [self resetTableViewSnoozeAlarm];
     });
-    
 }
 
 -(void)didAddDocument: (UIManagedDocument*)document

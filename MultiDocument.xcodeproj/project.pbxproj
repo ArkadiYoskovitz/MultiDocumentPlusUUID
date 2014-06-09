@@ -202,7 +202,7 @@
 		345CF93A1480A9CC0046F083 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0600;
 				ORGANIZATIONNAME = "Freelance Mad Science Labs";
 				TargetAttributes = {
 					345CF9421480A9CC0046F083 = {
@@ -304,10 +304,12 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Don Briggs (H8AMRRC6WX)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Don Briggs (H8AMRRC6WX)";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -326,8 +328,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
+				PROVISIONING_PROFILE = "7A600133-DA93-4B44-A79F-9EAE93188714";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7A600133-DA93-4B44-A79F-9EAE93188714";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -342,10 +344,12 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Don Briggs (H8AMRRC6WX)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -359,8 +363,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
+				PROVISIONING_PROFILE = "7A600133-DA93-4B44-A79F-9EAE93188714";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7A600133-DA93-4B44-A79F-9EAE93188714";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -370,8 +374,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MultiDocument/MultiDocument.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Don Briggs (H8AMRRC6WX)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Don Briggs (H8AMRRC6WX)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "iPhone Developer";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -379,8 +383,8 @@
 				INFOPLIST_FILE = "MultiDocument/MultiDocument-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
+				PROVISIONING_PROFILE = "7A600133-DA93-4B44-A79F-9EAE93188714";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7A600133-DA93-4B44-A79F-9EAE93188714";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -390,17 +394,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MultiDocument/MultiDocument.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Don Briggs (H8AMRRC6WX)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Don Briggs (H8AMRRC6WX)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "iPhone Developer: Don Briggs (H8AMRRC6WX)";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MultiDocument/MultiDocument-Prefix.pch";
 				INFOPLIST_FILE = "MultiDocument/MultiDocument-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "72F749A7-005A-43AD-8DD6-D8DD97ADB002";
+				PROVISIONING_PROFILE = "7A600133-DA93-4B44-A79F-9EAE93188714";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7A600133-DA93-4B44-A79F-9EAE93188714";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
